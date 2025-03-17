@@ -1,0 +1,6 @@
+@EZRide_Project_HostAddress = http://localhost:5250
+
+GET {{EZRide_Project_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
