@@ -23,6 +23,8 @@ namespace EZRide_Project.Controllers
         }
 
 
+
+
         //SignUp API
         [HttpPost("Signup")]
         public  IActionResult SignUp(AddUserDataDTO addUserDataDTO)
