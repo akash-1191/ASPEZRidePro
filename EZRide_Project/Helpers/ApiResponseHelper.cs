@@ -41,6 +41,7 @@ namespace EZRide_Project.Helpers
             return Fail($"{entityName} not found.", 404);
         }
 
+
         public static ApiResponseModel Unauthorized(string message = "Unauthorized access.")
         {
             return Fail(message, 401);
