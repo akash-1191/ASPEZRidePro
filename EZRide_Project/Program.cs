@@ -2,6 +2,7 @@ using System.Text;
 using EZRide_Project.Data;
 using EZRide_Project.Helpers;
 using EZRide_Project.Model.Entities;
+using EZRide_Project.Repositories;
 using EZRide_Project.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
@@ -21,6 +22,9 @@ builder.Services.AddTransient<EmailService>();
 
 
 builder.Services.AddScoped<JwtTokenGenerator>();
+builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<ApplicationDbContext>();
+builder.Services.AddScoped<IUserRepository, UserRepository>();
 
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle

@@ -5,13 +5,14 @@ namespace EZRide_Project.Helpers
     public class ApiResponseHelper
     {
 
-
-        public static ApiResponseModel Success(string message = "Success", int statusCode = 200)
+        
+        public static ApiResponseModel Success(string message = "Success",object data=null, int statusCode = 200)
         {
             return new ApiResponseModel
             {
                 IsSuccess = true,
                 Message = message,
+                Data = data,
                 StatusCode = statusCode
             };
         }

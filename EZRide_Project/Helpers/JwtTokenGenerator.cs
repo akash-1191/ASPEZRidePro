@@ -13,7 +13,7 @@ namespace EZRide_Project.Helpers
         {
             _configuration = configuration;
         }
-
+            
         public string GenerateToken(string email, int roleId, int UserId)
         {
             var authClaims = new[]
