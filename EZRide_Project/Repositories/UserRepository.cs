@@ -41,8 +41,31 @@ namespace EZRide_Project.Repositories
             return _context.Users
                 .Include(u => u.Role)   
                 .FirstOrDefault(u => u.UserId == id);
-
         }
 
+
+        //update user data
+        public User GetuserById(int userId)
+        {
+           return _context.Users.FirstOrDefault(u => u.UserId == userId);
+        }
+
+        public void UpdateUser(User user)
+        {
+            _context.Users.Update(user);
+            _context.SaveChanges();
+        }
+
+        //update user profile image
+        public async Task<User> GetUserByIdAsync(int userId)
+        {
+            return await _context.Users.FindAsync(userId);
+        }
+
+        public async Task UpdateUserAsync(User user)
+        {
+            _context.Users.Update(user);
+            await _context.SaveChangesAsync();
+        }
     }
 }

@@ -3,9 +3,11 @@ using EZRide_Project.Helpers;
 using EZRide_Project.Model;
 using EZRide_Project.Model.Entities;
 using EZRide_Project.Repositories;
+using Humanizer;
 using Microsoft.AspNetCore.Http.HttpResults;
 using System;
 using System.IO;
+using System.Linq;
 
 namespace EZRide_Project.Services
 {
@@ -37,7 +39,22 @@ namespace EZRide_Project.Services
                 return ApiResponseHelper.EmailAlreadyExists();
             }
 
-            string uploadFolder = Path.Combine(_environment.ContentRootPath, "Upload_image");
+            string[] blockedExtensions = { ".exe", ".bat", ".cmd", ".sh", ".js" };
+
+            var extension = Path.GetExtension(dto.Image.FileName).ToLower();
+            if (blockedExtensions.Contains(extension))
+            {
+                return ApiResponseHelper.Fail("This file type is not allowed.");
+            }
+
+            if (_environment.WebRootPath == null)
+            {
+                return ApiResponseHelper.Fail("WebRootPath is not set correctly.Contact  admin");
+            }
+
+            string uploadFolder = Path.Combine(_environment.WebRootPath, "Upload_image");
+
+
             if (!Directory.Exists(uploadFolder))
             {
                 Directory.CreateDirectory(uploadFolder);
@@ -50,6 +67,7 @@ namespace EZRide_Project.Services
             {
                 dto.Image.CopyTo(stream);
             }
+
 
             string hashedPassword = BCrypt.Net.BCrypt.HashPassword(dto.Password);
 
@@ -76,6 +94,8 @@ namespace EZRide_Project.Services
             return ApiResponseHelper.Success("User registered successfully.");
         }
 
+
+        //Login services
         public async Task<ApiResponseModel> LoginUser(LoginDTO loginDTO, EmailService _emailService)
         {
             if (loginDTO == null || string.IsNullOrWhiteSpace(loginDTO.Email) || string.IsNullOrWhiteSpace(loginDTO.Password))
@@ -149,6 +169,82 @@ namespace EZRide_Project.Services
             return ApiResponseHelper.Success("User profile fetched successfully.", dto);
         }
 
+
+        //update user data
+        public ApiResponseModel UpdateUserProfile(int authUserId, UserProfileUpdateDTO model)
+        {
+            if (authUserId != model.UserId)
+                return ApiResponseHelper.Forbidden("Access denied.");
+
+            var user = _repository.GetuserById(model.UserId);
+            if (user == null)
+                return ApiResponseHelper.NotFound("User not found.");
+
+            user.Firstname = model.Firstname;
+            user.Middlename = model.Middlename;
+            user.Lastname = model.Lastname;
+            user.Age = model.Age;
+            user.Address = model.Address;
+            user.Phone = model.Phone;
+            user.Gender = model.Gender;
+            user.City = model.City;
+            user.State = model.State;
+
+            _repository.UpdateUser(user);
+
+            return ApiResponseHelper.Success("User profile updated successfully.");
+        }
+
+        //update the user profile image
+
+        public async Task<ApiResponseModel> UpdateUserImageAsync(UpdateUserImageDTO updateUserImageDTO)
+        {
+            if (updateUserImageDTO == null || updateUserImageDTO.Image == null)
+                return ApiResponseHelper.Fail("Image is required.");
+
+            string[] blockedExtensions = { ".exe", ".bat", ".cmd", ".sh", ".js" };
+
+            var extension = Path.GetExtension(updateUserImageDTO.Image.FileName).ToLower();
+            if (blockedExtensions.Contains(extension))
+            {
+                return ApiResponseHelper.FileNotAllow("This file type is not allowed.");
+            }
+
+            var user = await _repository.GetUserByIdAsync(updateUserImageDTO.UserId);
+            if (user == null)
+                return ApiResponseHelper.NotFound("User not found.");
+
+            if (_environment.WebRootPath == null)
+                return ApiResponseHelper.Fail("WebRootPath not set.");
+
+            string uploadFolder = Path.Combine(_environment.WebRootPath, "Upload_image");
+
+            if (!Directory.Exists(uploadFolder))
+                Directory.CreateDirectory(uploadFolder);
+
+            // Delete old image
+            if (!string.IsNullOrEmpty(user.Image))
+            {
+                string oldImagePath = Path.Combine(_environment.WebRootPath, user.Image.TrimStart('/'));
+                if (File.Exists(oldImagePath))
+                    File.Delete(oldImagePath);
+            }
+
+            // Save new image
+            string uniqueFileName = Guid.NewGuid() + Path.GetExtension(updateUserImageDTO.Image.FileName);
+            string newFilePath = Path.Combine(uploadFolder, uniqueFileName);
+
+            using (var stream = new FileStream(newFilePath, FileMode.Create))
+            {
+                await updateUserImageDTO.Image.CopyToAsync(stream);
+            }
+
+            user.Image = "/Upload_image/" + uniqueFileName;
+
+            await _repository.UpdateUserAsync(user);
+
+            return ApiResponseHelper.Success("Profile image updated successfully.");
+        }
     }
     
 }

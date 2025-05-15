@@ -15,5 +15,10 @@ namespace EZRide_Project.Services
         //GetuserData
         ApiResponseModel GetUserProfile(int authUserId, int requestedUserId);
 
+        //Updatedata Of the user
+
+        ApiResponseModel UpdateUserProfile(int authUserId, UserProfileUpdateDTO model);
+//update user profile image 
+        Task<ApiResponseModel> UpdateUserImageAsync(UpdateUserImageDTO updateUserImageDTO);
     }
 }

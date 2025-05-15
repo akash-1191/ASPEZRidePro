@@ -12,5 +12,13 @@ namespace EZRide_Project.Repositories
 
 //GetUserdata
         User GetuserProfile(int id);
+
+//update profile data
+        User GetuserById(int userId);
+        void UpdateUser(User user);
+
+//update user profile image
+        Task<User> GetUserByIdAsync(int userId);
+        Task UpdateUserAsync(User user);
     }
 }

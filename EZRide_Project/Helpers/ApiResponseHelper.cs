@@ -27,6 +27,14 @@ namespace EZRide_Project.Helpers
             };
         }
 
+             public static ApiResponseModel FileNotAllow(string message)
+        {
+            return new ApiResponseModel
+            {
+                StatusCode = 400,
+                Message = "This types of file not allow."
+            };
+        }
 
         public static ApiResponseModel UserDataNull()
         {
