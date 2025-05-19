@@ -2,6 +2,7 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using static EZRide_Project.Model.Entities.Role;
 
 namespace EZRide_Project.Helpers
 {
@@ -14,14 +15,15 @@ namespace EZRide_Project.Helpers
             _configuration = configuration;
         }
             
-        public string GenerateToken(string email, int roleId, int UserId)
+        public string GenerateToken(string email, int roleId, int UserId, string roleName)
         {
             var authClaims = new[]
             {
                 new Claim("Email", email),
                 new Claim("RoleId", roleId.ToString()),
                 new Claim("UserId", UserId.ToString()),
-                
+                new Claim(ClaimTypes.Role, roleName),
+
             };
 
             var authSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));

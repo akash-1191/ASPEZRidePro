@@ -35,7 +35,7 @@ namespace EZRide_Project.Repositories
           
         }
 
-
+        // user profile data
         public User GetuserProfile(int id)
         {
             return _context.Users

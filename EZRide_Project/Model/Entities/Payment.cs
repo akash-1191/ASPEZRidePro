@@ -11,7 +11,7 @@ namespace EZRide_Project.Model.Entities
 
         [Column(TypeName = "decimal(10,2)")]
         public decimal Amount { get; set; }
-        public Paymentmethod PaymentMethod { get; set; } // Enum can be used here
+        public Paymentmethod PaymentMethod { get; set; } 
 
         [Required]
         [Column(TypeName ="varchar(100)")]
@@ -19,7 +19,7 @@ namespace EZRide_Project.Model.Entities
 
         [Required]
         [Column(TypeName = "varchar(50)")]
-        public PaymentStatus Status { get; set; } // Enum can be used here
+        public PaymentStatus Status { get; set; } 
         public DateTime CreatedAt { get; set; }
 
         // Navigation property for Booking

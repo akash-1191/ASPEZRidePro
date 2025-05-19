@@ -13,7 +13,7 @@ namespace EZRide_Project.Model.Entities
 
         [Required]
         [Column(TypeName ="varchar(50)")]
-        public VehicleType Type { get; set; } // Enum: 'bike', 'car'
+        public VehicleType Vehicletype { get; set; } // Enum: 'bike', 'car'
 
         [Required]
         [Column(TypeName = "varchar(50)")]
@@ -28,7 +28,7 @@ namespace EZRide_Project.Model.Entities
         public Fueltype FuelType { get; set; } // Enum: 'petrol', 'diesel', 'electric', 'CNG'
 
 
-        public byte SeatingCapacity { get; set; }
+        public byte? SeatingCapacity { get; set; }
 
         [Column(TypeName = "decimal(5,2)")]
         public decimal Mileage { get; set; }
@@ -48,24 +48,21 @@ namespace EZRide_Project.Model.Entities
         public Rcstatus RcStatus { get; set; } // Enum: 'active', 'expired'
 
 
-        [Required]
         [Column(TypeName = "varchar(50)")]
-        public acAvailability AcAvailability { get; set; } // Enum: 'yes', 'no'
+        public acAvailability? AcAvailability { get; set; } // Enum: 'yes', 'no'
 
        
         [Column(TypeName = "decimal(5,2)")]
         public decimal FuelTankCapacity { get; set; }
+            
 
-
-        [Required]
         [Column(TypeName = "varchar(50)")]
-        public Cartype CarType { get; set; } // Car type: 'sedan', 'suv', 'hatchback', 'other'
+        public String? CarName { get; set; } // Car type: 'sedan', 'suv', 'hatchback', 'other'
         public int EngineCapacity { get; set; }
 
 
-        [Required]
         [Column(TypeName = "varchar(80)")]
-        public Biketype BikeType { get; set; } // Bike type: 'sports', 'cruiser', 'scooter', 'other'
+        public string? BikeName { get; set; } // Bike type: 'sports', 'cruiser', 'scooter', 'other'
         public DateTime CreatedAt { get; set; } 
 
 
@@ -114,20 +111,6 @@ namespace EZRide_Project.Model.Entities
             Yes,
             No
         }
-        public enum Cartype
-        {
-            Sedan,
-            SUV,
-            Hatchback,
-            Other
-        }
-
-        public enum Biketype
-        {
-            Sports,
-            Cruiser,
-            Scooter,
-            Other
-        }
+       
     }
 }
