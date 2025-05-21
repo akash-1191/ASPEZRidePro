@@ -18,5 +18,7 @@ namespace EZRide_Project.Repositories
         //delete data of the vehicle 
         Task<bool> DeleteVehicleAsync(int vehicleId);
 
+       
+
     }
 }

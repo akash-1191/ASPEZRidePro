@@ -54,6 +54,7 @@ namespace EZRide_Project.Repositories
             int rowsAffected = await _context.SaveChangesAsync(); 
             return rowsAffected > 0; 
         }
+        
 
     }
 

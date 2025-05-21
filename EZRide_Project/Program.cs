@@ -28,8 +28,9 @@ builder.Services.AddScoped<ApplicationDbContext>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IVehicleRepository, VehicleRepository>();
 builder.Services.AddScoped<IVehicleService, VehicleService>();
-
-
+builder.Services.AddScoped<IVehicleImageRepository,VehicleImageRepository>();
+builder.Services.AddScoped<IVehicleImageService, VehicleImageService>();
+    
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();

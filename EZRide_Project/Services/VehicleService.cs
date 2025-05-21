@@ -9,9 +9,10 @@ namespace EZRide_Project.Services
     public class VehicleService : IVehicleService
     {
         private readonly IVehicleRepository _vehicleRepo;
-
-        public VehicleService(IVehicleRepository vehicleRepo)
+        private readonly IWebHostEnvironment _env;
+        public VehicleService(IVehicleRepository vehicleRepo, IWebHostEnvironment env)
         {
+            _env = env;
             _vehicleRepo = vehicleRepo;
         }
 
@@ -142,6 +143,7 @@ namespace EZRide_Project.Services
                 return ApiResponseHelper.Fail("Exception: " + ex.Message);
             }
         }
+
 
     }
 }
