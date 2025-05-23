@@ -30,7 +30,10 @@ builder.Services.AddScoped<IVehicleRepository, VehicleRepository>();
 builder.Services.AddScoped<IVehicleService, VehicleService>();
 builder.Services.AddScoped<IVehicleImageRepository,VehicleImageRepository>();
 builder.Services.AddScoped<IVehicleImageService, VehicleImageService>();
-    
+builder.Services.AddScoped<IPricingRuleRepository, PricingRuleRepository>();
+builder.Services.AddScoped<IPricingRuleService, PricingRuleService>();
+builder.Services.AddScoped<IVehicleDetailsRepository, VehicleDetailsRepository>();
+builder.Services.AddScoped<IVehicleDetailsService, VehicleDetailsService>();
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
