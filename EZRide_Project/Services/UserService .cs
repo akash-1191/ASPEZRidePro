@@ -133,7 +133,7 @@ namespace EZRide_Project.Services
                     user.Email,
                     user.RoleId,
                     RoleName = user.Role.RoleName.ToString()
-                }
+                }           
             });
         }
 

@@ -8,12 +8,12 @@ namespace EZRide_Project.Model.Entities
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int BookingId { get; set; }
+
         public int UserId { get; set; } //FK
         public int VehicleId { get; set; } // FK
 
         [Column(TypeName = "datetime2")]
         public DateTime StartTime { get; set; }
-
 
         [Column(TypeName = "datetime2")]
         public DateTime EndTime { get; set; }
@@ -25,8 +25,16 @@ namespace EZRide_Project.Model.Entities
         public decimal TotalAmount { get; set; }
 
         [Required]
-        [Column(TypeName ="varchar(50)")]
-        public BookingStatus Status { get; set; }//use ENUM
+        [Column(TypeName = "varchar(20)")]
+        public string BookingType { get; set; }
+
+        public int? TotalDays { get; set; }
+        public int? TotalHours { get; set; }
+
+        [Required]
+        [Column(TypeName = "varchar(50)")]
+        public BookingStatus Status { get; set; }
+
         public DateTime CreatedAt { get; set; }
 
         // Navigation properties
@@ -37,8 +45,6 @@ namespace EZRide_Project.Model.Entities
         public FuelLog FuelLog { get; set; }
         public DamageReport DamageReport { get; set; }
 
-
-
         public enum BookingStatus
         {
             Pending,
@@ -47,6 +53,6 @@ namespace EZRide_Project.Model.Entities
             Completed,
             Cancelled
         }
-     
     }
+
 }

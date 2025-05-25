@@ -19,10 +19,11 @@ namespace EZRide_Project.Controllers
         }
 
         [HttpPost("set-Or-price")]
-        
+        [Authorize(Roles = "Admin")]
+
         public async Task<IActionResult> SetOrUpdatePrice([FromBody] PricingRuleDto dto)
         {
-            if (dto == null || string.IsNullOrWhiteSpace(dto.PriceType))
+            if (dto == null)
                 return BadRequest(ApiResponseHelper.ValidationFailed("Invalid input."));
 
             var result = await _service.SetOrUpdatePricingAsync(dto);

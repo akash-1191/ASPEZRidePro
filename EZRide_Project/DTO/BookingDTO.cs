@@ -9,7 +9,11 @@
         public DateTime EndTime { get; set; }
         public decimal TotalDistance { get; set; }
         public decimal TotalAmount { get; set; }
-        public string Status { get; set; }  // Enum as string
+        public string BookingType { get; set; }
+        public int? TotalDays { get; set; }
+        public int? TotalHours { get; set; }
+        public string Status { get; set; }
         public DateTime CreatedAt { get; set; }
+    
     }
 }

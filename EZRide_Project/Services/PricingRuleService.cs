@@ -53,25 +53,11 @@ namespace EZRide_Project.Services
 
         private void SetPrice(PricingRule pricingRule, PricingRuleDto dto)
         {
-            switch (dto.PriceType?.ToLower())
-            {
-                case "price_per_km":
-                    pricingRule.PricePerKm = dto.Price;
-                    pricingRule.PricePerHour = null;
-                    pricingRule.PricePerDay = null;
-                    break;
-                case "price_per_hour":
-                    pricingRule.PricePerHour = dto.Price;
-                    pricingRule.PricePerKm = null;
-                    pricingRule.PricePerDay = null;
-                    break;
-                case "price_per_day":
-                    pricingRule.PricePerDay = dto.Price;
-                    pricingRule.PricePerKm = null;
-                    pricingRule.PricePerHour = null;
-                    break;
-            }
+            pricingRule.PricePerKm = dto.PricePerKm;
+            pricingRule.PricePerHour = dto.PricePerHour;
+            pricingRule.PricePerDay = dto.PricePerDay;
         }
+
 
 
         //get all data
