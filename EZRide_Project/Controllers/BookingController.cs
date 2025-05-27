@@ -1,7 +1,9 @@
-﻿using EZRide_Project.DTO;
+﻿using System.Security.Claims;
+using EZRide_Project.DTO;
 using EZRide_Project.Helpers;
 using EZRide_Project.Model.Entities;
 using EZRide_Project.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -40,11 +42,50 @@ namespace EZRide_Project.Controllers
 
 
         //get api for all data to get 
-        [HttpGet("getbookings/{userId}")]
-        public IActionResult GetBookingsByUserId(int userId)
+        [HttpGet("my-bookings")]
+        public async Task<IActionResult> GetMyBookings()
         {
-            var response = _bookingService.GetBookingsByUserId(userId);
-            return StatusCode(response.StatusCode, response);
+            var userIdString = User.FindFirst("UserId")?.Value;
+            if (string.IsNullOrEmpty(userIdString))
+                return Unauthorized("User id missing in token");
+
+            if (!int.TryParse(userIdString, out var userId))
+                return BadRequest("Invalid user id in token");
+
+            var bookings = await _bookingService.GetUserBookingsAsync(userId);
+            return Ok(bookings);
         }
+
+
+
+        [HttpPost("my-bookings/filter")]
+        public async Task<IActionResult> FilterBookings([FromBody] BookingFilterDTO filter)
+        {
+            var userIdString = User.FindFirst("UserId")?.Value;
+            if (string.IsNullOrEmpty(userIdString)) return Unauthorized("User id missing in token");
+            if (!int.TryParse(userIdString, out var userId)) return BadRequest("Invalid user id in token");
+
+            var bookings = await _bookingService.FilterUserBookingsAsync(userId, filter);
+            return Ok(bookings);
+        }
+
+        //filter data
+        //[HttpGet("filter")]
+        //[Authorize]
+        //public async Task<IActionResult> FilterBookings(int? userId, string filterType)
+        //{
+        //    if (string.IsNullOrEmpty(filterType))
+        //        return BadRequest("filterType is required.");
+
+        //    var bookings = await _bookingService.FilterBookings(userId, filterType);
+
+        //    return Ok(new
+        //    {
+        //        isSuccess = true,
+        //        message = "Bookings filtered successfully.",
+        //        statusCode = 200,
+        //        data = bookings
+        //    });
+        //}
     }
 }

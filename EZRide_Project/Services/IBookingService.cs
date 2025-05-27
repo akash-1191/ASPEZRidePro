@@ -12,7 +12,11 @@ namespace EZRide_Project.Services
         // Cancel booking method
         ApiResponseModel CancelBooking(int bookingId, int userId);
 
-        // get aal bookin data 
-        ApiResponseModel GetBookingsByUserId(int userId);
+
+        //get all full user data 
+        Task<List<BookingDetailDTO>> GetUserBookingsAsync(int userId);
+
+        //filter the data
+        Task<List<BookingDetailDTO>> FilterUserBookingsAsync(int userId, BookingFilterDTO filter);
     }
 }

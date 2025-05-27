@@ -1,4 +1,5 @@
-﻿using EZRide_Project.Model.Entities;
+﻿using EZRide_Project.DTO;
+using EZRide_Project.Model.Entities;
 
 namespace EZRide_Project.Repositories
 {
@@ -11,7 +12,11 @@ namespace EZRide_Project.Repositories
         Booking? GetBookingByIdAndUser(int bookingId, int userId);
         void CancelBooking(int bookingId, int userId);
 
-        //get all data of the booking table 
-        List<Booking> GetBookingsByUserId(int userId);
+
+        //get full all data 
+        Task<List<BookingDetailDTO>> GetUserBookingsAsync(int userId);
+
+        //filkter data of the booking table
+        Task<List<BookingDetailDTO>> FilterUserBookingsAsync(int userId, BookingFilterDTO filter);
     }
 }

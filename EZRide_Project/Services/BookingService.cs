@@ -66,34 +66,39 @@ namespace EZRide_Project.Services
             return ApiResponseHelper.Success("Booking cancelled successfully.");
         }
 
-        //get all data of the booking table
-        public ApiResponseModel GetBookingsByUserId(int userId)
+
+
+
+
+        //get all full data of the useer
+
+        public async Task<List<BookingDetailDTO>> GetUserBookingsAsync(int userId)
         {
-            var bookings = _bookingRepository.GetBookingsByUserId(userId);
+            return await _bookingRepository.GetUserBookingsAsync(userId);
+        }
 
-            if (bookings == null || bookings.Count == 0)
-            {
-                return ApiResponseHelper.Fail("No bookings found for this user.", 404);
-            }
+        //filter data
+        //public async Task<IEnumerable<BookingDTO>> FilterBookings(int? userId, string filterType)
+        //{
+        //    var bookings = await _bookingRepository.GetBookingsByUser(userId);
 
-            var dtoList = bookings.Select(b => new BookingDTO
-            {
-                BookingId = b.BookingId,
-                UserId = b.UserId,
-                VehicleId = b.VehicleId,
-                StartTime = b.StartTime,
-                EndTime = b.EndTime,
-                TotalDistance = b.TotalDistance,
-                TotalAmount = b.TotalAmount,
-                BookingType = b.BookingType,
-                TotalDays = b.TotalDays,
-                TotalHours = b.TotalHours,
-                PerKelomeater=b.PerKelomeater,
-                Status = b.Status.ToString(),
-                CreatedAt = b.CreatedAt
-            }).ToList();
+        //    IEnumerable<BookingDTO> filteredBookings = filterType.ToLower() switch
+        //    {
+        //        "latest" => bookings.OrderByDescending(b => b.CreatedAt),
+        //        "oldest" => bookings.OrderBy(b => b.CreatedAt),
+        //        "completed" => bookings.Where(b => b.Status.Equals("Completed", StringComparison.OrdinalIgnoreCase)),
+        //        "cancelled" => bookings.Where(b => b.Status.Equals("Cancelled", StringComparison.OrdinalIgnoreCase)),
+        //        "pending" => bookings.Where(b => b.Status.Equals("Pending", StringComparison.OrdinalIgnoreCase)),
+        //        "confirmed" => bookings.Where(b => b.Status.Equals("Confirmed", StringComparison.OrdinalIgnoreCase)),
+        //        "inprogress" => bookings.Where(b => b.Status.Equals("InProgress", StringComparison.OrdinalIgnoreCase)),
+        //        _ => throw new ArgumentException("Invalid filterType"),
+        //    };
 
-            return ApiResponseHelper.Success("Bookings fetched successfully.", dtoList);
+        //    return filteredBookings;
+        //}
+        public async Task<List<BookingDetailDTO>> FilterUserBookingsAsync(int userId, BookingFilterDTO filter)
+        {
+            return await _bookingRepository.FilterUserBookingsAsync(userId, filter);
         }
     }
 }
