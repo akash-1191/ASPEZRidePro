@@ -30,6 +30,7 @@ namespace EZRide_Project.Model.Entities
 
         public int? TotalDays { get; set; }
         public int? TotalHours { get; set; }
+        public int? PerKelomeater { get; set; }
 
         [Required]
         [Column(TypeName = "varchar(50)")]

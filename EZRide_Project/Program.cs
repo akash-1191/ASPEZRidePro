@@ -36,6 +36,9 @@ builder.Services.AddScoped<IVehicleDetailsRepository, VehicleDetailsRepository>(
 builder.Services.AddScoped<IVehicleDetailsService, VehicleDetailsService>();
 builder.Services.AddScoped<IBookingService, BookingService>();
 builder.Services.AddScoped<IBookingRepository, BookingRepository>();
+builder.Services.AddScoped<IPaymentRepository, PaymentRepository>();
+builder.Services.AddScoped<IPaymentService, PaymentService>();
+
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();

@@ -34,6 +34,7 @@ namespace EZRide_Project.Services
                 BookingType = dto.BookingType,
                 TotalDays = dto.TotalDays,
                 TotalHours = dto.TotalHours,
+                PerKelomeater = dto.PerKelomeater,
                 Status = Booking.BookingStatus.Pending,
                 CreatedAt = DateTime.Now
             };
@@ -87,6 +88,7 @@ namespace EZRide_Project.Services
                 BookingType = b.BookingType,
                 TotalDays = b.TotalDays,
                 TotalHours = b.TotalHours,
+                PerKelomeater=b.PerKelomeater,
                 Status = b.Status.ToString(),
                 CreatedAt = b.CreatedAt
             }).ToList();

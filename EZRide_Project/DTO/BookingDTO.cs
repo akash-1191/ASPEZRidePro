@@ -12,6 +12,9 @@
         public string BookingType { get; set; }
         public int? TotalDays { get; set; }
         public int? TotalHours { get; set; }
+        public int? PerKelomeater { get; set; }
+
+
         public string Status { get; set; }
         public DateTime CreatedAt { get; set; }
     

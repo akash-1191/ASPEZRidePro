@@ -38,6 +38,7 @@ namespace EZRide_Project.Controllers
             return StatusCode(response.StatusCode, response);
         }
 
+
         //get api for all data to get 
         [HttpGet("getbookings/{userId}")]
         public IActionResult GetBookingsByUserId(int userId)
