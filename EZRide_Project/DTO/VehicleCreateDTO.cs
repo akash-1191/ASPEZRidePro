@@ -20,6 +20,7 @@ namespace EZRide_Project.DTO
         public string? CarName { get; set; }
         public int EngineCapacity { get; set; }
         public string? BikeName { get; set; }
+        public decimal SecurityDepositAmount { get; set; }
     }
 
 }

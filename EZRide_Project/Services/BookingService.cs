@@ -77,25 +77,7 @@ namespace EZRide_Project.Services
             return await _bookingRepository.GetUserBookingsAsync(userId);
         }
 
-        //filter data
-        //public async Task<IEnumerable<BookingDTO>> FilterBookings(int? userId, string filterType)
-        //{
-        //    var bookings = await _bookingRepository.GetBookingsByUser(userId);
-
-        //    IEnumerable<BookingDTO> filteredBookings = filterType.ToLower() switch
-        //    {
-        //        "latest" => bookings.OrderByDescending(b => b.CreatedAt),
-        //        "oldest" => bookings.OrderBy(b => b.CreatedAt),
-        //        "completed" => bookings.Where(b => b.Status.Equals("Completed", StringComparison.OrdinalIgnoreCase)),
-        //        "cancelled" => bookings.Where(b => b.Status.Equals("Cancelled", StringComparison.OrdinalIgnoreCase)),
-        //        "pending" => bookings.Where(b => b.Status.Equals("Pending", StringComparison.OrdinalIgnoreCase)),
-        //        "confirmed" => bookings.Where(b => b.Status.Equals("Confirmed", StringComparison.OrdinalIgnoreCase)),
-        //        "inprogress" => bookings.Where(b => b.Status.Equals("InProgress", StringComparison.OrdinalIgnoreCase)),
-        //        _ => throw new ArgumentException("Invalid filterType"),
-        //    };
-
-        //    return filteredBookings;
-        //}
+        
         public async Task<List<BookingDetailDTO>> FilterUserBookingsAsync(int userId, BookingFilterDTO filter)
         {
             return await _bookingRepository.FilterUserBookingsAsync(userId, filter);

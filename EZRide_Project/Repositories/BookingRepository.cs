@@ -71,6 +71,7 @@ namespace EZRide_Project.Repositories
 
                 result.Add(new BookingDetailDTO
                 {
+                    BookingId = booking.BookingId,
                     VehicleImage = vehicleImage,
                     VehicleType = booking.Vehicle.Vehicletype.ToString(),
                     VehicleName = booking.Vehicle.Vehicletype == Vehicle.VehicleType.Bike
@@ -106,6 +107,7 @@ namespace EZRide_Project.Repositories
                 .Where(b => b.UserId == userId)
                 .AsQueryable();
 
+
             // Booking Status
             if (!string.IsNullOrEmpty(filter.BookingStatus) &&
                 Enum.TryParse<Booking.BookingStatus>(filter.BookingStatus, true, out var bookingStatusEnum))
@@ -118,6 +120,15 @@ namespace EZRide_Project.Repositories
             {
                 query = query.Where(b => b.Payment != null &&
                                          b.Payment.Status.ToLower() == filter.PaymentStatus.ToLower());
+            }
+
+            // Vehicle Type filter
+            if (!string.IsNullOrEmpty(filter.VehicleType))
+            {
+                if (Enum.TryParse<Vehicle.VehicleType>(filter.VehicleType, true, out var vehicleTypeEnum))
+                {
+                    query = query.Where(b => b.Vehicle.Vehicletype == vehicleTypeEnum);
+                }
             }
 
             // Filter by TotalDays
@@ -137,6 +148,7 @@ namespace EZRide_Project.Repositories
             {
                 query = query.Where(b => b.PerKelomeater.HasValue && b.PerKelomeater.Value >= filter.MinKilometers.Value);
             }
+
 
             // Sorting
             if (!string.IsNullOrEmpty(filter.SortBy))
@@ -159,6 +171,7 @@ namespace EZRide_Project.Repositories
 
                 result.Add(new BookingDetailDTO
                 {
+                    BookingId=booking.BookingId,
                     VehicleImage = vehicleImage,
                     VehicleType = booking.Vehicle.Vehicletype.ToString(),
                     VehicleName = booking.Vehicle.Vehicletype == Vehicle.VehicleType.Bike
@@ -184,35 +197,6 @@ namespace EZRide_Project.Repositories
         }
 
 
-        //public async Task<IEnumerable<booking>> GetBookingsByUser(int? userId)
-        //{
-        //    IQueryable<Booking> query = _context.Bookings;
-
-        //    if (userId.HasValue)
-        //        query = query.Where(b => b.UserId == userId.Value);
-
-        //    var bookings = await query
-        //        .Select(b => new BookingDTO
-        //        {
-        //            BookingId = b.BookingId,
-        //            UserId = b.UserId,
-        //            VehicleId = b.VehicleId,
-        //            StartTime = b.StartTime,
-        //            EndTime = b.EndTime,
-        //            TotalDistance = b.TotalDistance,
-        //            TotalAmount = b.TotalAmount,
-        //            BookingType = b.BookingType,
-        //            TotalDays = b.TotalDays,
-        //            TotalHours = b.TotalHours,
-        //            PerKelomeater = b.PerKelomeater,
-        //            Status = b.Status.ToString(),
-
-        //            CreatedAt = b.CreatedAt
-        //        })
-        //        .ToListAsync();
-
-        //    return bookings;
-        //}
 
     }
 

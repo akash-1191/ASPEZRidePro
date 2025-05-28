@@ -18,8 +18,11 @@ namespace EZRide_Project.Model.Entities
         [Column(TypeName = "Varchar(150)")]
         public string AddressProofPath { get; set; }
 
+        [Column(TypeName = "varchar(150)")]
+        public string DLImagePath { get; set; }
+
         [Column(TypeName ="varchar(50)")]
-        public DocumentStatus Status { get; set; } // Enum can be used here
+        public DocumentStatus Status { get; set; } = DocumentStatus.Active;  // Enum can be used here
         public DateTime CreatedAt { get; set; }
 
         // Navigation property for User

@@ -39,7 +39,8 @@ namespace EZRide_Project.Services
                     CarName = dto.CarName,
                     EngineCapacity = dto.EngineCapacity,
                     BikeName = dto.BikeName,
-                    CreatedAt = DateTime.Now
+                    CreatedAt = DateTime.Now,
+                    SecurityDepositAmount = dto.SecurityDepositAmount
                 };
 
                 _vehicleRepo.AddVehicle(vehicle);
@@ -78,6 +79,7 @@ namespace EZRide_Project.Services
                 AcAvailability = v.AcAvailability?.ToString(),
                 FuelTankCapacity = v.FuelTankCapacity,
                 CarName = v.CarName,
+                SecurityDepositAmount =v.SecurityDepositAmount,
                 EngineCapacity = v.EngineCapacity,
                 BikeName = v.BikeName
             }).ToList();
@@ -113,6 +115,7 @@ namespace EZRide_Project.Services
             existingVehicle.CarName = dto.CarName;
             existingVehicle.EngineCapacity = dto.EngineCapacity;
             existingVehicle.BikeName = dto.BikeName;
+            existingVehicle.SecurityDepositAmount = dto.SecurityDepositAmount;
 
             _vehicleRepo.UpdateVehicle(existingVehicle);
             var saved = await _vehicleRepo.SaveChangesAsync();

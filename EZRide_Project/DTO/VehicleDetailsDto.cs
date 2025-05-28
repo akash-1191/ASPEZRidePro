@@ -23,6 +23,7 @@
         public string CarType { get; set; }
         public int? EngineCapacity { get; set; }
         public string BikeType { get; set; }
+        public decimal SecurityDepositAmount { get; set; }
         public DateTime CreatedAt { get; set; }
 
         // From PricingRules table

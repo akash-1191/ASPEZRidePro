@@ -4,6 +4,7 @@ namespace EZRide_Project.DTO
 {
     public class BookingDetailDTO
     {
+        public int BookingId { get; set; }
         public string VehicleImage { get; set; }
         public string VehicleType { get; set; }
         public string VehicleName { get; set; }

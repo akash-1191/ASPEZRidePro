@@ -63,6 +63,9 @@ namespace EZRide_Project.Model.Entities
 
         [Column(TypeName = "varchar(80)")]
         public string? BikeName { get; set; } // Bike type: 'sports', 'cruiser', 'scooter', 'other'
+       
+        [Column(TypeName = "decimal(10,2)")]
+        public decimal SecurityDepositAmount { get; set; }
         public DateTime CreatedAt { get; set; } 
 
 

@@ -47,6 +47,7 @@ namespace EZRide_Project.Repositories
                 CarType = vehicle.CarName,
                 EngineCapacity = vehicle.EngineCapacity,
                 BikeType = vehicle.BikeName,
+                SecurityDepositAmount = vehicle.SecurityDepositAmount,
                 CreatedAt = vehicle.CreatedAt,
 
                 PricePerKm = pricing?.PricePerKm ?? 0,
@@ -89,6 +90,7 @@ namespace EZRide_Project.Repositories
                     CarType = vehicle.CarName,
                     EngineCapacity = vehicle.EngineCapacity,
                     BikeType = vehicle.BikeName,
+                    SecurityDepositAmount = vehicle.SecurityDepositAmount,
                     CreatedAt = vehicle.CreatedAt,
 
                     PricePerKm = pricing?.PricePerKm ?? 0,

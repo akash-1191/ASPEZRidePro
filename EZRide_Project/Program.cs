@@ -38,6 +38,10 @@ builder.Services.AddScoped<IBookingService, BookingService>();
 builder.Services.AddScoped<IBookingRepository, BookingRepository>();
 builder.Services.AddScoped<IPaymentRepository, PaymentRepository>();
 builder.Services.AddScoped<IPaymentService, PaymentService>();
+builder.Services.AddScoped<ISecurityDepositRepository, SecurityDepositRepository>();
+builder.Services.AddScoped<ISecurityDepositService, SecurityDepositService>();
+builder.Services.AddScoped<ICustomerDocumentRepository, CustomerDocumentRepository>();
+builder.Services.AddScoped<ICustomerDocumentService, CustomerDocumentService>();
 
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
