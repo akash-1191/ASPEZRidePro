@@ -3,6 +3,7 @@ using EZRide_Project.Helpers;
 using EZRide_Project.Model.Entities;
 using EZRide_Project.Model;
 using EZRide_Project.Repositories;
+using Microsoft.EntityFrameworkCore;
 
 namespace EZRide_Project.Services
 {
@@ -16,46 +17,68 @@ namespace EZRide_Project.Services
             _repository = repository;
             _env = env;
         }
+        //Add documnet
+        public async Task<bool> HasUserUploadedAnyDocumentsAsync(int userId)
+        {
+            return await _repository.HasUserUploadedAnyDocumentsAsync(userId);
+        }
+
 
         public async Task AddAsync(CustomerDocumentCreateDTO dto)
         {
-            // File save path
             var folderPath = Path.Combine(_env.WebRootPath, "Upload_image", "CustomerDocument");
             if (!Directory.Exists(folderPath))
                 Directory.CreateDirectory(folderPath);
 
-            // Save files once only
-            string ageProofPath = await SaveFileAsync(dto.AgeProof, folderPath);
-            string addressProofPath = await SaveFileAsync(dto.AddressProof, folderPath);
-            string dlImagePath = null;
+            // File paths
+            string? ageProofPath = dto.AgeProof != null ? await SaveFileAsync(dto.AgeProof, folderPath) : null;
+            string? addressProofPath = dto.AddressProof != null ? await SaveFileAsync(dto.AddressProof, folderPath) : null;
+            string? dlImagePath = dto.DLImage != null ? await SaveFileAsync(dto.DLImage, folderPath) : null;
 
-            if (dto.DLImage != null)
+            // Pehle check karo ki record already exist karta hai ya nahi
+            var existingDoc = await _repository.GetByUserIdRawAsync(dto.UserId); // NOTE: This should return Entity not DTO
+
+            if (existingDoc != null)
             {
-                dlImagePath = await SaveFileAsync(dto.DLImage, folderPath);
+                // Update existing record
+                if (ageProofPath != null) existingDoc.AgeProofPath = ageProofPath;
+                if (addressProofPath != null) existingDoc.AddressProofPath = addressProofPath;
+                if (dlImagePath != null) existingDoc.DLImagePath = dlImagePath;
+
+                existingDoc.CreatedAt = DateTime.UtcNow;
+
+                if (!string.IsNullOrEmpty(dto.Status) &&
+                    Enum.TryParse(dto.Status, true, out CustomerDocument.DocumentStatus parsedStatus))
+                {
+                    existingDoc.Status = parsedStatus;
+                }
+
+                await _repository.UpdateAsync(existingDoc); // You must implement UpdateAsync in repository
             }
-
-            // Create document entity
-            var document = new CustomerDocument
+            else
             {
-                UserId = dto.UserId,
-                AgeProofPath = ageProofPath,
-                AddressProofPath = addressProofPath,
-                DLImagePath = dlImagePath,
-                CreatedAt = DateTime.UtcNow,
-                Status = CustomerDocument.DocumentStatus.Active // Default status
-            };
+                // Add new record
+                var document = new CustomerDocument
+                {
+                    UserId = dto.UserId,
+                    AgeProofPath = ageProofPath,
+                    AddressProofPath = addressProofPath,
+                    DLImagePath = dlImagePath,
+                    CreatedAt = DateTime.UtcNow,
+                    Status = CustomerDocument.DocumentStatus.Active
+                };
 
-            // If DTO status provided, override default
-            if (!string.IsNullOrEmpty(dto.Status) &&
-                Enum.TryParse(dto.Status, true, out CustomerDocument.DocumentStatus parsedStatus))
-            {
-                document.Status = parsedStatus;
+                if (!string.IsNullOrEmpty(dto.Status) &&
+                    Enum.TryParse(dto.Status, true, out CustomerDocument.DocumentStatus parsedStatus))
+                {
+                    document.Status = parsedStatus;
+                }
+
+                await _repository.AddAsync(document);
             }
-
-            // Save to database
-            await _repository.AddAsync(document);
         }
 
+        //get all document
         public async Task<IEnumerable<CustomerDocumentReadDTO>> GetAllAsync()
         {
             var documents = await _repository.GetAllAsync();
@@ -72,34 +95,57 @@ namespace EZRide_Project.Services
             });
         }
 
-        public async Task<CustomerDocumentReadDTO> GetByIdAsync(int id)
+        //get document by user id
+        public async Task<CustomerDocumentReadDTO> GetByUserIdAsync(int userId)
         {
-            var d = await _repository.GetByIdAsync(id);
-            if (d == null) return null;
+            var document = await _repository.GetByUserIdAsync(userId);
+            if (document == null) return null;
 
             return new CustomerDocumentReadDTO
             {
-                DocumentId = d.DocumentId,
-                UserId = d.UserId,
-                AgeProofPath = d.AgeProofPath,
-                AddressProofPath = d.AddressProofPath,
-                DLImagePath = d.DLImagePath,
-                Status = d.Status.ToString(),
-                CreatedAt = d.CreatedAt
+                DocumentId = document.DocumentId,
+                UserId = document.UserId,
+                AgeProofPath = document.AgeProofPath,
+                AddressProofPath = document.AddressProofPath,
+                DLImagePath = document.DLImagePath,
+                CreatedAt = document.CreatedAt,
+                Status = document.Status.ToString()
             };
         }
+     
 
-        public async Task DeleteAsync(int id)
+        // Helper to remove file from server
+        private void DeleteFileIfExists(string relativePath)
         {
-            await _repository.DeleteAsync(id);
+            if (string.IsNullOrWhiteSpace(relativePath))
+                return;
+
+            var fullPath = Path.Combine(_env.WebRootPath, relativePath.Replace("/", "\\"));
+
+            if (File.Exists(fullPath))
+                File.Delete(fullPath);
         }
 
+        //validatio to check file type and drive 
         private async Task<string> SaveFileAsync(IFormFile file, string folderPath)
         {
-            if (file == null || file.Length == 0)
-                return null;
 
-            var fileName = $"{Guid.NewGuid()}_{file.FileName}";
+            if (file == null || file.Length == 0)
+                throw new Exception("File is empty or missing.");
+
+            var allowedExtensions = new[] { ".jpg", ".jpeg", ".png", ".pdf" };
+            var ext = Path.GetExtension(file.FileName).ToLowerInvariant();
+
+            if (!allowedExtensions.Contains(ext))
+                throw new Exception("Invalid file type. Only JPG, PNG, and PDF files are allowed.");
+
+            if (file.Length > 5 * 1024 * 1024) // 5 MB
+                throw new Exception("File size cannot exceed 5MB.");
+
+            if (!Directory.Exists(folderPath))
+                Directory.CreateDirectory(folderPath);
+
+            var fileName = $"{Guid.NewGuid()}_{Path.GetFileName(file.FileName)}";
             var fullPath = Path.Combine(folderPath, fileName);
 
             using (var stream = new FileStream(fullPath, FileMode.Create))
@@ -107,9 +153,46 @@ namespace EZRide_Project.Services
                 await file.CopyToAsync(stream);
             }
 
-            // Return relative path for storing in DB
+
             return Path.Combine("Upload_image", "CustomerDocument", fileName).Replace("\\", "/");
         }
 
+
+
+        public async Task UpdateDocumentFieldToNullAndDeleteFileAsync(int userId, string fieldName)
+        {
+            var document = await _repository.GetByUserIdAsync(userId);
+            if (document == null) return;
+
+            string filePath = null;
+
+            switch (fieldName.ToLower())
+            {
+                case "ageproof":
+                    filePath = document.AgeProofPath;
+                    break;
+                case "addressproof":
+                    filePath = document.AddressProofPath;
+                    break;
+                case "dlimage":
+                    filePath = document.DLImagePath;
+                    break;
+                default:
+                    throw new ArgumentException("Invalid field name");
+            }
+
+            // 1. Null in DB
+            await _repository.UpdateDocumentFieldToNullAsync(userId, fieldName);
+
+            // 2. Delete file from server
+            if (!string.IsNullOrEmpty(filePath))
+            {
+                var fullPath = Path.Combine(_env.WebRootPath, filePath.Replace("/", Path.DirectorySeparatorChar.ToString()));
+                if (File.Exists(fullPath))
+                {
+                    File.Delete(fullPath);
+                }
+            }
+        }
     }
 }

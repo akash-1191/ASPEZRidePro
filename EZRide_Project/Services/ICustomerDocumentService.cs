@@ -7,7 +7,11 @@ namespace EZRide_Project.Services
     {
         Task AddAsync(CustomerDocumentCreateDTO dto);
         Task<IEnumerable<CustomerDocumentReadDTO>> GetAllAsync();
-        Task<CustomerDocumentReadDTO> GetByIdAsync(int id);
-        Task DeleteAsync(int id);
+        Task<CustomerDocumentReadDTO> GetByUserIdAsync(int userId);
+       
+        
+        Task<bool> HasUserUploadedAnyDocumentsAsync(int userId);
+
+        Task UpdateDocumentFieldToNullAndDeleteFileAsync(int userId, string fieldName);
     }
 }

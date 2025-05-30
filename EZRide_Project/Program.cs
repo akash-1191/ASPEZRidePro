@@ -42,6 +42,8 @@ builder.Services.AddScoped<ISecurityDepositRepository, SecurityDepositRepository
 builder.Services.AddScoped<ISecurityDepositService, SecurityDepositService>();
 builder.Services.AddScoped<ICustomerDocumentRepository, CustomerDocumentRepository>();
 builder.Services.AddScoped<ICustomerDocumentService, CustomerDocumentService>();
+builder.Services.AddScoped<IPaymentDetailsRepository, PaymentDetailsRepository>();
+builder.Services.AddScoped<IPaymentDetailsService, PaymentDetailsService>();
 
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle

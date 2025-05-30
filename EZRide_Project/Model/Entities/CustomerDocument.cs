@@ -10,16 +10,16 @@ namespace EZRide_Project.Model.Entities
         public int DocumentId { get; set; }
         public int UserId { get; set; } // FK for User
 
-        [Required]
+        
         [Column(TypeName ="Varchar(150)")]
-        public string AgeProofPath { get; set; }
+        public string? AgeProofPath { get; set; }
 
-        [Required]
+       
         [Column(TypeName = "Varchar(150)")]
-        public string AddressProofPath { get; set; }
+        public string? AddressProofPath { get; set; }
 
         [Column(TypeName = "varchar(150)")]
-        public string DLImagePath { get; set; }
+        public string? DLImagePath { get; set; }
 
         [Column(TypeName ="varchar(50)")]
         public DocumentStatus Status { get; set; } = DocumentStatus.Active;  // Enum can be used here

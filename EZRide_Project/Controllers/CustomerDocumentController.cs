@@ -23,11 +23,27 @@ namespace EZRide_Project.Controllers
         [Authorize]
         public async Task<IActionResult> Upload([FromForm] CustomerDocumentCreateDTO dto)
         {
-            if (dto.AgeProof == null || dto.AddressProof == null)
-                return BadRequest("Required files are missing");
+            if (dto.AgeProof == null && dto.AddressProof == null && dto.DLImage == null)
+                return BadRequest("Please  document must be provided.");
 
-            await _documentService.AddAsync(dto);
-            return Ok(new { Message = "Document uploaded successfully" });
+            try
+            {
+                await _documentService.AddAsync(dto);
+                return Ok(new { Message = "Document uploaded or updated successfully." });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { Message = "Internal server error.", Details = ex.Message });
+            }
+        }
+
+
+        [HttpGet("checkDocumentsUploaded/{userId}")]
+        [Authorize]
+        public async Task<IActionResult> CheckDocumentsUploaded(int userId)
+        {
+            bool allUploaded = await _documentService.HasUserUploadedAnyDocumentsAsync(userId);
+            return Ok(new { exists = allUploaded });
         }
 
 
@@ -39,22 +55,32 @@ namespace EZRide_Project.Controllers
             return Ok(documents);
         }
 
-        [HttpGet("GetDocumnetByUserId{id}")]
+        [HttpGet("getCustomerDocument/{userId}")]
         [Authorize]
-        public async Task<IActionResult> GetById(int id)
+        public async Task<IActionResult> GetCustomerDocument(int userId)
         {
-            var doc = await _documentService.GetByIdAsync(id);
-            if (doc == null) return NotFound();
+            var doc = await _documentService.GetByUserIdAsync(userId);
+            if (doc == null)
+                return NotFound(new { Message = "No documents found for this user." });
+
             return Ok(doc);
         }
 
 
-        [HttpDelete("DocumentDelete{id}")]
+
+        [HttpPut("update-document-field-null/{userId}/{fieldName}")]
         [Authorize]
-        public async Task<IActionResult> Delete(int id)
+        public async Task<IActionResult> UpdateDocumentFieldToNull(int userId, string fieldName)
         {
-            await _documentService.DeleteAsync(id);
-            return Ok(new { Message = "Document deleted successfully" });
+            try
+            {
+                await _documentService.UpdateDocumentFieldToNullAndDeleteFileAsync(userId, fieldName);
+                return Ok(new { message = "Document field cleared successfully." });
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
         }
     }
 }

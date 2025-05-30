@@ -147,18 +147,15 @@ namespace EZRide_Project.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("DocumentId"));
 
                     b.Property<string>("AddressProofPath")
-                        .IsRequired()
                         .HasColumnType("Varchar(150)");
 
                     b.Property<string>("AgeProofPath")
-                        .IsRequired()
                         .HasColumnType("Varchar(150)");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("DLImagePath")
-                        .IsRequired()
                         .HasColumnType("varchar(150)");
 
                     b.Property<string>("Status")
