@@ -19,6 +19,7 @@ namespace EZRide_Project.DTO
         public string TransactionId { get; set; }
         public string BookingStatus { get; set; }
         public DateTime CreatedAt { get; set; }
+        public string? Useremail { get; set; }
 
     }
 

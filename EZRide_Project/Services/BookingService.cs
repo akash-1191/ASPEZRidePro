@@ -35,7 +35,7 @@ namespace EZRide_Project.Services
                 TotalDays = dto.TotalDays,
                 TotalHours = dto.TotalHours,
                 PerKelomeater = dto.PerKelomeater,
-                Status = Booking.BookingStatus.Pending,
+                Status = Booking.BookingStatus.Confirmed,
                 CreatedAt = DateTime.Now
             };
 
@@ -81,6 +81,13 @@ namespace EZRide_Project.Services
         public async Task<List<BookingDetailDTO>> FilterUserBookingsAsync(int userId, BookingFilterDTO filter)
         {
             return await _bookingRepository.FilterUserBookingsAsync(userId, filter);
+        }
+
+
+        //check the booking is avalible or not live
+        public async Task<List<DateAvailabilityDTO>> GetAvailabilityAsync(int vehicleId, DateTime startDate, DateTime endDate)
+        {
+            return await _bookingRepository.GetAvailabilityAsync(vehicleId, startDate, endDate);
         }
     }
 }

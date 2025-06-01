@@ -69,23 +69,13 @@ namespace EZRide_Project.Controllers
             return Ok(bookings);
         }
 
-        //filter data
-        //[HttpGet("filter")]
-        //[Authorize]
-        //public async Task<IActionResult> FilterBookings(int? userId, string filterType)
-        //{
-        //    if (string.IsNullOrEmpty(filterType))
-        //        return BadRequest("filterType is required.");
+        //check the booking is avalible or not live
 
-        //    var bookings = await _bookingService.FilterBookings(userId, filterType);
-
-        //    return Ok(new
-        //    {
-        //        isSuccess = true,
-        //        message = "Bookings filtered successfully.",
-        //        statusCode = 200,
-        //        data = bookings
-        //    });
-        //}
+        [HttpGet("availability")]
+        public async Task<IActionResult> GetAvailability(int vehicleId, DateTime startDateTime, DateTime endDateTime)
+        {
+            var availability = await _bookingService.GetAvailabilityAsync(vehicleId, startDateTime, endDateTime);
+            return Ok(availability);
+        }
     }
 }

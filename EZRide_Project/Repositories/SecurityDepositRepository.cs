@@ -45,7 +45,7 @@ namespace EZRide_Project.Repositories
                     CreatedAt = sd.CreatedAt,
                     RefundedAt = sd.RefundedAt,
                     VehicleName = sd.Booking.Vehicle.CarName ?? sd.Booking.Vehicle.BikeName,
-                    RegistrationNo = sd.Booking.Vehicle.RegistrationNo
+                    RegistrationNo = sd.Booking.Vehicle.RegistrationNo 
                 })
                 .ToListAsync();
         }

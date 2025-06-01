@@ -58,6 +58,7 @@ namespace EZRide_Project.Repositories
                 .Where(b => b.UserId == userId)
                 .Include(b => b.Vehicle)
                 .Include(b => b.Payment)
+                .Include(b=>b.User)
                 .ToListAsync();
 
             var result = new List<BookingDetailDTO>();
@@ -72,6 +73,7 @@ namespace EZRide_Project.Repositories
                 result.Add(new BookingDetailDTO
                 {
                     BookingId = booking.BookingId,
+                    
                     VehicleImage = vehicleImage,
                     VehicleType = booking.Vehicle.Vehicletype.ToString(),
                     VehicleName = booking.Vehicle.Vehicletype == Vehicle.VehicleType.Bike
@@ -89,7 +91,8 @@ namespace EZRide_Project.Repositories
                     PaymentMode = booking.Payment?.PaymentMethod ?? "N/A",
                     TransactionId = booking.Payment?.TransactionId ?? "N/A",
                     BookingStatus = booking.Status.ToString(),
-                    CreatedAt=booking.CreatedAt
+                    CreatedAt = booking.CreatedAt,
+                    Useremail = booking.User.Email
                 });
             }
 
@@ -104,6 +107,7 @@ namespace EZRide_Project.Repositories
             var query = _context.Bookings
                 .Include(b => b.Vehicle)
                 .Include(b => b.Payment)
+                .Include(b=>b.User)
                 .Where(b => b.UserId == userId)
                 .AsQueryable();
 
@@ -171,7 +175,7 @@ namespace EZRide_Project.Repositories
 
                 result.Add(new BookingDetailDTO
                 {
-                    BookingId=booking.BookingId,
+                    BookingId = booking.BookingId,
                     VehicleImage = vehicleImage,
                     VehicleType = booking.Vehicle.Vehicletype.ToString(),
                     VehicleName = booking.Vehicle.Vehicletype == Vehicle.VehicleType.Bike
@@ -189,15 +193,50 @@ namespace EZRide_Project.Repositories
                     PaymentMode = booking.Payment?.PaymentMethod ?? "N/A",
                     TransactionId = booking.Payment?.TransactionId ?? "N/A",
                     BookingStatus = booking.Status.ToString(),
-                    CreatedAt = booking.CreatedAt
+                    CreatedAt = booking.CreatedAt,
+                    Useremail=booking.User.Email
                 });
             }
 
             return result;
         }
 
+        //check the booking is avalible or not live
+        public async Task<List<DateAvailabilityDTO>> GetAvailabilityAsync(int vehicleId, DateTime startDateTime, DateTime endDateTime)
+        {
+
+            var bookings = await _context.Bookings
+                .Where(b => b.VehicleId == vehicleId &&
+                       b.StartTime < endDateTime && b.EndTime > startDateTime)
+                .ToListAsync();
+
+            var availabilityList = new List<DateAvailabilityDTO>();
+
+            var pointer = startDateTime;
+            while (pointer < endDateTime)
+            {
+                var nextPointer = pointer.AddHours(1);
+
+                var isAvailable = !bookings.Any(b =>
+                    b.StartTime < nextPointer && b.EndTime > pointer
+                );
+
+                availabilityList.Add(new DateAvailabilityDTO
+                {
+                    StartDateTime = pointer,
+                    EndDateTime = nextPointer,
+                    IsAvailable = isAvailable
+                });
+
+                pointer = nextPointer;
+            }
+
+            return availabilityList;
+        }
+
 
 
     }
-
 }
+
+

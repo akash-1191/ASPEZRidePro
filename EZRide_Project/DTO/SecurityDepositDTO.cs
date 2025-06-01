@@ -7,14 +7,15 @@
 
         public decimal Amount { get; set; }
 
-        public string Status { get; set; } = "Pending"; // Default value
+        public string Status { get; set; } = "Confirmed"; // Default value
 
         public DateTime CreatedAt { get; set; } = DateTime.Now;
 
         public DateTime? RefundedAt { get; set; }
 
-        public string VehicleName { get; set; }
-        public string RegistrationNo { get; set; }
+        public string? VehicleName { get; set; }
+        public string? RegistrationNo { get; set; }
+        public string? Bookingstatus { get; set; }
 
     }
 }

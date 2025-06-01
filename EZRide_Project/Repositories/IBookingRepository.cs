@@ -18,5 +18,9 @@ namespace EZRide_Project.Repositories
 
         //filkter data of the booking table
         Task<List<BookingDetailDTO>> FilterUserBookingsAsync(int userId, BookingFilterDTO filter);
+
+
+        //check the booking is avalible or not live
+        Task<List<DateAvailabilityDTO>> GetAvailabilityAsync(int vehicleId, DateTime startDate, DateTime endDate);
     }
 }
