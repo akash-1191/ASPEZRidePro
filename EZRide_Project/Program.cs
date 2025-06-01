@@ -48,6 +48,8 @@ builder.Services.AddScoped<IPaymentReceiptRepository, PaymentReceiptRepository>(
 builder.Services.AddScoped<IPaymentReceiptService, PaymentReceiptService>();
 builder.Services.AddScoped<IFeedbackRepository,FeedbackRepository>();
 builder.Services.AddScoped<IFeedbackService, FeedbackService>();
+builder.Services.AddScoped<IBookingSummaryRepository, BookingSummaryRepository>();
+builder.Services.AddScoped<IBookingSummaryService, BookingSummaryService>();
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
