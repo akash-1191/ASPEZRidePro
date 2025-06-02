@@ -4,9 +4,11 @@ EXPOSE 80
 
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
-COPY . .
 
-# ✅ Correct path (no subfolder needed)
+COPY EZRide_Project/ ./EZRide_Project/
+
+WORKDIR /src/EZRide_Project
+
 RUN dotnet restore "EZRide_Project.csproj"
 RUN dotnet publish "EZRide_Project.csproj" -c Release -o /app/publish
 
