@@ -6,7 +6,7 @@ namespace EZRide_Project.Repositories
     public interface IBookingRepository
     {
         void AddBooking(Booking booking);
-        bool IsBookingOverlapping(int userId, DateTime startTime, DateTime endTime);
+        bool IsBookingOverlapping(int vehicleId, DateTime startTime, DateTime endTime);
 
         // Add this method for update statuse for cancel booking 
         Booking? GetBookingByIdAndUser(int bookingId, int userId);

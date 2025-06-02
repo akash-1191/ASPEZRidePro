@@ -19,9 +19,9 @@ namespace EZRide_Project.Services
         }
 
 
-        public async Task<VehicleBookingCountDTO> GetBookedVehicleTypeCountAsync()
+        public async Task<VehicleBookingCountDTO> GetBookedVehicleTypeCountAsync(int userId)
         {
-            return await _bookingRepo.GetBookedVehicleTypeCountAsync();
+            return await _bookingRepo.GetBookedVehicleTypeCountAsync(userId);
         }
 
 

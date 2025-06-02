@@ -18,9 +18,9 @@ namespace EZRide_Project.Services
         public ApiResponseModel AddBooking(BookingDTO dto)
         {
             // Validation
-            if (_bookingRepository.IsBookingOverlapping(dto.UserId, dto.StartTime, dto.EndTime))
+            if (_bookingRepository.IsBookingOverlapping(dto.VehicleId, dto.StartTime, dto.EndTime))
             {
-                return ApiResponseHelper.Fail("You already have a booking in the selected time range.", 409);
+                return ApiResponseHelper.Fail("Vehicle is already have a booking in the selected time range.", 409);
             }
 
             var booking = new Booking
@@ -60,6 +60,12 @@ namespace EZRide_Project.Services
             if (booking.Status == Booking.BookingStatus.Cancelled)
             {
                 return ApiResponseHelper.Fail("Booking is already cancelled.", 400);
+            }
+
+            var timeDifference = booking.StartTime - DateTime.Now;
+            if (timeDifference.TotalHours < 2)
+            {
+                return ApiResponseHelper.Fail("Cannot cancel the booking. Cancellation is allowed only 2 hours before trip start time.", 400);
             }
 
             _bookingRepository.CancelBooking(bookingId, userId);

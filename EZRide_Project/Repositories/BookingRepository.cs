@@ -23,10 +23,10 @@ namespace EZRide_Project.Repositories
             _context.SaveChanges();
         }
 
-        public bool IsBookingOverlapping(int userId, DateTime startTime, DateTime endTime)
+        public bool IsBookingOverlapping(int vehicleId, DateTime startTime, DateTime endTime)
         {
             return _context.Bookings.Any(b =>
-                b.UserId == userId &&
+                b.VehicleId == vehicleId &&
                 b.Status != Booking.BookingStatus.Cancelled &&
                 (
                     (startTime >= b.StartTime && startTime < b.EndTime) ||
@@ -153,15 +153,35 @@ namespace EZRide_Project.Repositories
                 query = query.Where(b => b.PerKelomeater.HasValue && b.PerKelomeater.Value >= filter.MinKilometers.Value);
             }
 
+            if (filter.OnlyToday.HasValue && filter.OnlyToday.Value)
+            {
+                var today = DateTime.Today;
+                var tomorrow = today.AddDays(1);
+                query = query.Where(b => b.StartTime >= today && b.StartTime < tomorrow);
+            }
 
             // Sorting
             if (!string.IsNullOrEmpty(filter.SortBy))
             {
-                if (filter.SortBy.ToLower() == "latest")
-                    query = query.OrderByDescending(b => b.CreatedAt);
-                else if (filter.SortBy.ToLower() == "old")
-                    query = query.OrderBy(b => b.CreatedAt);
+                switch (filter.SortBy.ToLower())
+                {
+                    case "latest":
+                        query = query.OrderByDescending(b => b.CreatedAt);
+                        break;
+                    case "old":
+                        query = query.OrderBy(b => b.CreatedAt);
+                        break;
+                    case "starttime_asc":
+                        query = query.Where(b => b.Status == Booking.BookingStatus.Confirmed)
+                                     .OrderBy(b => b.StartTime);
+                        break;
+                    case "starttime_desc":
+                        query = query.Where(b => b.Status == Booking.BookingStatus.Confirmed)
+                                     .OrderByDescending(b => b.StartTime);
+                        break;
+                }
             }
+
 
             var bookings = await query.ToListAsync();
 

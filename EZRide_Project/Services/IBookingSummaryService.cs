@@ -5,11 +5,10 @@ namespace EZRide_Project.Services
     public interface IBookingSummaryService
     {
         BookingSummaryDTO GetTotalBookingsByUserId(int userId);
-        Task<VehicleBookingCountDTO> GetBookedVehicleTypeCountAsync();
+        Task<VehicleBookingCountDTO> GetBookedVehicleTypeCountAsync(int userId);
 
         int GetAvailableVehicleCount();
         Task<int> GetPendingPaymentCountAsync(int userId);
         Task<RefundInfoDto?> GetLatestRefundAsync(int userId);
-
     }
 }

@@ -1,4 +1,5 @@
-﻿using EZRide_Project.DTO;
+﻿using System.Security.Claims;
+using EZRide_Project.DTO;
 using EZRide_Project.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -26,12 +27,12 @@ namespace EZRide_Project.Controllers
         }
 
 
-    
-        [HttpGet("booked-vehicle-type-count")]
+
+        [HttpGet("booked-vehicle-type-count/{userId}")]
         [Authorize]
-        public async Task<ActionResult<VehicleBookingCountDTO>> GetBookedVehicleTypeCount()
+        public async Task<ActionResult<VehicleBookingCountDTO>> GetBookedVehicleTypeCount(int userId)
         {
-            var result = await _bookingSummaryService.GetBookedVehicleTypeCountAsync();
+            var result = await _bookingSummaryService.GetBookedVehicleTypeCountAsync(userId);
             return Ok(result);
         }
 
@@ -40,6 +41,7 @@ namespace EZRide_Project.Controllers
         [Authorize]
         public IActionResult GetAvailableVehicleCount()
         {
+
             var count = _bookingSummaryService.GetAvailableVehicleCount();
             return Ok(count);
         }

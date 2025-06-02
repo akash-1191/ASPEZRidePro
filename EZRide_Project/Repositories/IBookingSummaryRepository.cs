@@ -5,7 +5,7 @@ namespace EZRide_Project.Repositories
     public interface IBookingSummaryRepository
     {
         int GetTotalBookingsByUserId(int userId);
-        Task<VehicleBookingCountDTO> GetBookedVehicleTypeCountAsync();
+        Task<VehicleBookingCountDTO> GetBookedVehicleTypeCountAsync(int usreId);
         int GetAvailableVehicleCount();
         Task<int> GetPendingPaymentCountAsync(int userId);
         Task<RefundInfoDto?> GetLatestRefundAsync(int userId);

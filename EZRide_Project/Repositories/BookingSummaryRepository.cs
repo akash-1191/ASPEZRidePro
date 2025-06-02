@@ -21,17 +21,17 @@ namespace EZRide_Project.Repositories
 
 
 
-        //get how many bike or cars bookied by user
-        public async Task<VehicleBookingCountDTO> GetBookedVehicleTypeCountAsync()
+        //get how many bike or vehicle bookied by user
+        public async Task<VehicleBookingCountDTO> GetBookedVehicleTypeCountAsync(int userId)
         {
             var bikeCount = await _context.Bookings
                 .Include(b => b.Vehicle)
-                .Where(b => b.Vehicle.Vehicletype == Vehicle.VehicleType.Bike)
+                .Where(b => b.Vehicle.Vehicletype == Vehicle.VehicleType.Bike && b.UserId == userId)
                 .CountAsync();
 
             var carCount = await _context.Bookings
                 .Include(b => b.Vehicle)
-                .Where(b => b.Vehicle.Vehicletype == Vehicle.VehicleType.Car)
+                .Where(b => b.Vehicle.Vehicletype == Vehicle.VehicleType.Car && b.UserId == userId)
                 .CountAsync();
 
             return new VehicleBookingCountDTO
@@ -71,7 +71,7 @@ namespace EZRide_Project.Repositories
             var latestRefund = await _context.SecurityDeposits
                 .Where(sd => sd.Status == SecurityDeposit.DepositStatus.Refunded)
                 .Where(sd => sd.Booking.UserId == userId)
-                .OrderByDescending(sd => sd.RefundedAt) 
+                .OrderByDescending(sd => sd.RefundedAt) // <-- Yahan change kara
                 .Select(sd => new RefundInfoDto
                 {
                     Amount = sd.Amount,
