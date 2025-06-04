@@ -20,7 +20,7 @@ namespace EZRide_Project.Services
             // Validation
             if (_bookingRepository.IsBookingOverlapping(dto.VehicleId, dto.StartTime, dto.EndTime))
             {
-                return ApiResponseHelper.Fail("Vehicle is already have a booking in the selected time range.", 409);
+                return ApiResponseHelper.Fail("Same Date And Time Vehicle is already have a booking in the selected time range.", 409);
             }
 
             var booking = new Booking

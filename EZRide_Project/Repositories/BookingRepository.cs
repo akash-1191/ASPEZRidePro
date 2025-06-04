@@ -221,39 +221,27 @@ namespace EZRide_Project.Repositories
             return result;
         }
 
-        //check the booking is avalible or not live
+        
+
         public async Task<List<DateAvailabilityDTO>> GetAvailabilityAsync(int vehicleId, DateTime startDateTime, DateTime endDateTime)
         {
-
             var bookings = await _context.Bookings
                 .Where(b => b.VehicleId == vehicleId &&
-                       b.StartTime < endDateTime && b.EndTime > startDateTime)
+                            b.Status != Booking.BookingStatus.Cancelled &&
+                            b.StartTime < endDateTime &&
+                            b.EndTime > startDateTime)
                 .ToListAsync();
 
-            var availabilityList = new List<DateAvailabilityDTO>();
-
-            var pointer = startDateTime;
-            while (pointer < endDateTime)
+            var availabilityList = bookings.Select(b => new DateAvailabilityDTO
             {
-                var nextPointer = pointer.AddHours(1);
-
-                var isAvailable = !bookings.Any(b =>
-                    b.StartTime < nextPointer && b.EndTime > pointer
-                );
-
-                availabilityList.Add(new DateAvailabilityDTO
-                {
-                    StartDateTime = pointer,
-                    EndDateTime = nextPointer,
-                    IsAvailable = isAvailable
-                });
-
-                pointer = nextPointer;
-            }
+                StartDateTime = b.StartTime,
+                EndDateTime = b.EndTime,
+                IsAvailable = false,
+                Status = b.Status.ToString()
+            }).ToList();
 
             return availabilityList;
         }
-
 
 
     }

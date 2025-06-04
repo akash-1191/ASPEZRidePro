@@ -55,7 +55,7 @@ namespace EZRide_Project.Repositories
 
             var pendingCount = await _context.Bookings
                 .Where(b => b.UserId == userId)
-                .Where(b => b.EndTime >= today) // only consider current/future bookings
+                .Where(b => b.EndTime >= today) 
                 .Where(b => !_context.Payments
                     .Any(p => p.BookingId == b.BookingId && p.Status.ToLower() == "success"))
                 .CountAsync();
@@ -71,7 +71,7 @@ namespace EZRide_Project.Repositories
             var latestRefund = await _context.SecurityDeposits
                 .Where(sd => sd.Status == SecurityDeposit.DepositStatus.Refunded)
                 .Where(sd => sd.Booking.UserId == userId)
-                .OrderByDescending(sd => sd.RefundedAt) // <-- Yahan change kara
+                .OrderByDescending(sd => sd.RefundedAt)
                 .Select(sd => new RefundInfoDto
                 {
                     Amount = sd.Amount,

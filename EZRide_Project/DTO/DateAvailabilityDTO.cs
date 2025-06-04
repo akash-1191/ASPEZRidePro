@@ -2,8 +2,9 @@
 {
     public class DateAvailabilityDTO
     {
-        public DateTime StartDateTime { get; set; }   // Changed from Date to DateTime
-        public DateTime EndDateTime { get; set; }     // Optional: if frontend wants to show end time
+        public DateTime StartDateTime { get; set; }   
+        public DateTime EndDateTime { get; set; }     
         public bool IsAvailable { get; set; }
+        public string Status { get; set; }
     }
 }
