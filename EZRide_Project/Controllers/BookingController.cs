@@ -22,6 +22,7 @@ namespace EZRide_Project.Controllers
 
         [HttpPost("addbooking")]
         [Authorize]
+        
         public IActionResult AddBooking([FromBody] BookingDTO dto)
         {
             if (dto == null)
@@ -35,7 +36,7 @@ namespace EZRide_Project.Controllers
 
 
         [HttpPut("cancelbooking/{bookingId}")]
-        [Authorize]
+       
         public IActionResult CancelBooking(int bookingId, [FromQuery] int userId)
         {
             var response = _bookingService.CancelBooking(bookingId, userId);
@@ -45,7 +46,7 @@ namespace EZRide_Project.Controllers
 
         //get api for all data to get 
         [HttpGet("my-bookings")]
-        [Authorize]
+        
         public async Task<IActionResult> GetMyBookings()
         {
             var userIdString = User.FindFirst("UserId")?.Value;
