@@ -98,12 +98,12 @@ namespace EZRide_Project.Data
                 .HasForeignKey(f => f.UserId)
                 .OnDelete(DeleteBehavior.Cascade);
 
-            // Configure User -> Contact (One-to-Many)
-            modelBuilder.Entity<User>()
-                .HasMany(u => u.Contacts)
-                .WithOne(c => c.User)
-                .HasForeignKey(c => c.UserId)
-                .OnDelete(DeleteBehavior.Cascade);
+            //// Configure User -> Contact (One-to-Many)
+            //modelBuilder.Entity<User>()
+            //    .HasMany(u => u.Contacts)
+            //    .WithOne(c => c.User)
+            //    //.HasForeignKey(c => c.UserId)
+            //    .OnDelete(DeleteBehavior.Cascade);
 
             // Configure Vehicle -> Booking (One-to-Many)
             modelBuilder.Entity<Vehicle>()

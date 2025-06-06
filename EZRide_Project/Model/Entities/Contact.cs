@@ -8,18 +8,21 @@ namespace EZRide_Project.Model.Entities
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int ContactId { get; set; }
-        public int UserId { get; set; } // Foreign key for User
+
+        //public int? UserId { get; set; } // Foreign key for User
 
         [Column(TypeName ="Varchar(100)")]
         public string Subject { get; set; }
 
         [Column(TypeName ="Varchar(255)")]
+
+        public string Email { get; set; }
+
+        public string Phone {  get; set; } //phone number
         public string Message { get; set; }
         public ContactStatus Status { get; set; } // Enum can be used here
         public DateTime CreatedAt { get; set; }
 
-        // Navigation property for User
-        public User User { get; set; }
 
 
 
