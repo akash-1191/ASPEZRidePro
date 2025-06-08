@@ -5,8 +5,8 @@ namespace EZRide_Project.Helpers
 {
     public class WhatsAppService
     {
-        private readonly string _instanceUrl = "https://api.ultramsg.com/instance124193/messages/chat";
-        private readonly string _token = "z5lhl4h70gppj4k8";
+        private readonly string _instanceUrl = "";
+        private readonly string _token = "xsdsd";
 
         public async Task<bool> SendMessageAsync(string phone, string message)
         {

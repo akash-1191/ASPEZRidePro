@@ -1,0 +1,35 @@
+2025/06/08-12:05:29.084 5098 Reusing MANIFEST D:\Akash\MSC(ICT)\Sem-2\Project_sem2\ASP\EZRide_Project\EZRide_Project\WhatsAppScripts\tokens\ezride-session\Default\IndexedDB\https_web.whatsapp.com_0.indexeddb.leveldb/MANIFEST-000001
+2025/06/08-12:05:29.084 5098 Recovering log #175
+2025/06/08-12:05:29.113 5098 Reusing old log D:\Akash\MSC(ICT)\Sem-2\Project_sem2\ASP\EZRide_Project\EZRide_Project\WhatsAppScripts\tokens\ezride-session\Default\IndexedDB\https_web.whatsapp.com_0.indexeddb.leveldb/000175.log 
+2025/06/08-12:05:29.114 5098 Delete type=2 #171
+2025/06/08-12:05:29.114 5098 Delete type=2 #172
+2025/06/08-12:05:29.114 5098 Delete type=2 #173
+2025/06/08-12:05:30.418 53a8 Level-0 table #182: started
+2025/06/08-12:05:30.428 53a8 Level-0 table #182: 728933 bytes OK
+2025/06/08-12:05:30.429 53a8 Delete type=0 #175
+2025/06/08-12:05:30.430 53a8 Manual compaction at level-0 from '\x00D\x00\x00\x00' @ 72057594037927935 : 1 .. '\x00E\x00\x00\x00' @ 0 : 0; will stop at '\x00D\x00\x00\x05' @ 511303 : 1
+2025/06/08-12:05:30.430 53a8 Compacting 1@0 + 3@1 files
+2025/06/08-12:05:30.508 53a8 Generated table #183@0: 182157 keys, 2357047 bytes
+2025/06/08-12:05:30.541 53a8 Generated table #184@0: 26977 keys, 2191671 bytes
+2025/06/08-12:05:30.575 53a8 Generated table #185@0: 51034 keys, 1527560 bytes
+2025/06/08-12:05:30.575 53a8 Compacted 1@0 + 3@1 files => 6076278 bytes
+2025/06/08-12:05:30.576 53a8 compacted to: files[ 0 3 1 0 0 0 0 ]
+2025/06/08-12:05:30.576 53a8 Delete type=2 #182
+2025/06/08-12:05:30.576 53a8 Manual compaction at level-0 from '\x00D\x00\x00\x05' @ 511303 : 1 .. '\x00E\x00\x00\x00' @ 0 : 0; will stop at (end)
+2025/06/08-12:05:34.969 53a8 Compacting 1@1 + 1@2 files
+2025/06/08-12:05:35.012 53a8 Generated table #186@1: 34786 keys, 1154271 bytes
+2025/06/08-12:05:35.012 53a8 Compacted 1@1 + 1@2 files => 1154271 bytes
+2025/06/08-12:05:35.013 53a8 compacted to: files[ 0 2 1 0 0 0 0 ]
+2025/06/08-12:05:35.014 53a8 Delete type=2 #177
+2025/06/08-12:05:35.014 53a8 Delete type=2 #178
+2025/06/08-12:05:35.014 53a8 Delete type=2 #179
+2025/06/08-12:05:35.706 5098 Level-0 table #188: started
+2025/06/08-12:05:35.723 5098 Level-0 table #188: 1163027 bytes OK
+2025/06/08-12:05:35.725 5098 Delete type=2 #50
+2025/06/08-12:05:35.725 5098 Delete type=0 #181
+2025/06/08-12:05:35.725 5098 Delete type=2 #183
+2025/06/08-12:05:35.733 5098 Compacting 1@0 + 2@1 files
+2025/06/08-12:05:35.781 5098 Generated table #189@0: 36384 keys, 2203708 bytes
+2025/06/08-12:05:35.828 5098 Generated table #190@0: 65727 keys, 2163446 bytes
+2025/06/08-12:05:35.828 5098 Compacted 1@0 + 2@1 files => 4367154 bytes
+2025/06/08-12:05:35.829 5098 compacted to: files[ 0 2 1 0 0 0 0 ]
