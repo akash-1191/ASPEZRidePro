@@ -1,3 +1,2 @@
-2025/06/08-12:05:28.732 59e4 Reusing MANIFEST D:\Akash\MSC(ICT)\Sem-2\Project_sem2\ASP\EZRide_Project\EZRide_Project\WhatsAppScripts\tokens\ezride-session\Default\shared_proto_db\metadata/MANIFEST-000001
-2025/06/08-12:05:28.732 59e4 Recovering log #3
-2025/06/08-12:05:28.732 59e4 Reusing old log D:\Akash\MSC(ICT)\Sem-2\Project_sem2\ASP\EZRide_Project\EZRide_Project\WhatsAppScripts\tokens\ezride-session\Default\shared_proto_db\metadata/000003.log 
+2025/06/14-10:42:15.580 6278 Creating DB D:\Akash\MSC(ICT)\Sem-2\Project_sem2\ASP\EZRide_Project\EZRide_Project\WhatsAppScripts\tokens\ezride-session\Default\shared_proto_db\metadata since it was missing.
+2025/06/14-10:42:15.589 6278 Reusing MANIFEST D:\Akash\MSC(ICT)\Sem-2\Project_sem2\ASP\EZRide_Project\EZRide_Project\WhatsAppScripts\tokens\ezride-session\Default\shared_proto_db\metadata/MANIFEST-000001

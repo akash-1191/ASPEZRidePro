@@ -53,8 +53,8 @@ builder.Services.AddScoped<IBookingSummaryService, BookingSummaryService>();
 builder.Services.AddScoped<IContactRepository, ContactRepository>();
 builder.Services.AddScoped<IContactService, ContactService>();
 builder.Services.AddSingleton<WhatsAppService>();
-builder.Services.AddScoped<IUserBookingDetailsRepository, UserBookingDetailsRepository>();
-builder.Services.AddScoped<IUserBookingDetailsService, UserBookingDetailsService>();
+builder.Services.AddScoped<IAdminUserBookingInfoRepository, AdminUserBookingInfoRepository>();
+builder.Services.AddScoped<IAdminUserBookingInfoService, AdminUserBookingInfoService>();
 
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle

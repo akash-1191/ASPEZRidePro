@@ -34,6 +34,9 @@ namespace EZRide_Project.Migrations
                         .IsRequired()
                         .HasColumnType("varchar(20)");
 
+                    b.Property<string>("Cancelreasion")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 

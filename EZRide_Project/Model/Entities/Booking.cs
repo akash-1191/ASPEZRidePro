@@ -10,7 +10,7 @@ namespace EZRide_Project.Model.Entities
         public int BookingId { get; set; }
 
         public int UserId { get; set; } //FK
-        public int VehicleId { get; set; } // FK
+        public int VehicleId { get; set; } //FK
 
         [Column(TypeName = "datetime2")]
         public DateTime StartTime { get; set; }
@@ -46,6 +46,7 @@ namespace EZRide_Project.Model.Entities
         public FuelLog FuelLog { get; set; }
         public DamageReport DamageReport { get; set; }
 
+        public String? Cancelreasion { get; set; }
         public enum BookingStatus
         {
             Pending,

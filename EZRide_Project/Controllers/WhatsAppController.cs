@@ -1,4 +1,5 @@
 ﻿using EZRide_Project.DTO;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
 
@@ -9,6 +10,7 @@ namespace EZRide_Project.Controllers
     public class WhatsAppController : ControllerBase
     {
         [HttpPost("sendWhatsAppMessage")]
+      
         public async Task<IActionResult> SendMessage([FromBody] WhatsAppSendDTO dto)
         {
             try
@@ -49,7 +51,7 @@ namespace EZRide_Project.Controllers
                     {
                         Console.WriteLine("Node Error: " + e.Data);
 
-                        // Ignore Venom logs and known non-errors
+                       
                         if (e.Data.Contains("Help Keep This Project Going") ||
                             e.Data.StartsWith("- ") ||
                             e.Data.Contains("Node.js version") ||
@@ -57,10 +59,9 @@ namespace EZRide_Project.Controllers
                             e.Data.Contains("Platform: win32") ||
                             e.Data.Contains("You're up to date"))
                         {
-                            return; // skip these non-errors
+                            return; 
                         }
 
-                        // If real error, throw
                         tcs.TrySetException(new Exception(e.Data));
                     }
                 };
@@ -68,7 +69,7 @@ namespace EZRide_Project.Controllers
                 process.BeginOutputReadLine();
                 process.BeginErrorReadLine();
 
-                // Timeout max 40 seconds
+               
                 var completed = await Task.WhenAny(tcs.Task, Task.Delay(40000));
 
                 if (completed == tcs.Task && tcs.Task.Result)
