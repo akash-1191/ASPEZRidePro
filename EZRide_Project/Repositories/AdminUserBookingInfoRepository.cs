@@ -13,7 +13,7 @@ namespace EZRide_Project.Repositories
         public AdminUserBookingInfoRepository(ApplicationDbContext context)
         {
             _context = context;
-        }
+        }   
 
         public async Task<List<AdminUserBookingInfoDto>> GetUserBookingInfoAsync()
         {
@@ -24,8 +24,9 @@ namespace EZRide_Project.Repositories
                     .ThenInclude(v => v.VehicleImages)
                 .Include(b => b.Payment)
                 .Include(b => b.SecurityDeposit)
-                .Where(b => b.Status == Booking.BookingStatus.Confirmed && b.Payment.Status == "Success") // Payment navigation assumed
-
+                 .Where(b =>
+            (b.Status == Booking.BookingStatus.Confirmed || b.Status == Booking.BookingStatus.InProgress) &&
+            b.Payment.Status == "Success")
                 .Select(booking => new AdminUserBookingInfoDto
                 {
                     // Booking info

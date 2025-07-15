@@ -29,6 +29,7 @@ namespace EZRide_Project.Data
         public DbSet<FuelLog> FuelLogs { get; set; }
         public DbSet<DamageReport> DamageReports { get; set; }
         public DbSet<VehicleImage> VehicleImages { get; set; }
+        public DbSet<BookingOTP> BookingOTPs { get; set; }
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)

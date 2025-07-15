@@ -118,11 +118,11 @@ namespace EZRide_Project.Services
             var token = _jwtTokenGenerator.GenerateToken(user.Email, user.RoleId, user.UserId, user.Role.RoleName.ToString());
 
 
-           // await _emailService.SendEmailAsync(
-           //    user.Email,
-           //    "Login Successful",
-           //    $"Hello {user.Firstname}\n{user.Middlename}\n{user.Lastname},\n\nYou have logged in successfully at {DateTime.Now}."
-           //);
+            await _emailService.SendEmailAsync(
+               user.Email,
+               "Login Successful",
+               $"Hello {user.Firstname}\n{user.Middlename}\n{user.Lastname},\n\nYou have logged in successfully at {DateTime.Now}."
+           );
 
             return ApiResponseHelper.Success("Login successful", new
             {

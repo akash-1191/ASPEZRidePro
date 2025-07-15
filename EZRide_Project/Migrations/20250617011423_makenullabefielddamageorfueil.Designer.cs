@@ -4,6 +4,7 @@ using EZRide_Project.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EZRide_Project.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250617011423_makenullabefielddamageorfueil")]
+    partial class makenullabefielddamageorfueil
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -78,41 +81,6 @@ namespace EZRide_Project.Migrations
                     b.HasIndex("VehicleId");
 
                     b.ToTable("Bookings");
-                });
-
-            modelBuilder.Entity("EZRide_Project.Model.Entities.BookingOTP", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("BookingId")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("EmailSentTo")
-                        .IsRequired()
-                        .HasColumnType("varchar(100)");
-
-                    b.Property<DateTime>("ExpiryTime")
-                        .HasColumnType("datetime2");
-
-                    b.Property<bool>("IsUsed")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("OTPCode")
-                        .IsRequired()
-                        .HasColumnType("varchar(6)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("BookingId");
-
-                    b.ToTable("BookingOTPs");
                 });
 
             modelBuilder.Entity("EZRide_Project.Model.Entities.Contact", b =>
@@ -233,9 +201,6 @@ namespace EZRide_Project.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Description")
-                        .HasColumnType("varchar(255)");
-
-                    b.Property<string>("Image")
                         .HasColumnType("varchar(255)");
 
                     b.Property<decimal?>("RepairCost")
@@ -697,17 +662,6 @@ namespace EZRide_Project.Migrations
                     b.Navigation("User");
 
                     b.Navigation("Vehicle");
-                });
-
-            modelBuilder.Entity("EZRide_Project.Model.Entities.BookingOTP", b =>
-                {
-                    b.HasOne("EZRide_Project.Model.Entities.Booking", "Booking")
-                        .WithMany()
-                        .HasForeignKey("BookingId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Booking");
                 });
 
             modelBuilder.Entity("EZRide_Project.Model.Entities.Contact", b =>

@@ -11,16 +11,16 @@ namespace EZRide_Project.Model.Entities
         public int BookingId { get; set; } 
 
         [Column(TypeName = "decimal(5,2)")]
-        public decimal FuelGiven { get; set; }
+        public decimal? FuelGiven { get; set; }
 
         [Column(TypeName = "decimal(5,2)")]
-        public decimal FuelReturned { get; set; }
+        public decimal? FuelReturned { get; set; }
 
         [Column(TypeName = "decimal(10,2)")]
-        public decimal FuelCharge { get; set; }
+        public decimal? FuelCharge { get; set; }
 
         [Column(TypeName = "varchar(50)")]
-        public FuelLogStatus Status { get; set; } // Enum can be used here
+        public FuelLogStatus? Status { get; set; } = FuelLogStatus.Active; // Enum can be used here
         public DateTime CreatedAt { get; set; }
 
         // Navigation property for Booking
