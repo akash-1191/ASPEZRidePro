@@ -1,6 +1,0 @@
-services:
-  ezride_project:
-    image: ${DOCKER_REGISTRY-}ezrideproject
-    build:
-      context: EZRide_Project
-      dockerfile: Dockerfile
