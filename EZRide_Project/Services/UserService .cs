@@ -109,6 +109,11 @@ namespace EZRide_Project.Services
                 return ApiResponseHelper.Fail("Invalid email or password.");
             }
 
+            if (user.Email != loginDTO.Email)
+            {
+                return ApiResponseHelper.Fail("Invalid email or password.");  
+            }
+
             bool isPasswordValid = BCrypt.Net.BCrypt.Verify(loginDTO.Password, user.Password);
             if (!isPasswordValid)
             {

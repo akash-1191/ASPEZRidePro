@@ -1,4 +1,5 @@
-﻿using EZRide_Project.Data;
+﻿using System.Xml;
+using EZRide_Project.Data;
 using EZRide_Project.Model.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pages;
@@ -28,6 +29,8 @@ namespace EZRide_Project.Repositories
         //Login 
         public User GetUserByEmail(string email)
         {
+            if (string.IsNullOrWhiteSpace(email))
+                return null;
 
             return _context.Users
                 .Include(u => u.Role)
