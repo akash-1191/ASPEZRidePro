@@ -9,7 +9,7 @@ namespace EZRide_Project.Repositories
         Task<bool> SaveChangesAsync();
 
         //Get all vehical list
-        Task<List<Vehicle>> GetAllVehiclesAsync();
+        Task<List<Vehicle>> GetAllVehiclesAsync(int adminId);
 
         //update data of the vehicle 
         Task<Vehicle?> GetVehicleByIdAsync(int vehicleId);

@@ -1,7 +1,7 @@
 using System.Text;
 using EZRide_Project.Data;
 using EZRide_Project.Helpers;
-using EZRide_Project.Model.Entities;
+using EZRide_Project.Model;
 using EZRide_Project.Repositories;
 using EZRide_Project.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -55,10 +55,18 @@ builder.Services.AddScoped<IContactService, ContactService>();
 builder.Services.AddSingleton<WhatsAppService>();
 builder.Services.AddScoped<IAdminUserBookingInfoRepository, AdminUserBookingInfoRepository>();
 builder.Services.AddScoped<IAdminUserBookingInfoService, AdminUserBookingInfoService>();
+// Owner Vehicle Dependency Injection
+builder.Services.AddScoped<IOwnerVehicleService, OwnerVehicleService>();
+builder.Services.AddScoped<IOwnerVehicleRepository, OwnerVehicleRepository>();
+builder.Services.AddScoped<IOwnerDocumentService, OwnerDocumentService>();
+builder.Services.AddScoped<IOwnerDocumentRepository, OwnerDocumentRepository>();
+
 
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
+
+
 
 
 // Add Swagger with JWT Bearer support
@@ -131,7 +139,10 @@ var app = builder.Build();
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
-    app.UseSwaggerUI();
+    app.UseSwaggerUI(c =>
+    {
+        c.SwaggerEndpoint("/swagger/v1/swagger.json", "EZRide API v1");
+    });
 }
 
 app.UseStaticFiles();

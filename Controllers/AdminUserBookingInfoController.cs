@@ -19,10 +19,12 @@ namespace EZRide_Project.Controllers
     {
         private readonly IAdminUserBookingInfoService _service;
         private readonly ApplicationDbContext _context;
-        public AdminUserBookingInfoController(IAdminUserBookingInfoService service, ApplicationDbContext applicationDbContext)
+        private readonly IConfiguration _configuration;
+        public AdminUserBookingInfoController(IAdminUserBookingInfoService service, ApplicationDbContext applicationDbContext, IConfiguration configuration)
         {
             _service = service;
             _context = applicationDbContext;
+            _configuration = configuration;
         }
 
         [HttpGet("user-booking-info")]
@@ -358,18 +360,60 @@ namespace EZRide_Project.Controllers
 
 
 
+        //[HttpPost("create-security-deposit-order")]
+        //public IActionResult CreateSecurityDepositOrder([FromBody] decimal amount)
+        //{
+        //    try
+        //    {
+        //        string key = _configuration["Razorpay:Key"];
+        //        string secret = _configuration["Razorpay:Secret"];
+
+
+        //        RazorpayClient client = new RazorpayClient(key, secret);
+
+        //        Dictionary<string, object> options = new Dictionary<string, object>();
+        //        options.Add("amount", amount * 100); // Convert to paise
+        //        options.Add("currency", "INR");
+        //        options.Add("receipt", "rcptid_" + Guid.NewGuid().ToString().Substring(0, 8));
+        //        options.Add("payment_capture", 1); // auto-capture
+
+        //        Razorpay.Api.Order order = client.Order.Create(options);
+
+        //        return Ok(new
+        //        {
+        //            orderId = order["id"].ToString(),
+        //            amount = amount * 100,
+        //            currency = "INR"
+        //        });
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return StatusCode(500, new { message = "Error creating Razorpay order", error = ex.Message });
+        //    }
+        //}
+
         [HttpPost("create-security-deposit-order")]
-        public IActionResult CreateSecurityDepositOrder([FromBody] decimal amount)
+        public IActionResult CreateSecurityDepositOrder([FromBody] AmountRequest request)
         {
             try
             {
-                RazorpayClient client = new RazorpayClient("rzp_test_icoOUo8PN7viYp", "ebdrRVrIoXSRdsKLuzgXWfXD");
+                if (request == null || request.Amount <= 0)
+                {
+                    return BadRequest(new { message = "Invalid amount" });
+                }
+
+                decimal amount = request.Amount;
+
+                string key = _configuration["Razorpay:Key"];
+                string secret = _configuration["Razorpay:Secret"];
+
+                RazorpayClient client = new RazorpayClient(key, secret);
 
                 Dictionary<string, object> options = new Dictionary<string, object>();
-                options.Add("amount", amount * 100); // Convert to paise
+                options.Add("amount", amount * 100);
                 options.Add("currency", "INR");
                 options.Add("receipt", "rcptid_" + Guid.NewGuid().ToString().Substring(0, 8));
-                options.Add("payment_capture", 1); // auto-capture
+                options.Add("payment_capture", 1);
 
                 Razorpay.Api.Order order = client.Order.Create(options);
 
@@ -382,7 +426,11 @@ namespace EZRide_Project.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new { message = "Error creating Razorpay order", error = ex.Message });
+                return StatusCode(500, new
+                {
+                    message = "Error creating Razorpay order",
+                    error = ex.Message
+                });
             }
         }
 

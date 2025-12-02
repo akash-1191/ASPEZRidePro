@@ -29,7 +29,8 @@ namespace EZRide_Project.Model.Entities
         {
             Admin,
             Customer,
-            OwnerVehicle
+            OwnerVehicle,
+            Driver
         }
       
     }

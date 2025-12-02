@@ -30,18 +30,29 @@ namespace EZRide_Project.Data
         public DbSet<DamageReport> DamageReports { get; set; }
         public DbSet<VehicleImage> VehicleImages { get; set; }
         public DbSet<BookingOTP> BookingOTPs { get; set; }
+        public DbSet<OwnerDocument> OwnerDocuments { get; set; }
+
+        //new extend tables
+        public DbSet<Driver> Drivers { get; set; }
+        public DbSet<DriverDocuments> DriverDocuments { get; set; }
+        public DbSet<DriverBookingHistory> DriverBookingHistories { get; set; }
+        public DbSet<DriverReview> DriverReviews { get; set; }
+        public DbSet<OwnerVehicleAvailability> OwnerVehicleAvailabilities { get; set; }
+        public DbSet<ChatMessage> ChatMessages { get; set; }
+
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
 
-                modelBuilder.Entity<Role>().HasData(
-                      new Role { RoleId = 1, RoleName = Role.Rolename.Admin, Description = "System Administrator" },
-                      new Role { RoleId = 2, RoleName = Role.Rolename.OwnerVehicle, Description = "Normal User" },
-                      new Role { RoleId = 3, RoleName = Role.Rolename.Customer, Description = "Vehicle Owner" }
-                      );
-    
+            modelBuilder.Entity<Role>().HasData(
+                  new Role { RoleId = 1, RoleName = Role.Rolename.Admin, Description = "System Administrator" },
+                  new Role { RoleId = 2, RoleName = Role.Rolename.OwnerVehicle, Description = "Normal User" },
+                  new Role { RoleId = 3, RoleName = Role.Rolename.Customer, Description = "Vehicle Owner" },
+                   new Role { RoleId = 4, RoleName = Role.Rolename.Driver, Description = "Driver" }
+                  );
+
 
             modelBuilder.Entity<User>()
                 .HasIndex(un => un.Email)
@@ -76,14 +87,20 @@ namespace EZRide_Project.Data
                 .HasForeignKey(o => o.UserId)
                 .OnDelete(DeleteBehavior.NoAction);
 
-            // Configure User -> Conversation (One-to-Many)
+            // Configure User -> Conversation (Both sides)
             modelBuilder.Entity<User>()
-                .HasMany(u => u.Conversations)
-                .WithOne(c => c.User)
-                .HasForeignKey(c => c.UserId)
-                .OnDelete(DeleteBehavior.Cascade);
+                .HasMany(u => u.ConversationsAsParticipant1)
+                .WithOne(c => c.Participant1)
+                .HasForeignKey(c => c.Participant1Id)
+                .OnDelete(DeleteBehavior.NoAction);
 
-          
+            modelBuilder.Entity<User>()
+                .HasMany(u => u.ConversationsAsParticipant2)
+                .WithOne(c => c.Participant2)
+                .HasForeignKey(c => c.Participant2Id)
+                .OnDelete(DeleteBehavior.NoAction);
+
+
 
             // Configure User -> CustomerDocument (One-to-Many)
             modelBuilder.Entity<User>()
@@ -103,10 +120,26 @@ namespace EZRide_Project.Data
             //modelBuilder.Entity<User>()
             //    .HasMany(u => u.Contacts)
             //    .WithOne(c => c.User)
-            //    //.HasForeignKey(c => c.UserId)
+            //    .HasForeignKey(c => c.UserId)
             //    .OnDelete(DeleteBehavior.Cascade);
 
-            // Configure Vehicle -> Booking (One-to-Many)
+
+            // Configure User -> DriverReview (One-to-Many)
+            modelBuilder.Entity<User>()
+                .HasMany(u => u.DriverReviews)
+                .WithOne(dr => dr.User)
+                .HasForeignKey(dr => dr.UserId)
+                .OnDelete(DeleteBehavior.NoAction);
+
+            // Configure User -> Driver (One-to-One)
+            modelBuilder.Entity<User>()
+                .HasOne(u => u.Driver)
+                .WithOne(d => d.User)
+                .HasForeignKey<Driver>(d => d.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+
+
             modelBuilder.Entity<Vehicle>()
                 .HasMany(v => v.Bookings)
                 .WithOne(b => b.Vehicle)
@@ -134,6 +167,16 @@ namespace EZRide_Project.Data
                 .HasForeignKey(vi => vi.VehicleId)
                 .OnDelete(DeleteBehavior.Cascade);
 
+
+
+            // Configure Vehicle -> OwnerVehicleAvailability (One-to-Many)
+            modelBuilder.Entity<Vehicle>()
+                .HasMany(v => v.OwnerVehicleAvailabilities)
+                .WithOne(ova => ova.Vehicle)
+                .HasForeignKey(ova => ova.VehicleId)
+                .OnDelete(DeleteBehavior.NoAction);
+
+
             // Configure Booking -> Payment (One-to-One)
             modelBuilder.Entity<Booking>()
                 .HasOne(b => b.Payment)
@@ -141,6 +184,7 @@ namespace EZRide_Project.Data
                 .HasForeignKey<Payment>(p => p.BookingId)
                 .OnDelete(DeleteBehavior.NoAction);
 
+           
             // Configure Booking -> SecurityDeposit (One-to-One)
             modelBuilder.Entity<Booking>()
                 .HasOne(b => b.SecurityDeposit)
@@ -160,6 +204,57 @@ namespace EZRide_Project.Data
                 .HasOne(b => b.DamageReport)
                 .WithOne(d => d.Booking)
                 .HasForeignKey<DamageReport>(d => d.BookingId)
+                .OnDelete(DeleteBehavior.NoAction);
+
+            //// Configure Booking -> BookingOTP (One-to-One)
+            //modelBuilder.Entity<Booking>()
+            //    .HasOne(b => b.BookingOTP)
+            //    .WithOne(o => o.Booking)
+            //    .HasForeignKey<BookingOTP>(o => o.BookingId)
+            //    .OnDelete(DeleteBehavior.Cascade);
+
+            // Configure Driver -> DriverDocument (One-to-Many)
+            modelBuilder.Entity<Driver>()
+                .HasMany(d => d.DriverDocuments)
+                .WithOne(dd => dd.Driver)
+                .HasForeignKey(dd => dd.DriverId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            // Configure Driver -> DriverBookingHistory (One-to-Many)
+            modelBuilder.Entity<Driver>()
+                .HasMany(d => d.DriverBookingHistories)
+                .WithOne(db => db.Driver)
+                .HasForeignKey(db => db.DriverId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+
+
+            // Configure Conversation -> ChatMessage (One-to-Many)
+            modelBuilder.Entity<Conversation>()
+                .HasMany(c => c.ChatMessages)
+                .WithOne(cm => cm.Conversation)
+                .HasForeignKey(cm => cm.ConversationId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            // Configure OwnerVehicleAvailability -> User (Many-to-One)
+            modelBuilder.Entity<OwnerVehicleAvailability>()
+                .HasOne(ova => ova.Owner)
+                .WithMany()
+                .HasForeignKey(ova => ova.OwnerId)
+                .OnDelete(DeleteBehavior.NoAction);
+
+            // ✅ ADD THESE MISSING RELATIONSHIPS:
+            modelBuilder.Entity<DriverBookingHistory>()
+                .HasOne(db => db.Booking)
+                .WithMany()
+                .HasForeignKey(db => db.BookingId)
+                .OnDelete(DeleteBehavior.NoAction);
+
+
+            modelBuilder.Entity<DriverBookingHistory>()
+                .HasOne(db => db.Vehicle)
+                .WithMany()
+                .HasForeignKey(db => db.VehicleId)
                 .OnDelete(DeleteBehavior.NoAction);
         }
     }

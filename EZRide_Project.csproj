@@ -37,6 +37,7 @@
     <PackageReference Include="RestSharp" Version="112.1.0" />
     <PackageReference Include="SixLabors.ImageSharp" Version="3.1.11" />
     <PackageReference Include="SixLabors.ImageSharp.Drawing" Version="2.1.7" />
+    <PackageReference Include="Stripe.net" Version="50.0.0" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="9.0.4" />
     <PackageReference Include="Twilio" Version="7.13.0" />
   </ItemGroup>

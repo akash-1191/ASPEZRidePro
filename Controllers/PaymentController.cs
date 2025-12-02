@@ -37,31 +37,64 @@ namespace EZRide_Project.Controllers
                 return BadRequest(ApiResponseHelper.Fail("Payment verification failed"));
         }
 
+        //[HttpPost("CreateOrder")]
+        //public IActionResult CreateOrder([FromBody] CreateOrderRequestDto request)
+        //{
+        //    try
+        //    {
+        //            RazorpayClient client = new RazorpayClient(_razorpayKey, _razorpaySecret);
+
+        //            var receiptId = $"order_rcptid_{Guid.NewGuid().ToString().Substring(0, 8)}";
+
+        //            var options = new Dictionary<string, object>
+        //{
+        //    { "amount", (int)(request.Amount * 100) },
+        //    { "currency", "INR" },
+        //    { "receipt", receiptId }
+        //};
+
+        //            Razorpay.Api.Order order = client.Order.Create(options);
+
+        //            return Ok(new { orderId = order["id"].ToString() });
+        //        }
+        //        catch (Exception ex)
+        //        {
+        //            return StatusCode(500, ApiResponseHelper.Fail("Order creation failed: " + ex.Message));
+        //        }
+        //    }
+
         [HttpPost("CreateOrder")]
         public IActionResult CreateOrder([FromBody] CreateOrderRequestDto request)
         {
             try
-            {
-                    RazorpayClient client = new RazorpayClient(_razorpayKey, _razorpaySecret);
+            {           
+                RazorpayClient client = new RazorpayClient(_razorpayKey, _razorpaySecret);
 
-                    var receiptId = $"order_rcptid_{Guid.NewGuid().ToString().Substring(0, 8)}";
+                var receiptId = $"order_rcptid_{Guid.NewGuid().ToString().Substring(0, 8)}";
 
-                    var options = new Dictionary<string, object>
-        {
-            { "amount", (int)(request.Amount * 100) },
-            { "currency", "INR" },
-            { "receipt", receiptId }
-        };
+                var options = new Dictionary<string, object>
+             {
+     { "amount", (int)(request.Amount * 100) },  // ✅ amount in paise
+     { "currency", "INR" },
+     { "receipt", receiptId },
+     { "payment_capture", 1 }                   // ✅ auto capture
+ };
 
-                    Razorpay.Api.Order order = client.Order.Create(options);
 
-                    return Ok(new { orderId = order["id"].ToString() });
-                }
-                catch (Exception ex)
+                Razorpay.Api.Order order = client.Order.Create(options);
+
+                return Ok(new
                 {
-                    return StatusCode(500, ApiResponseHelper.Fail("Order creation failed: " + ex.Message));
-                }
+                    orderId = order["id"].ToString(),
+                    amount = Convert.ToInt32(order["amount"]),    
+                    currency = order["currency"].ToString()
+                });
             }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ApiResponseHelper.Fail("Order creation failed: " + ex.Message));
+            }
+        }
     }
 }
 

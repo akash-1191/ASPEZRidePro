@@ -10,7 +10,7 @@ namespace EZRide_Project.Services
         
 
         //Get all vehicala list
-        Task<List<VehicleCreateDTO>> GetAllVehiclesAsync();
+        Task<List<VehicleCreateDTO>> GetAllVehiclesAsync(int adminId);
 
         //updatedata of the vehicle 
         Task<ApiResponseModel> UpdateVehicleAsync(VehicleCreateDTO dto, int userId);

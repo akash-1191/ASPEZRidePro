@@ -21,7 +21,7 @@ namespace EZRide_Project.Controllers
 
         //Add image
         [HttpPost("uploadVehicleImage")]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "OwnerVehicle,Admin")]
         public async Task<IActionResult> UploadVehicleImage([FromForm] VehicleImageDTO dto)
         {
             var result = await _vehicleImageService.UploadVehicleImageAsync(dto);
@@ -32,7 +32,7 @@ namespace EZRide_Project.Controllers
         //updatae image 
 
         [HttpPut("updateVehicleImage")]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "OwnerVehicle,Admin")]
         public async Task<IActionResult> UpdateVehicleImage([FromForm] VehicleImageUpdateDTO dto)
         {
             var result = await _vehicleImageService.UpdateVehicleImageAsync(dto);
@@ -42,7 +42,7 @@ namespace EZRide_Project.Controllers
 
         //delete data image
         [HttpDelete("deleteVehicleImage/{imageId}")]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "OwnerVehicle,Admin")]
         public async Task<IActionResult> DeleteVehicleImage(int imageId)
         {
             var result = await _vehicleImageService.DeleteVehicleImageAsync(imageId);
@@ -51,7 +51,7 @@ namespace EZRide_Project.Controllers
         //get aal image 
 
         [HttpGet("getImagesByVehicle/{vehicleId}")]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "OwnerVehicle,Admin")]
         public async Task<IActionResult> GetImagesByVehicleId(int vehicleId)
         {
             var images = await _vehicleImageService.GetImagesByVehicleIdAsync(vehicleId);

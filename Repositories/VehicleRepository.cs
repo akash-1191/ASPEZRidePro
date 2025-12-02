@@ -25,10 +25,13 @@ namespace EZRide_Project.Repositories
         }
 
         //getall data vehicle list
-        public async Task<List<Vehicle>> GetAllVehiclesAsync()
+        public async Task<List<Vehicle>> GetAllVehiclesAsync(int adminId)
         {
-            return await _context.Vehicles.ToListAsync();
+            return await _context.Vehicles
+                .Where(v=>v.UserId==adminId)
+                .ToListAsync();
         }
+
 
         //update vehicle list
         public async Task<Vehicle?> GetVehicleByIdAsync(int vehicleId)

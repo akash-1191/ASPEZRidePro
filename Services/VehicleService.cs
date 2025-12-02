@@ -22,7 +22,7 @@ namespace EZRide_Project.Services
             {
                 var vehicle = new Vehicle
                 {
-                    UserId = userId, // logged-in Admin's ID
+                    UserId = userId, 
                     Vehicletype = Enum.Parse<Vehicle.VehicleType>(dto.Vehicletype, true),
                     RegistrationNo = dto.RegistrationNo,
                     Availability = Enum.Parse<Vehicle.AvailabilityStatus>(dto.Availability, true),
@@ -40,7 +40,8 @@ namespace EZRide_Project.Services
                     EngineCapacity = dto.EngineCapacity,
                     BikeName = dto.BikeName,
                     CreatedAt = DateTime.Now,
-                    SecurityDepositAmount = dto.SecurityDepositAmount
+                    SecurityDepositAmount = dto.SecurityDepositAmount,
+                    Status = false
                 };
 
                 _vehicleRepo.AddVehicle(vehicle);
@@ -59,9 +60,9 @@ namespace EZRide_Project.Services
 
 
         //Get all data of the vehicle table 
-        public async Task<List<VehicleCreateDTO>> GetAllVehiclesAsync()
+        public async Task<List<VehicleCreateDTO>> GetAllVehiclesAsync(int adminId)
         {
-            var vehicles = await _vehicleRepo.GetAllVehiclesAsync();
+            var vehicles = await _vehicleRepo.GetAllVehiclesAsync(adminId);
 
             var dtoList = vehicles.Select(v => new VehicleCreateDTO
             {

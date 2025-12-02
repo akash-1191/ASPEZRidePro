@@ -47,6 +47,14 @@ namespace EZRide_Project.Model.Entities
         public DamageReport DamageReport { get; set; }
 
         public String? Cancelreasion { get; set; }
+
+        //new add
+        [Column(TypeName = "varchar(3)")]
+        public string? DriverRequired { get; set; } // "yes" / "no"
+
+        public int? DriverId { get; set; } // FK → Drivers
+        public Driver Driver { get; set; } // Navigation property
+
         public enum BookingStatus
         {
             Pending,

@@ -21,7 +21,7 @@ namespace EZRide_Project.Controllers
 
         //add vehicle data
         [HttpPost("addVehicle")]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "OwnerVehicle,Admin")]
         public async Task<IActionResult> AddVehicle([FromBody] VehicleCreateDTO dto)
         {
             var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == "UserId");
@@ -41,7 +41,12 @@ namespace EZRide_Project.Controllers
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> GetAllVehicles()
         {
-            var vehicles = await _vehicleService.GetAllVehiclesAsync();
+            var userIdClaim = User.FindFirst("UserId");
+            if (userIdClaim == null)
+                return Unauthorized("Invalid token, UserId not found.");
+
+            int adminId = int.Parse(userIdClaim.Value);
+            var vehicles = await _vehicleService.GetAllVehiclesAsync(adminId);
 
             if (vehicles == null || !vehicles.Any())
                 return NotFound("No vehicles found.");

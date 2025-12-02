@@ -68,18 +68,25 @@ namespace EZRide_Project.Model.Entities
         public UserStatus Status { get; set; } // Enum can be used here
         public DateTime CreatedAt { get; set; }
 
-        // Foreign key for Role
+        // Foreign key for Role 
         public int RoleId { get; set; }
         public Role Role { get; set; }
 
         // Navigation properties
         public ICollection<Vehicle> Vehicles { get; set; }
-        public ICollection<Booking> Bookings { get; set; }
+        public ICollection<Booking> Bookings { get; set; } 
         public ICollection<OwnerPayment> OwnerPayments { get; set; }
-        public ICollection<Conversation> Conversations { get; set; }
+        public ICollection<Conversation> ConversationsAsParticipant1 { get; set; }
+        public ICollection<Conversation> ConversationsAsParticipant2 { get; set; }
         public ICollection<CustomerDocument> CustomerDocuments { get; set; }
         public ICollection<Feedback> Feedbacks { get; set; }
         public ICollection<Contact> Contacts { get; set; }
+        public ICollection<DriverReview> DriverReviews { get; set; }
+        public Driver? Driver { get; set; }
+        public ICollection<OwnerDocument> OwnerDocuments { get; set; }
+
+
+
 
         public enum UserStatus
         {

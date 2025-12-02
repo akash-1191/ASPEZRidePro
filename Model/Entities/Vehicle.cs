@@ -65,7 +65,8 @@ namespace EZRide_Project.Model.Entities
         public string? BikeName { get; set; } // Bike type: 'sports', 'cruiser', 'scooter', 'other'
        
         [Column(TypeName = "decimal(10,2)")]
-        public decimal SecurityDepositAmount { get; set; }
+        public decimal? SecurityDepositAmount { get; set; }
+        public bool? Status { get; set; }
         public DateTime CreatedAt { get; set; } 
 
 
@@ -78,6 +79,7 @@ namespace EZRide_Project.Model.Entities
 
         // VehicleImages Navigation Property
         public ICollection<VehicleImage> VehicleImages { get; set; }
+        public ICollection<OwnerVehicleAvailability> OwnerVehicleAvailabilities { get; set; }
 
 
         public enum VehicleType

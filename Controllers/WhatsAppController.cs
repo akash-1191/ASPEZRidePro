@@ -1,7 +1,8 @@
-﻿using EZRide_Project.DTO;
+﻿using System.Diagnostics;
+using System.Text;
+using EZRide_Project.DTO;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Diagnostics;
 
 namespace EZRide_Project.Controllers
 {
@@ -10,26 +11,23 @@ namespace EZRide_Project.Controllers
     public class WhatsAppController : ControllerBase
     {
         [HttpPost("sendWhatsAppMessage")]
-      
         public async Task<IActionResult> SendMessage([FromBody] WhatsAppSendDTO dto)
         {
             try
             {
                 var tcs = new TaskCompletionSource<bool>();
 
-                // Properly escape the arguments
-                var escapedMessage = dto.Message.Replace("\"", "\\\"");
-                var escapedPhone = dto.Phone;
-
                 var psi = new ProcessStartInfo
                 {
-                    FileName = "node",
-                    Arguments = $"sendMessage.js \"{escapedMessage}\" {escapedPhone}",
-                    WorkingDirectory = @"D:\Akash\MSC(ICT)\Sem-2\Project_sem2\ASP\EZRide_Project\EZRide_Project\WhatsAppScripts",
+                    FileName = @"C:\Program Files\nodejs\node.exe",
+                    Arguments = $"sendMessage.js \"{dto.Message}\" {dto.Phone}",
+                    WorkingDirectory = @"D:\Akash\MSC(ICT)\Sem-2\Project_sem2\ASP\EZRide_Project\WhatsAppScripts",
                     RedirectStandardOutput = true,
                     RedirectStandardError = true,
                     UseShellExecute = false,
-                    CreateNoWindow = true
+                    CreateNoWindow = true,
+                    StandardOutputEncoding = Encoding.UTF8,
+                    StandardErrorEncoding = Encoding.UTF8
                 };
 
                 var process = new Process { StartInfo = psi };
@@ -39,8 +37,7 @@ namespace EZRide_Project.Controllers
                     if (!string.IsNullOrWhiteSpace(e.Data))
                     {
                         Console.WriteLine("Node Output: " + e.Data);
-
-                        if (e.Data.Contains("Message sent successfully"))
+                        if (e.Data.Contains("📨 Message Sent Successfully!"))
                             tcs.TrySetResult(true);
                     }
                 };
@@ -50,27 +47,16 @@ namespace EZRide_Project.Controllers
                     if (!string.IsNullOrWhiteSpace(e.Data))
                     {
                         Console.WriteLine("Node Error: " + e.Data);
-
-                       
-                        if (e.Data.Contains("Help Keep This Project Going") ||
-                            e.Data.StartsWith("- ") ||
-                            e.Data.Contains("Node.js version") ||
-                            e.Data.Contains("Executable path browser") ||
-                            e.Data.Contains("Platform: win32") ||
-                            e.Data.Contains("You're up to date"))
-                        {
-                            return; 
-                        }
-
                         tcs.TrySetException(new Exception(e.Data));
                     }
                 };
+
                 process.Start();
                 process.BeginOutputReadLine();
                 process.BeginErrorReadLine();
 
-               
-                var completed = await Task.WhenAny(tcs.Task, Task.Delay(40000));
+                // wait max 60 seconds
+                var completed = await Task.WhenAny(tcs.Task, Task.Delay(60000));
 
                 if (completed == tcs.Task && tcs.Task.Result)
                 {
@@ -90,5 +76,6 @@ namespace EZRide_Project.Controllers
                 return StatusCode(500, new { status = "error", error = ex.Message });
             }
         }
+
     }
 }
