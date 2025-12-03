@@ -10,12 +10,12 @@ namespace EZRide_Project.Services
         public class PaymentService : IPaymentService
         {
             private readonly IPaymentRepository _repository;
-            private readonly string _razorpaySecret = "ebdrRVrIoXSRdsKLuzgXWfXD"; // Replace with real one
-
-            public PaymentService(IPaymentRepository repository)
+        private readonly string _razorpaySecret;
+        public PaymentService(IPaymentRepository repository, IConfiguration config)
             {
-                _repository = repository;
-            }
+                _repository = repository;   
+            _razorpaySecret = config["Razorpay:Secret"];
+        }
 
         public async Task<bool> VerifyAndSavePaymentAsync(RazorpayVerificationDto dto)
         {

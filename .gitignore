@@ -179,6 +179,12 @@ csx/
 ecf/
 rcf/
 
+# Ignore sensitive config files
+appsettings.json
+appsettings.*.json
+application.json
+application.*.json
+
 # Windows Store app package directories and files
 AppPackages/
 BundleArtifacts/

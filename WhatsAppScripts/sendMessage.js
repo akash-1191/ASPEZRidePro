@@ -2,26 +2,26 @@
 const qrcode = require("qrcode-terminal");
 
 const client = new Client({
-    authStrategy: new LocalAuth(),   // 👈 Session save hoga
+    authStrategy: new LocalAuth(),  
     puppeteer: {
-        headless: false,             // WhatsApp visible rahe
+        headless: false,             
         args: ['--no-sandbox', '--disable-setuid-sandbox']
     }
 });
 
 client.on("qr", (qr) => {
     qrcode.generate(qr, { small: true });
-    console.log("📌 Please Scan QR ");
+    console.log(" Please Scan QR ");
 });
 
 client.on("ready", () => {
-    console.log("💥 WhatsApp Client Ready!");
+    console.log(" WhatsApp Client Ready!");
 
     const message = process.argv[2];
     const number = process.argv[3];
 
     if (!message || !number) {
-        console.log("⚠ Usage: node sendMessage.js \"Message\" 916XXXXXXXX");
+        console.log(" Usage: node sendMessage.js \"Message\" 916XXXXXXXX");
         return;
     }
 
@@ -29,10 +29,10 @@ client.on("ready", () => {
 
     client.sendMessage(finalNumber, message)
         .then(() => {
-            console.log("📨 Message Sent Successfully!");
+            console.log(" Message Sent Successfully!");
         })
         .catch((err) => {
-            console.log("❌ Send Error:", err);
+            console.log("Send Error:", err);
         });
 });
 

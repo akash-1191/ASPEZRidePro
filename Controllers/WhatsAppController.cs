@@ -37,7 +37,7 @@ namespace EZRide_Project.Controllers
                     if (!string.IsNullOrWhiteSpace(e.Data))
                     {
                         Console.WriteLine("Node Output: " + e.Data);
-                        if (e.Data.Contains("📨 Message Sent Successfully!"))
+                        if (e.Data.Contains(" Message Sent Successfully!"))
                             tcs.TrySetResult(true);
                     }
                 };

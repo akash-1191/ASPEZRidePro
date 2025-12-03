@@ -67,7 +67,7 @@ namespace EZRide_Project.Controllers
         public IActionResult CreateOrder([FromBody] CreateOrderRequestDto request)
         {
             try
-            {           
+            {
                 RazorpayClient client = new RazorpayClient(_razorpayKey, _razorpaySecret);
 
                 var receiptId = $"order_rcptid_{Guid.NewGuid().ToString().Substring(0, 8)}";
@@ -86,7 +86,7 @@ namespace EZRide_Project.Controllers
                 return Ok(new
                 {
                     orderId = order["id"].ToString(),
-                    amount = Convert.ToInt32(order["amount"]),    
+                    amount = Convert.ToInt32(order["amount"]),
                     currency = order["currency"].ToString()
                 });
             }
