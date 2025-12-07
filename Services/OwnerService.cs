@@ -8,7 +8,7 @@ using NuGet.Protocol.Core.Types;
 
 namespace EZRide_Project.Services
 {
-    public class OwnerService: IOwnerService
+    public class OwnerService : IOwnerService
     {
         private readonly IOwnerRepository _ownerRepo;
 
@@ -37,7 +37,7 @@ namespace EZRide_Project.Services
             return ApiResponseHelper.Success("Owner approved successfully.");
         }
 
-        // ❌ Owner Reject + Reason
+        //  Owner Reject + Reason
         public ApiResponseModel RejectOwner(int userId, string reason)
         {
             var user = _ownerRepo.GetUserById(userId);
@@ -75,14 +75,22 @@ namespace EZRide_Project.Services
                 InsuranceStatus = v.InsuranceStatus.ToString(),
                 RcStatus = v.RcStatus.ToString(),
                 AcAvailability = v.AcAvailability?.ToString(),
-                FuelTankCapacity = v.FuelTankCapacity,
+                FuelTankCapacity = v.FuelTankC  apacity,
                 CarName = v.CarName,
                 SecurityDepositAmount = v.SecurityDepositAmount,
                 EngineCapacity = v.EngineCapacity,
                 BikeName = v.BikeName,
-                Status = v.Status ,
-                RejectReason=v.RejectReason,
-                IsApproved=v.IsApproved
+                Status = v.Status,
+                RejectReason = v.RejectReason,
+                IsApproved = v.IsApproved,
+                AvailabilityId = v.OwnerVehicleAvailabilities
+    .FirstOrDefault(a => a.Status == OwnerVehicleAvailability.AvailabilityStatus.Active)
+    ?.AvailabilityId ?? 0,
+
+                VehicleAmountPerDay = v.OwnerVehicleAvailabilities
+    .FirstOrDefault(a => a.Status == OwnerVehicleAvailability.AvailabilityStatus.Active)
+    ?.vehicleAmountPerDay ?? 0
+
             }).ToList();
 
             return dtoList;
@@ -107,7 +115,7 @@ namespace EZRide_Project.Services
                 Email = u.Email,
                 Phone = u.Phone,
                 Address = u.Address,
-                Status=u.Status.ToString(),
+                Status = u.Status.ToString(),
                 CreatedAt = u.CreatedAt
             }).ToList();
         }
@@ -180,5 +188,17 @@ namespace EZRide_Project.Services
             return "Vehicle rejected successfully!";
         }
 
+
+        public async Task<string> UpdatePriceAsync(int availabilityId, decimal vehicleAmountPerDay)
+        {
+            var availability = await _ownerRepo.GetAvailabilityByIdAsync(availabilityId);
+            if (availability == null)
+                return "Error: Availability not found.";
+
+            availability.vehicleAmountPerDay = vehicleAmountPerDay;
+            await _ownerRepo.UpdateAvailabilityAsync(availability);
+
+            return "Price updated successfully!";
+        }
     }
 }

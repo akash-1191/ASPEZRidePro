@@ -16,5 +16,8 @@ namespace EZRide_Project.Services
 
         Task<string> ApproveVehicleAsync(int vehicleId);
         Task<string> RejectVehicleAsync(int vehicleId, string reason);
+
+        Task<string> UpdatePriceAsync(int availabilityId, decimal vehicleAmountPerDay);
+
     }
 }

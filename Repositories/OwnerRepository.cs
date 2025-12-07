@@ -67,19 +67,31 @@ namespace EZRide_Project.Repositories
         {
             _context.Users.Update(user);
             _context.SaveChanges();
-     
+
         }
 
         //Get all vehicles uploaded by owners
+        //public async Task<List<Vehicle>> GetAllOwnerVehiclesAsync(int ownerId)
+        //{
+        //    return await _context.Vehicles
+        //        .Include(v => v.User)
+        //            .ThenInclude(u => u.Role)
+        //        .Where(v => v.User != null
+        //                    && v.User.Role != null
+        //                    && v.User.Role.RoleName == Role.Rolename.OwnerVehicle
+        //                    && v.UserId == ownerId)
+        //        .ToListAsync();
+        //}
         public async Task<List<Vehicle>> GetAllOwnerVehiclesAsync(int ownerId)
         {
             return await _context.Vehicles
                 .Include(v => v.User)
                     .ThenInclude(u => u.Role)
+                .Include(v => v.OwnerVehicleAvailabilities)
                 .Where(v => v.User != null
                             && v.User.Role != null
                             && v.User.Role.RoleName == Role.Rolename.OwnerVehicle
-                            && v.UserId == ownerId) 
+                            && v.UserId == ownerId)
                 .ToListAsync();
         }
 
@@ -94,7 +106,7 @@ namespace EZRide_Project.Repositories
                             && u.Status == User.UserStatus.Active)
                 .ToListAsync();
         }
-            
+
 
         //add or update the security amount
         public async Task<Vehicle> GetVehicleByIdAsync(int vehicleId)
@@ -111,6 +123,19 @@ namespace EZRide_Project.Repositories
         public async Task UpdateVehicleAsync(Vehicle vehicle)
         {
             _context.Vehicles.Update(vehicle);
+            await _context.SaveChangesAsync();
+        }
+
+
+        public async Task<OwnerVehicleAvailability> GetAvailabilityByIdAsync(int availabilityId)
+        {
+            return await _context.OwnerVehicleAvailabilities
+                .FirstOrDefaultAsync(a => a.AvailabilityId == availabilityId);
+        }
+
+        public async Task UpdateAvailabilityAsync(OwnerVehicleAvailability availability)
+        {
+            _context.OwnerVehicleAvailabilities.Update(availability);
             await _context.SaveChangesAsync();
         }
     }

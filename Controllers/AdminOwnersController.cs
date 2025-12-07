@@ -127,5 +127,18 @@ namespace EZRide_Project.Controllers
             });
         }
 
+
+        //admin sdet price or the per vehicle to pay vehicle owner
+        [HttpPut("updatePrice")]
+        [Authorize(Roles = "Admin")] 
+        public async Task<IActionResult> UpdatePrice([FromBody] UpdateAvailabilityPriceDto dto)
+        {
+            var result = await _ownerService.UpdatePriceAsync(dto.AvailabilityId, dto.vehicleAmountPerDay);
+            if (result.StartsWith("Error"))
+                return BadRequest(result);
+
+            return Ok(result);
+        }
+
     }
 }

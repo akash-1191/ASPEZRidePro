@@ -24,6 +24,8 @@ namespace EZRide_Project.DTO
         public decimal? SecurityDepositAmount { get; set; }
         public bool? IsApproved { get; set; }
         public string? RejectReason { get; set; }
+        public int? AvailabilityId { get; set; }
+        public decimal? VehicleAmountPerDay { get; set; }
     }
 
 }

@@ -25,7 +25,7 @@ namespace EZRide_Project.Model.Entities
         public AvailabilityStatus Status { get; set; } // Enum: Active, Expired
 
         [Column(TypeName = "decimal(10,2)")]
-        public decimal PricePerDay { get; set; }
+        public decimal vehicleAmountPerDay { get; set; }
 
         public DateTime CreatedAt { get; set; }
 

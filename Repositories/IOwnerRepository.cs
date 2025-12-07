@@ -17,6 +17,9 @@ namespace EZRide_Project.Repositories
 
    
         Task UpdateVehicleAsync(Vehicle vehicle);
+        Task<OwnerVehicleAvailability> GetAvailabilityByIdAsync(int availabilityId);
+        Task UpdateAvailabilityAsync(OwnerVehicleAvailability availability);
+
 
 
 
