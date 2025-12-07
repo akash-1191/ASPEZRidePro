@@ -32,6 +32,7 @@ namespace EZRide_Project.DTO
         public int RoleId { get; set; }
 
         public DateTime CreatedAt { get; set; }
+        public string? UserStatus { get; set; }
     }
 
 

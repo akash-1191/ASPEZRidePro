@@ -6,7 +6,7 @@ namespace EZRide_Project.Services
 {
     public interface IVehicleService
     {
-        Task<ApiResponseModel> AddVehicleAsync(VehicleCreateDTO dto, int userId);
+        Task<ApiResponseModel> AddVehicleAsync(VehicleCreateDTO dto, int userId,bool status);
         
 
         //Get all vehicala list

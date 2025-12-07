@@ -10,5 +10,9 @@ namespace EZRide_Project.Services
         Task<ApiResponseModel> UpdateOwnerVehicleAsync(VehicleDTO dto, int ownerId);
         Task<ApiResponseModel> DeleteOwnerVehicleAsync(int vehicleId, int ownerId);
 
+        //add owner vehile avalibilityes days
+        Task<string> AddAvailabilityAsync(AddAvailabilityDto dto, int ownerId);
+
+
     }
 }

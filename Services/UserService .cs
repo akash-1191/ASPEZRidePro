@@ -27,38 +27,92 @@ namespace EZRide_Project.Services
             _jwtTokenGenerator = jwtTokenGenerator;
         }
 
+        //public ApiResponseModel RegisterUser(AddUserDataDTO dto)
+        //{
+        //    if (dto == null || dto.Image == null)
+        //    {
+        //        return ApiResponseHelper.UserDataNull();
+        //    }
+
+        //    if (_repository.IsEmailExists(dto.Email))
+        //    {
+        //        return ApiResponseHelper.EmailAlreadyExists();
+        //    }
+
+        //    string[] blockedExtensions = { ".exe", ".bat", ".cmd", ".sh", ".js" };
+
+        //    var extension = Path.GetExtension(dto.Image.FileName).ToLower();
+        //    if (blockedExtensions.Contains(extension))
+        //    {
+        //        return ApiResponseHelper.Fail("This file type is not allowed.");
+        //    }
+
+        //    if (_environment.WebRootPath == null)
+        //    {
+        //        return ApiResponseHelper.Fail("WebRootPath is not set correctly.Contact  admin");
+        //    }
+
+        //    string uploadFolder = Path.Combine(_environment.WebRootPath, "Upload_image");
+
+
+        //    if (!Directory.Exists(uploadFolder))
+        //    {
+        //        Directory.CreateDirectory(uploadFolder);
+        //    }
+
+        //    string uniqueFileName = Guid.NewGuid() + Path.GetExtension(dto.Image.FileName);
+        //    string filePath = Path.Combine(uploadFolder, uniqueFileName);
+
+        //    using (var stream = new FileStream(filePath, FileMode.Create))
+        //    {
+        //        dto.Image.CopyTo(stream);
+        //    }
+
+
+        //    string hashedPassword = BCrypt.Net.BCrypt.HashPassword(dto.Password);
+
+        //    var user = new User
+        //    {
+        //        RoleId = dto.RoleId,
+        //        Firstname = dto.Firstname,
+        //        Middlename = dto.Middlename,
+        //        Lastname = dto.Lastname,
+        //        Email = dto.Email,
+        //        Password = hashedPassword,
+        //        Address = dto.Address,
+        //        Phone = dto.Phone,
+        //        Age = dto.Age,
+        //        Gender = dto.Gender,
+        //        City = dto.City,
+        //        State = dto.State,
+        //        CreatedAt = DateTime.Now,
+        //        Image = "/Upload_image/" + uniqueFileName
+        //    };
+
+        //    _repository.AddUser(user);
+
+        //    return ApiResponseHelper.Success("User registered successfully.");
+        //}
         public ApiResponseModel RegisterUser(AddUserDataDTO dto)
         {
             if (dto == null || dto.Image == null)
-            {
                 return ApiResponseHelper.UserDataNull();
-            }
 
             if (_repository.IsEmailExists(dto.Email))
-            {
                 return ApiResponseHelper.EmailAlreadyExists();
-            }
 
             string[] blockedExtensions = { ".exe", ".bat", ".cmd", ".sh", ".js" };
-
             var extension = Path.GetExtension(dto.Image.FileName).ToLower();
+
             if (blockedExtensions.Contains(extension))
-            {
                 return ApiResponseHelper.Fail("This file type is not allowed.");
-            }
 
             if (_environment.WebRootPath == null)
-            {
-                return ApiResponseHelper.Fail("WebRootPath is not set correctly.Contact  admin");
-            }
+                return ApiResponseHelper.Fail("WebRootPath missing.");
 
             string uploadFolder = Path.Combine(_environment.WebRootPath, "Upload_image");
-
-
             if (!Directory.Exists(uploadFolder))
-            {
                 Directory.CreateDirectory(uploadFolder);
-            }
 
             string uniqueFileName = Guid.NewGuid() + Path.GetExtension(dto.Image.FileName);
             string filePath = Path.Combine(uploadFolder, uniqueFileName);
@@ -68,8 +122,15 @@ namespace EZRide_Project.Services
                 dto.Image.CopyTo(stream);
             }
 
-
             string hashedPassword = BCrypt.Net.BCrypt.HashPassword(dto.Password);
+
+            User.UserStatus finalStatus;
+            if (dto.RoleId == 1)                
+                finalStatus = User.UserStatus.Active;
+            else if (dto.RoleId == 2 || dto.RoleId == 3) 
+                finalStatus = User.UserStatus.Pending;
+            else
+                finalStatus = User.UserStatus.Pending;
 
             var user = new User
             {
@@ -86,13 +147,17 @@ namespace EZRide_Project.Services
                 City = dto.City,
                 State = dto.State,
                 CreatedAt = DateTime.Now,
-                Image = "/Upload_image/" + uniqueFileName
+                Image = "/Upload_image/" + uniqueFileName,
+
+                // ⭐ Important line 
+                Status = finalStatus
             };
 
             _repository.AddUser(user);
 
             return ApiResponseHelper.Success("User registered successfully.");
         }
+
 
 
         //Login services

@@ -65,7 +65,10 @@ namespace EZRide_Project.Model.Entities
         [Required]
         [Column(TypeName ="varchar(200)")]
         public string Address { get; set; }
-        public UserStatus Status { get; set; } // Enum can be used here
+        public UserStatus Status { get; set; } = UserStatus.Pending;
+
+        [Column(TypeName = "varchar(200)")]
+        public string? RejectionReason { get; set; }
         public DateTime CreatedAt { get; set; }
 
         // Foreign key for Role 
@@ -90,8 +93,9 @@ namespace EZRide_Project.Model.Entities
 
         public enum UserStatus
         {
-            Active,
-            Disabled
+            Pending = 0,
+            Active = 1,
+            Disabled = 2
         }
 
     }

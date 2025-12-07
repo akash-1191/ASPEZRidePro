@@ -60,6 +60,8 @@ builder.Services.AddScoped<IOwnerVehicleService, OwnerVehicleService>();
 builder.Services.AddScoped<IOwnerVehicleRepository, OwnerVehicleRepository>();
 builder.Services.AddScoped<IOwnerDocumentService, OwnerDocumentService>();
 builder.Services.AddScoped<IOwnerDocumentRepository, OwnerDocumentRepository>();
+builder.Services.AddScoped<IOwnerRepository, OwnerRepository>();
+builder.Services.AddScoped<IOwnerService, OwnerService>();
 
 
 

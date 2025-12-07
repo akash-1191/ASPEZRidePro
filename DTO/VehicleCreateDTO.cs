@@ -20,7 +20,10 @@ namespace EZRide_Project.DTO
         public string? CarName { get; set; }
         public int EngineCapacity { get; set; }
         public string? BikeName { get; set; }
+        public bool? Status { get; set; }
         public decimal? SecurityDepositAmount { get; set; }
+        public bool? IsApproved { get; set; }
+        public string? RejectReason { get; set; }
     }
 
 }

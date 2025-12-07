@@ -39,6 +39,9 @@ namespace EZRide_Project.Controllers
             var result = await _service.GetPricingByVehicleIdAsync(vehicleId);
             return StatusCode(result.StatusCode, result);
         }
+
+
+
     }
 }
 

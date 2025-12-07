@@ -16,7 +16,7 @@ namespace EZRide_Project.Services
             _vehicleRepo = vehicleRepo;
         }
 
-        public async Task<ApiResponseModel> AddVehicleAsync(VehicleCreateDTO dto, int userId)
+        public async Task<ApiResponseModel> AddVehicleAsync(VehicleCreateDTO dto, int userId,bool status)
         {
             try
             {
@@ -41,7 +41,7 @@ namespace EZRide_Project.Services
                     BikeName = dto.BikeName,
                     CreatedAt = DateTime.Now,
                     SecurityDepositAmount = dto.SecurityDepositAmount,
-                    Status = false
+                    Status = status
                 };
 
                 _vehicleRepo.AddVehicle(vehicle);

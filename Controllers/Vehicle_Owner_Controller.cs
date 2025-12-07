@@ -3,6 +3,7 @@ using EZRide_Project.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Stripe;
 
 namespace EZRide_Project.Controllers
 {
@@ -64,6 +65,28 @@ namespace EZRide_Project.Controllers
             var result = await _ownerVehicleService.DeleteOwnerVehicleAsync(vehicleId, ownerId);
             return StatusCode(result.StatusCode, result);
         }
+
+
+        //add owner vehile avalibilityes days
+        [HttpPost("addAvalibilityDays")]
+        [Authorize(Roles = "OwnerVehicle")]
+        public async Task<IActionResult> AddAvailability([FromBody] AddAvailabilityDto dto)
+        {
+            var ownerIdClaim = User.FindFirst("UserId");
+            if (ownerIdClaim == null)
+                return Unauthorized("Invalid token");
+
+            int ownerId = int.Parse(ownerIdClaim.Value);
+
+            var result = await _ownerVehicleService.AddAvailabilityAsync(dto, ownerId);
+
+            if (result.StartsWith("Unauthorized"))
+                return Unauthorized(result);
+
+            return Ok(result);
+        }
+
+
 
     }
 

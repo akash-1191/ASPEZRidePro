@@ -30,7 +30,11 @@ namespace EZRide_Project.Controllers
 
             int userId = int.Parse(userIdClaim.Value);
 
-            var result = await _vehicleService.AddVehicleAsync(dto, userId);
+            // Determine status based on role
+            bool isAdmin = User.IsInRole("Admin");
+            bool status = isAdmin; // true if admin, false if owner
+
+            var result = await _vehicleService.AddVehicleAsync(dto, userId, status);
             return StatusCode(result.StatusCode, result);
         }
 

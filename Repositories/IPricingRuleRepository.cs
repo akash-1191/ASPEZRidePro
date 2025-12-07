@@ -12,6 +12,8 @@ namespace EZRide_Project.Repositories
         Task UpdateAsync(PricingRule pricingRule);
         Task SaveChangesAsync();
 
+
+
          
         
     }

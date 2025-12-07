@@ -67,6 +67,13 @@ namespace EZRide_Project.Model.Entities
         [Column(TypeName = "decimal(10,2)")]
         public decimal? SecurityDepositAmount { get; set; }
         public bool? Status { get; set; }
+
+        [Column(TypeName = "bit")]
+        public bool IsApproved { get; set; } = false;
+
+        [Column(TypeName = "varchar(200)")]
+        public string? RejectReason { get; set; }
+
         public DateTime CreatedAt { get; set; } 
 
 

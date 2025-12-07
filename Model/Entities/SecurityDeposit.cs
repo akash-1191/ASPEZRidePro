@@ -8,7 +8,7 @@ namespace EZRide_Project.Model.Entities
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int DepositId { get; set; }
-        public int BookingId { get; set; } // FK
+        public int BookingId { get; set; } 
 
         [Column(TypeName = "decimal(10,2)")]
         public decimal Amount { get; set; }

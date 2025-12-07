@@ -20,5 +20,10 @@
         public string? BikeName { get; set; }
         public decimal? SecurityDepositAmount { get; set; }
         public bool? Status { get; set; }
+        //add avalibilityed daty date a nad time also both 
+        public int AvailableDays { get; set; }
+        public DateTime EffectiveFrom { get; set; }
+        public DateTime EffectiveTo { get; set; }
+      
     }
 }

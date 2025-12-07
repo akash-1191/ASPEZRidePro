@@ -13,7 +13,13 @@ namespace EZRide_Project.Repositories
         void DeleteVehicle(Vehicle vehicle);
         Task<bool> SaveChangesAsync();
 
-     
+        //add owner vehile avalibilityes days
+
+        Task<bool> IsVehicleOwnedByUserAsync(int vehicleId, int ownerId);
+        Task AddAvailabilityAsync(OwnerVehicleAvailability availability);
+
+        Task<OwnerVehicleAvailability> GetAvailabilityByVehicleAndOwnerAsync(int vehicleId, int ownerId);
+        Task UpdateAvailabilityAsync(OwnerVehicleAvailability availability);
 
     }
 }

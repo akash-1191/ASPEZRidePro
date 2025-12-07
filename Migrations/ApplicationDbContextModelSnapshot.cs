@@ -833,6 +833,9 @@ namespace EZRide_Project.Migrations
                         .HasMaxLength(12)
                         .HasColumnType("varchar(15)");
 
+                    b.Property<string>("RejectionReason")
+                        .HasColumnType("varchar(200)");
+
                     b.Property<int>("RoleId")
                         .HasColumnType("int");
 
@@ -895,6 +898,9 @@ namespace EZRide_Project.Migrations
                         .IsRequired()
                         .HasColumnType("varchar(50)");
 
+                    b.Property<bool>("IsApproved")
+                        .HasColumnType("bit");
+
                     b.Property<decimal>("Mileage")
                         .HasColumnType("decimal(5,2)");
 
@@ -905,6 +911,9 @@ namespace EZRide_Project.Migrations
                     b.Property<string>("RegistrationNo")
                         .IsRequired()
                         .HasColumnType("varchar(50)");
+
+                    b.Property<string>("RejectReason")
+                        .HasColumnType("varchar(200)");
 
                     b.Property<byte?>("SeatingCapacity")
                         .HasColumnType("tinyint");

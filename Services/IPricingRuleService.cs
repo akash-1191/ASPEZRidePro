@@ -8,6 +8,9 @@ namespace EZRide_Project.Services
         Task<ApiResponseModel> SetOrUpdatePricingAsync(PricingRuleDto dto);
 
         Task<ApiResponseModel> GetPricingByVehicleIdAsync(int vehicleId);
+
+       //security deposit
+
     }
 
 }
