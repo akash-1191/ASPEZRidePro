@@ -7,6 +7,7 @@ using EZRide_Project.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.FileProviders;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 
@@ -63,7 +64,12 @@ builder.Services.AddScoped<IOwnerDocumentRepository, OwnerDocumentRepository>();
 builder.Services.AddScoped<IOwnerRepository, OwnerRepository>();
 builder.Services.AddScoped<IOwnerService, OwnerService>();
 
+//chat services
+builder.Services.AddScoped<IChatService, ChatService>();
 
+
+// --- ADD SIGNALR ---
+builder.Services.AddSignalR();
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
@@ -100,8 +106,7 @@ builder.Services.AddSwaggerGen(c =>
         }
     });
 });
-
-
+// AUTH (JWT) with SignalR token-from-query handling
 
 builder.Services.AddAuthentication(options =>
 {
@@ -120,19 +125,47 @@ builder.Services.AddAuthentication(options =>
         ValidAudience = builder.Configuration["Jwt:Audience"],
         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]))
     };
+
+
+// Important for SignalR: allow token from query string when connecting to hub
+options.Events = new JwtBearerEvents
+{
+    OnMessageReceived = context =>
+    {
+        var accessToken = context.Request.Query["access_token"].FirstOrDefault();
+        var path = context.HttpContext.Request.Path;
+        if (!string.IsNullOrEmpty(accessToken) && path.StartsWithSegments("/chathub"))
+        {
+            context.Token = accessToken;
+        }
+        return Task.CompletedTask;
+    }
+};
+
 });
 
 
-
+//builder.Services.AddCors(options =>
+//{
+//    options.AddPolicy("AllowAll", policy =>
+//    {
+//        policy.AllowAnyOrigin()
+//              .AllowAnyMethod()
+//              .AllowAnyHeader();
+//    });
+//});
+// ------------- CORS (ONLY 1 POLICY) -------------
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowAll", policy =>
+    options.AddPolicy("SignalRPolicy", policy =>
     {
-        policy.AllowAnyOrigin()
+        policy.WithOrigins("http://localhost:4200")
+              .AllowAnyHeader()
               .AllowAnyMethod()
-              .AllowAnyHeader();
+              .AllowCredentials();   // IMPORTANT
     });
 });
+
 
 
 var app = builder.Build();
@@ -152,11 +185,15 @@ app.UseStaticFiles();
 app.UseHttpsRedirection();
 
 // Add CORS middleware BEFORE Authorization and routing
-app.UseCors("AllowAll");
+//app.UseCors("AllowAll");
+app.UseCors("SignalRPolicy");
 
 app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+
+// MAP SIGNALR HUB
+app.MapHub<EZRide_Project.Hubs.ChatHub>("/chathub");
 
 app.Run();

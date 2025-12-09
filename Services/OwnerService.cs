@@ -75,7 +75,7 @@ namespace EZRide_Project.Services
                 InsuranceStatus = v.InsuranceStatus.ToString(),
                 RcStatus = v.RcStatus.ToString(),
                 AcAvailability = v.AcAvailability?.ToString(),
-                FuelTankCapacity = v.FuelTankC  apacity,
+                FuelTankCapacity = v.FuelTankCapacity,
                 CarName = v.CarName,
                 SecurityDepositAmount = v.SecurityDepositAmount,
                 EngineCapacity = v.EngineCapacity,

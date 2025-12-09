@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 
 namespace EZRide_Project.Model.Entities
 {
@@ -23,6 +24,7 @@ namespace EZRide_Project.Model.Entities
         public MessageStatus Status { get; set; } // Enum
 
         // Navigation properties
+        [JsonIgnore]
         public Conversation Conversation { get; set; }
         public User Sender { get; set; }
 
