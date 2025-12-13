@@ -8,6 +8,7 @@ namespace EZRide_Project.Repositories
 
         Task<OwnerPayment> AddPaymentAsync(OwnerPayment payment);
         Task<bool> UpdateVehicleAvailabilityStatusAsync(int vehicleId, int ownerId);
+        Task ClearSecurityDepositAmountAsync(int vehicleId);
 
         Task<List<OwnerPayment>> GetOwnerPaymentsAsync(int ownerId);
         Task<OwnerVehicleAvailability> GetAvailabilityAtDateAsync(int vehicleId, DateTime date);

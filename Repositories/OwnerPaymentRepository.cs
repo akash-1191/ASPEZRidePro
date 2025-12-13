@@ -54,6 +54,19 @@ namespace EZRide_Project.Repositories
             }
         }
 
+        public async Task ClearSecurityDepositAmountAsync(int vehicleId)
+        {
+            var vehicle = await _context.Vehicles
+                .FirstOrDefaultAsync(v => v.VehicleId == vehicleId);
+
+            if (vehicle != null)
+            {
+                vehicle.SecurityDepositAmount = null;
+                _context.Vehicles.Update(vehicle);
+                await _context.SaveChangesAsync();
+            }
+        }
+
 
 
         public async Task<List<OwnerPayment>> GetOwnerPaymentsAsync(int ownerId)

@@ -64,6 +64,7 @@ namespace EZRide_Project.Repositories
             var vehicles = _context.Vehicles
                 .Include(v => v.VehicleImages)
                 .Include(v => v.PricingRule)
+                .Where(v=>v.SecurityDepositAmount != null && v.SecurityDepositAmount >0)
                 .ToList();
 
             var vehicleDetailsList = vehicles.Select(vehicle =>

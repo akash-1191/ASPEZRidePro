@@ -56,6 +56,8 @@ namespace EZRide_Project.Services
                     Console.WriteLine($"Warning: Could not update availability for VehicleId: {dto.VehicleId}, OwnerId: {dto.OwnerId}");
                 }
 
+                await _repo.ClearSecurityDepositAmountAsync(dto.VehicleId);
+
                 await transaction.CommitAsync();
                 return true;
             }

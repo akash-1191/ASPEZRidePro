@@ -24,17 +24,9 @@ namespace EZRide_Project.Services
 
             foreach (var vehicle in vehicles)
             {
-                var hasActiveAvailability = vehicle.OwnerVehicleAvailabilities
-                    .Any(a => a.Status == OwnerVehicleAvailability.AvailabilityStatus.Active);
-
-                if (!hasActiveAvailability)
-                {
-                    continue;
-                }
-                var activeAvailability = vehicle.OwnerVehicleAvailabilities
-                    .Where(a => a.Status == OwnerVehicleAvailability.AvailabilityStatus.Active)
-                    .OrderByDescending(a => a.CreatedAt)
-                    .FirstOrDefault();
+                var latestAvailability = vehicle.OwnerVehicleAvailabilities
+             .OrderByDescending(a => a.CreatedAt)
+             .FirstOrDefault();
 
                 var dto = new VehicleDTO
                 {
@@ -56,12 +48,12 @@ namespace EZRide_Project.Services
                     BikeName = vehicle.BikeName,
                     SecurityDepositAmount = vehicle.SecurityDepositAmount,
                     Status = vehicle.Status,
-                    Rejectresion=vehicle.RejectReason,
+                    Rejectresion = vehicle.RejectReason,
 
-                    AvailableDays = activeAvailability?.AvailableDays ?? 0,
-                    EffectiveFrom = activeAvailability?.EffectiveFrom ?? default(DateTime),
-                    EffectiveTo = activeAvailability?.EffectiveTo ?? default(DateTime),
-                    AvailabilityStatus = activeAvailability?.Status.ToString() ?? "Active" // Will always be "Active"
+                    AvailableDays = latestAvailability?.AvailableDays ?? 0,
+                    EffectiveFrom = latestAvailability?.EffectiveFrom ?? default(DateTime),
+                    EffectiveTo = latestAvailability?.EffectiveTo ?? default(DateTime),
+                    AvailabilityStatus = latestAvailability?.Status.ToString() ?? "Active" // Will always be "Active"
                 };
 
                 result.Add(dto);
