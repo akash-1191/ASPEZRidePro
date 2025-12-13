@@ -1,5 +1,6 @@
 ﻿using EZRide_Project.DTO;
 using EZRide_Project.DTO.Vehile_Owner_DTo;
+using EZRide_Project.DTO.Vehile_Owner_DTo.EZRide_Project.DTO;
 using EZRide_Project.Helpers;
 using EZRide_Project.Model;
 using EZRide_Project.Model.Entities;
@@ -56,13 +57,15 @@ namespace EZRide_Project.Services
         }
 
         //get aala vehole uploade by owner
-
-        public async Task<List<VehicleCreateDTO>> GetAllOwnerVehiclesAsync(int ownerId)
+        public async Task<List<VehicleDetailsWithAvailabilitiesDTO>> GetAllOwnerVehiclesAsync(int ownerId)
         {
+            // 1. Get vehicles with their availabilities
             var vehicles = await _ownerRepo.GetAllOwnerVehiclesAsync(ownerId);
 
-            var dtoList = vehicles.Select(v => new VehicleCreateDTO
+            // 2. Map to DTO
+            var result = vehicles.Select(v => new VehicleDetailsWithAvailabilitiesDTO
             {
+                // Map vehicle properties
                 VehicleId = v.VehicleId,
                 Vehicletype = v.Vehicletype.ToString(),
                 RegistrationNo = v.RegistrationNo,
@@ -77,23 +80,39 @@ namespace EZRide_Project.Services
                 AcAvailability = v.AcAvailability?.ToString(),
                 FuelTankCapacity = v.FuelTankCapacity,
                 CarName = v.CarName,
-                SecurityDepositAmount = v.SecurityDepositAmount,
                 EngineCapacity = v.EngineCapacity,
                 BikeName = v.BikeName,
                 Status = v.Status,
-                RejectReason = v.RejectReason,
+                SecurityDepositAmount = v.SecurityDepositAmount,
                 IsApproved = v.IsApproved,
+                RejectReason = v.RejectReason,
+
                 AvailabilityId = v.OwnerVehicleAvailabilities
-    .FirstOrDefault(a => a.Status == OwnerVehicleAvailability.AvailabilityStatus.Active)
-    ?.AvailabilityId ?? 0,
+                    .FirstOrDefault(a => a.Status == OwnerVehicleAvailability.AvailabilityStatus.Active)?
+                    .AvailabilityId,
 
                 VehicleAmountPerDay = v.OwnerVehicleAvailabilities
-    .FirstOrDefault(a => a.Status == OwnerVehicleAvailability.AvailabilityStatus.Active)
-    ?.vehicleAmountPerDay ?? 0
+                    .FirstOrDefault(a => a.Status == OwnerVehicleAvailability.AvailabilityStatus.Active)?
+                    .vehicleAmountPerDay,
+
+                
+                AllAvailabilities = v.OwnerVehicleAvailabilities
+                    .Select(a => new AvailabilityDetailDTO
+                    {
+                        AvailabilityId = a.AvailabilityId,
+                        AvailableDays = a.AvailableDays,
+                        EffectiveFrom = a.EffectiveFrom,
+                        EffectiveTo = a.EffectiveTo,
+                        Status = a.Status.ToString(),
+                        VehicleAmountPerDay = a.vehicleAmountPerDay,
+                        CreatedAt = a.CreatedAt
+                    })
+                    .OrderByDescending(a => a.CreatedAt) // Latest first
+                    .ToList()
 
             }).ToList();
 
-            return dtoList;
+            return result;
         }
 
         //get all aproval owner data
@@ -182,7 +201,6 @@ namespace EZRide_Project.Services
 
             vehicle.IsApproved = false;
             vehicle.RejectReason = reason;
-            vehicle.Availability = Vehicle.AvailabilityStatus.Disabled;
 
             await _ownerRepo.UpdateVehicleAsync(vehicle);
             return "Vehicle rejected successfully!";
@@ -195,10 +213,20 @@ namespace EZRide_Project.Services
             if (availability == null)
                 return "Error: Availability not found.";
 
+            if (availability.AvailableDays == 0)
+            {
+                return "Error: Cannot update price because available days is 0. Please set available days first.";
+            }
+
             availability.vehicleAmountPerDay = vehicleAmountPerDay;
             await _ownerRepo.UpdateAvailabilityAsync(availability);
 
             return "Price updated successfully!";
+        }
+
+        public async Task<List<OwnerPaymentInfoDto>> GetOwnerPaymentDataAsync()
+        {
+            return await _ownerRepo.GetOwnerPaymentDataAsync();
         }
     }
 }

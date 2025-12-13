@@ -140,5 +140,17 @@ namespace EZRide_Project.Controllers
             return Ok(result);
         }
 
+
+        //get total amount of the perticular owner vehicle 
+        [HttpGet("get-owner-payment-data")]
+        public async Task<IActionResult> GetOwnerPaymentData()
+        {
+            var data = await _ownerService.GetOwnerPaymentDataAsync();
+            return Ok(data);
+        }
+
+
+       
+
     }
 }

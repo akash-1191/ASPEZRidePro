@@ -20,42 +20,54 @@ namespace EZRide_Project.Services
         {
             var vehicles = await _ownerRepo.GetVehiclesByOwnerAsync(ownerId);
 
+            var result = new List<VehicleDTO>();
 
-            return vehicles.Select(v =>
+            foreach (var vehicle in vehicles)
             {
-                var lastAvailability = v.OwnerVehicleAvailabilities
+                var hasActiveAvailability = vehicle.OwnerVehicleAvailabilities
+                    .Any(a => a.Status == OwnerVehicleAvailability.AvailabilityStatus.Active);
+
+                if (!hasActiveAvailability)
+                {
+                    continue;
+                }
+                var activeAvailability = vehicle.OwnerVehicleAvailabilities
                     .Where(a => a.Status == OwnerVehicleAvailability.AvailabilityStatus.Active)
                     .OrderByDescending(a => a.CreatedAt)
                     .FirstOrDefault();
 
-                return new VehicleDTO
+                var dto = new VehicleDTO
                 {
-                    VehicleId = v.VehicleId,
-                    Vehicletype = v.Vehicletype.ToString(),
-                    RegistrationNo = v.RegistrationNo,
-                    Availability = v.Availability.ToString(),
-                    FuelType = v.FuelType.ToString(),
-                    SeatingCapacity = v.SeatingCapacity,
-                    Mileage = v.Mileage,
-                    Color = v.Color,
-                    YearOfManufacture = v.YearOfManufacture,
-                    InsuranceStatus = v.InsuranceStatus.ToString(),
-                    RcStatus = v.RcStatus.ToString(),
-                    AcAvailability = v.AcAvailability?.ToString(),
-                    FuelTankCapacity = v.FuelTankCapacity,
-                    CarName = v.CarName,
-                    EngineCapacity = v.EngineCapacity,
-                    BikeName = v.BikeName,
-                    SecurityDepositAmount = v.SecurityDepositAmount,
-                    Status = v.Status,
+                    VehicleId = vehicle.VehicleId,
+                    Vehicletype = vehicle.Vehicletype.ToString(),
+                    RegistrationNo = vehicle.RegistrationNo,
+                    Availability = vehicle.Availability.ToString(),
+                    FuelType = vehicle.FuelType.ToString(),
+                    SeatingCapacity = vehicle.SeatingCapacity,
+                    Mileage = vehicle.Mileage,
+                    Color = vehicle.Color,
+                    YearOfManufacture = vehicle.YearOfManufacture,
+                    InsuranceStatus = vehicle.InsuranceStatus.ToString(),
+                    RcStatus = vehicle.RcStatus.ToString(),
+                    AcAvailability = vehicle.AcAvailability?.ToString(),
+                    FuelTankCapacity = vehicle.FuelTankCapacity,
+                    CarName = vehicle.CarName,
+                    EngineCapacity = vehicle.EngineCapacity,
+                    BikeName = vehicle.BikeName,
+                    SecurityDepositAmount = vehicle.SecurityDepositAmount,
+                    Status = vehicle.Status,
+                    Rejectresion=vehicle.RejectReason,
 
-                    // NEW — From Availability Table
-                    AvailableDays = lastAvailability?.AvailableDays??0,
-                    EffectiveFrom = lastAvailability?.EffectiveFrom ?? default(DateTime),
-                    EffectiveTo = lastAvailability?.EffectiveTo ?? default(DateTime)
+                    AvailableDays = activeAvailability?.AvailableDays ?? 0,
+                    EffectiveFrom = activeAvailability?.EffectiveFrom ?? default(DateTime),
+                    EffectiveTo = activeAvailability?.EffectiveTo ?? default(DateTime),
+                    AvailabilityStatus = activeAvailability?.Status.ToString() ?? "Active" // Will always be "Active"
                 };
 
-            }).ToList();
+                result.Add(dto);
+            }
+
+            return result;
         }
 
 
@@ -148,8 +160,8 @@ namespace EZRide_Project.Services
                 return "Vehicle not found.";
 
             // Step 3 — Check running status
-            if (vehicle.Status == false)   // status = false → running
-                return "This vehicle is currently running. Availability cannot be changed.";
+            if (vehicle.IsApproved == true)   // status = false → running
+                return "This vehicle is Aproved by admin. Availability cannot be changed.";
 
             // Step 4 — Check if availability already exists
             var existing = await _ownerRepo.GetAvailabilityByVehicleAndOwnerAsync(dto.VehicleId, ownerId);

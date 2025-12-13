@@ -5,5 +5,7 @@ namespace EZRide_Project.Repositories
     public interface IPaymentRepository
     {
         Task<bool> SavePaymentAsync(Payment payment);
+
+
     }
 } 

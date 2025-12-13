@@ -21,9 +21,11 @@
         public decimal? SecurityDepositAmount { get; set; }
         public bool? Status { get; set; }
         //add avalibilityed daty date a nad time also both 
+        public string AvailabilityStatus { get; set; }
         public int AvailableDays { get; set; }
         public DateTime EffectiveFrom { get; set; }
         public DateTime EffectiveTo { get; set; }
+        public string Rejectresion { get; set; }
       
     }
 }

@@ -138,6 +138,30 @@ namespace EZRide_Project.Repositories
             _context.OwnerVehicleAvailabilities.Update(availability);
             await _context.SaveChangesAsync();
         }
+
+
+        public async Task<List<OwnerPaymentInfoDto>> GetOwnerPaymentDataAsync()
+        {
+            return await (
+            from ova in _context.OwnerVehicleAvailabilities
+            join u in _context.Users on ova.OwnerId equals u.UserId
+            join v in _context.Vehicles on ova.VehicleId equals v.VehicleId
+            where v.IsApproved == true   
+            select new OwnerPaymentInfoDto
+            {
+                AvailabilityId = ova.AvailabilityId,
+                OwnerId = u.UserId,
+                OwnerName = u.Firstname + " " + u.Lastname,
+                VehicleId = v.VehicleId,
+                RegistrationNo=v.RegistrationNo,
+                StartDate = ova.EffectiveFrom,
+                EndDate = ova.EffectiveTo,
+                TotalDays = ova.AvailableDays,
+                VehicleAmountPerDay = ova.vehicleAmountPerDay,
+                TotalAmount = (ova.AvailableDays * ova.vehicleAmountPerDay),
+                Status = ova.Status.ToString()
+            }).ToListAsync();
+        }
     }
 }
 

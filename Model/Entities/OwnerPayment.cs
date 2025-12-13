@@ -22,6 +22,7 @@ namespace EZRide_Project.Model.Entities
         [Required]
         [Column(TypeName = "varchar(50)")]
         public PaymentStatus Status { get; set; } // Enum can be used here
+
         public DateTime CreatedAt { get; set; }
 
         // Navigation properties
@@ -38,7 +39,8 @@ namespace EZRide_Project.Model.Entities
         public enum PaymentStatus
         {
             Pending,
-            Paid
+            Paid,
+            ReRent
         }
     }
 }

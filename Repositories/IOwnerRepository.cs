@@ -20,6 +20,8 @@ namespace EZRide_Project.Repositories
         Task<OwnerVehicleAvailability> GetAvailabilityByIdAsync(int availabilityId);
         Task UpdateAvailabilityAsync(OwnerVehicleAvailability availability);
 
+        Task<List<OwnerPaymentInfoDto>> GetOwnerPaymentDataAsync();
+
 
 
 
