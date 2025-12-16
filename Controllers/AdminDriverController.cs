@@ -152,43 +152,7 @@ namespace EZRide_Project.Controllers
 
 
 
-        //[HttpGet("DrivertripsDetails")]
-        //public async Task<IActionResult> GetAllOngoingTrips()
-        //{
-        //    // Fetch ongoing trips for all drivers where the driver status is "Active"
-        //    var ongoingTrips = await _context.Bookings
-        //        .Where(b => b.Driver.User.Status == Model.Entities.User.UserStatus.Active) // Filter by active driver and ongoing status
-        //        .Include(b => b.Driver)
-        //        .ThenInclude(d => d.User)
-        //        .Include(b => b.Vehicle)
-        //        .Include(b => b.User) 
-        //        .Select(b => new OngoingTripDTO
-        //        {
-        //            DriverFullName = b.Driver.User.Firstname + " " + b.Driver.User.Lastname,
-        //            DriverPhone = b.Driver.User.Phone,
-        //            VehicleType = b.Vehicle.Vehicletype.ToString(),
-        //            CarName = b.Vehicle.CarName,
-        //            BikeName = b.Vehicle.BikeName,
-        //            RegistrationNo=b.Vehicle.RegistrationNo,
-        //            DriverId=b.DriverId.Value,
-        //            UesrEmail=b.User.Email,
-        //            DriverEmail=b.Driver.User.Email,
-        //            CustomerFullName = b.User.Firstname + " " + b.User.Lastname,
-        //            CustomerPhone = b.User.Phone,
-        //            CustomerCity = b.User.City,
-        //            StartTime = b.StartTime,
-        //            EndTime = b.EndTime,
-        //            DriverAvailabiliStatus = b.Driver.AvailabilityStatus.ToString() // Ongoing
-        //        })
-        //        .ToListAsync();
-
-        //    if (ongoingTrips == null || !ongoingTrips.Any())
-        //    {
-        //        return NotFound(new { success = false, message = "No ongoing trips found for the drivers." });
-        //    }
-
-        //    return Ok(new { success = true, data = ongoingTrips });
-        //}
+        
 
 
 
@@ -231,6 +195,81 @@ namespace EZRide_Project.Controllers
             return Ok(new { success = true, data = tripsDetails });
         }
 
+
+
+        [HttpGet("DrivertripsDetails/{driverId}")]
+        public async Task<IActionResult> GetDriverTripsDetails(int driverId)
+        {
+            // Fetching data from DriverBookingHistories table filtered by DriverId
+            var tripsDetails = await _context.DriverBookingHistories
+                .Where(dbh => dbh.DriverId == driverId)  // Filter by DriverId
+                .Include(dbh => dbh.Booking)  // Include Booking table
+                    .ThenInclude(b => b.User)  // Include Customer details from Booking
+                .Include(dbh => dbh.Driver)  // Include Driver table
+                    .ThenInclude(d => d.User)  // Include Driver user details
+                .Include(dbh => dbh.Vehicle)  // Include Vehicle table
+                .Include(dbh => dbh.Vehicle.VehicleImages)  // Include Vehicle Images table
+                .Include(dbh => dbh.Vehicle.PricingRule)  // Include Vehicle Pricing table
+                .Include(dbh => dbh.Booking.SecurityDeposit)  // Include Security Deposit table
+                .Select(dbh => new
+                {
+                    // Driver Details
+                    Driver = new
+                    {
+                        DriverFullName = dbh.Driver.User.Firstname + " " + dbh.Driver.User.Lastname,
+                        DriverPhone = dbh.Driver.User.Phone,
+                        DriverEmail = dbh.Driver.User.Email,
+                        DriverId = dbh.DriverId
+                    },
+
+                    // Customer Details
+                    Customer = new
+                    {
+                        CustomerFullName = dbh.Booking.User.Firstname + " " + dbh.Booking.User.Lastname,
+                        CustomerPhone = dbh.Booking.User.Phone,
+                        CustomerEmail = dbh.Booking.User.Email,
+                        CustomerCity = dbh.Booking.User.City
+                    },
+
+                    // Vehicle Details
+                    Vehicle = new
+                    {
+                        VehicleType = dbh.Vehicle.Vehicletype.ToString(),
+                        CarName = dbh.Vehicle.CarName,
+                        BikeName = dbh.Vehicle.BikeName,
+                        RegistrationNo = dbh.Vehicle.RegistrationNo,
+                        // Vehicle Image (First image in array or null)
+                        VehicleImages = dbh.Vehicle.VehicleImages.Select(vi => vi.ImagePath).ToList(),
+                        // Pricing Details
+                        Pricing = new
+                        {
+                            PricePerDay = dbh.Vehicle.PricingRule != null ? dbh.Vehicle.PricingRule.PricePerDay : 0,
+                            PricePerHour = dbh.Vehicle.PricingRule != null ? dbh.Vehicle.PricingRule.PricePerHour : 0,
+                            PricePerKm = dbh.Vehicle.PricingRule != null ? dbh.Vehicle.PricingRule.PricePerKm : 0
+                        }
+                    },
+
+                    // Security Deposit
+                    SecurityDepositAmount = dbh.Booking.SecurityDeposit != null ? dbh.Booking.SecurityDeposit.Amount : 0,
+
+                    // Booking and Trip Details
+                    Booking = new
+                    {
+                        StartTime = dbh.Booking.StartTime,
+                        EndTime = dbh.Booking.EndTime,
+                        Status = dbh.Status.ToString(),
+                        AssignTime = dbh.AssignTime
+                    }
+                })
+                .ToListAsync();
+
+            if (tripsDetails == null || !tripsDetails.Any())
+            {
+                return NotFound(new { success = false, message = "No trips found for the given driver." });
+            }
+
+            return Ok(new { success = true, data = tripsDetails });
+        }
 
 
     }
