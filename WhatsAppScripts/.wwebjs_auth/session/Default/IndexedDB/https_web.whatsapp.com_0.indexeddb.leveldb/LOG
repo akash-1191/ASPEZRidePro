@@ -1,3 +1,21 @@
-2025/12/03-13:17:37.393 69dc Reusing MANIFEST D:\Akash\MSC(ICT)\Sem-2\Project_sem2\ASP\EZRide_Project\WhatsAppScripts\.wwebjs_auth\session\Default\IndexedDB\https_web.whatsapp.com_0.indexeddb.leveldb/MANIFEST-000001
-2025/12/03-13:17:37.394 69dc Recovering log #1213
-2025/12/03-13:17:37.900 69dc Reusing old log D:\Akash\MSC(ICT)\Sem-2\Project_sem2\ASP\EZRide_Project\WhatsAppScripts\.wwebjs_auth\session\Default\IndexedDB\https_web.whatsapp.com_0.indexeddb.leveldb/001213.log 
+2025/12/16-10:22:38.607 526c Reusing MANIFEST D:\Akash\MSC(ICT)\Sem-2\Project_sem2\ASP\EZRide_Project\WhatsAppScripts\.wwebjs_auth\session\Default\IndexedDB\https_web.whatsapp.com_0.indexeddb.leveldb/MANIFEST-000001
+2025/12/16-10:22:38.607 526c Recovering log #1550
+2025/12/16-10:22:39.020 526c Reusing old log D:\Akash\MSC(ICT)\Sem-2\Project_sem2\ASP\EZRide_Project\WhatsAppScripts\.wwebjs_auth\session\Default\IndexedDB\https_web.whatsapp.com_0.indexeddb.leveldb/001550.log 
+2025/12/16-10:22:39.021 526c Delete type=2 #1546
+2025/12/16-10:22:39.021 526c Delete type=2 #1547
+2025/12/16-10:22:39.021 526c Delete type=2 #1548
+2025/12/16-10:22:39.021 526c Delete type=2 #1549
+2025/12/16-10:22:39.021 526c Delete type=2 #1551
+2025/12/16-10:22:39.476 7324 Level-0 table #1558: started
+2025/12/16-10:22:39.519 7324 Level-0 table #1558: 927064 bytes OK
+2025/12/16-10:22:39.521 7324 Delete type=0 #1550
+2025/12/16-10:22:39.522 2620 Manual compaction at level-0 from '\x00H\x00\x00\x00' @ 72057594037927935 : 1 .. '\x00I\x00\x00\x00' @ 0 : 0; will stop at '\x00H\x00\x00\x05' @ 2201453 : 1
+2025/12/16-10:22:39.522 2620 Compacting 1@0 + 5@1 files
+2025/12/16-10:22:40.313 2620 Generated table #1559@0: 254848 keys, 2444687 bytes
+2025/12/16-10:22:40.475 2620 Generated table #1560@0: 43701 keys, 2227898 bytes
+2025/12/16-10:22:40.588 2620 Generated table #1561@0: 26404 keys, 2193693 bytes
+2025/12/16-10:22:40.718 2620 Generated table #1562@0: 43399 keys, 1751017 bytes
+2025/12/16-10:22:40.718 2620 Compacted 1@0 + 5@1 files => 8617295 bytes
+2025/12/16-10:22:40.719 2620 compacted to: files[ 0 4 1 0 0 0 0 ]
+2025/12/16-10:22:40.720 2620 Delete type=2 #1558
+2025/12/16-10:22:40.721 2620 Manual compaction at level-0 from '\x00H\x00\x00\x05' @ 2201453 : 1 .. '\x00I\x00\x00\x00' @ 0 : 0; will stop at (end)

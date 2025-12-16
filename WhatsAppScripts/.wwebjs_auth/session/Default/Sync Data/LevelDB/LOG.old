@@ -1,3 +1,4 @@
-2025/12/02-14:09:54.645 4198 Reusing MANIFEST D:\Akash\MSC(ICT)\Sem-2\Project_sem2\ASP\EZRide_Project\WhatsAppScripts\.wwebjs_auth\session\Default\Sync Data\LevelDB/MANIFEST-000001
-2025/12/02-14:09:54.646 4198 Recovering log #3
-2025/12/02-14:09:54.647 4198 Reusing old log D:\Akash\MSC(ICT)\Sem-2\Project_sem2\ASP\EZRide_Project\WhatsAppScripts\.wwebjs_auth\session\Default\Sync Data\LevelDB/000003.log 
+2025/12/16-10:19:25.976 66cc Creating DB D:\Akash\MSC(ICT)\Sem-2\Project_sem2\ASP\EZRide_Project\WhatsAppScripts\.wwebjs_auth\session\Default\Sync Data\LevelDB since it was missing.
+2025/12/16-10:19:26.019 66cc Reusing MANIFEST D:\Akash\MSC(ICT)\Sem-2\Project_sem2\ASP\EZRide_Project\WhatsAppScripts\.wwebjs_auth\session\Default\Sync Data\LevelDB/MANIFEST-000001
+2025/12/16-10:19:26.019 66cc Recovering log #3
+2025/12/16-10:19:26.020 66cc Reusing old log D:\Akash\MSC(ICT)\Sem-2\Project_sem2\ASP\EZRide_Project\WhatsAppScripts\.wwebjs_auth\session\Default\Sync Data\LevelDB/000003.log 

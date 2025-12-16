@@ -58,22 +58,25 @@ namespace EZRide_Project.Repositories
                 .Where(b => b.UserId == userId)
                 .Include(b => b.Vehicle)
                 .Include(b => b.Payment)
-                .Include(b=>b.User)
+                .Include(b => b.Driver) // Including the Driver here
+                    .ThenInclude(d => d.User) // Fetching the User data of the Driver
+                .Include(b => b.User) // Including the User who made the booking
                 .ToListAsync();
 
             var result = new List<BookingDetailDTO>();
 
             foreach (var booking in bookings)
             {
+                // Fetch the vehicle image path
                 var vehicleImage = await _context.VehicleImages
                     .Where(v => v.VehicleId == booking.VehicleId)
                     .Select(v => v.ImagePath)
                     .FirstOrDefaultAsync();
 
+                // Add booking details to DTO
                 result.Add(new BookingDetailDTO
                 {
                     BookingId = booking.BookingId,
-                    
                     VehicleImage = vehicleImage,
                     VehicleType = booking.Vehicle.Vehicletype.ToString(),
                     VehicleName = booking.Vehicle.Vehicletype == Vehicle.VehicleType.Bike
@@ -92,12 +95,19 @@ namespace EZRide_Project.Repositories
                     TransactionId = booking.Payment?.TransactionId ?? "N/A",
                     BookingStatus = booking.Status.ToString(),
                     CreatedAt = booking.CreatedAt,
-                    Useremail = booking.User.Email
+                    Useremail = booking.User.Email,
+
+
+                    DriverFirstName = booking.Driver?.User?.Firstname ?? "N/A",  
+                    DriverLastName = booking.Driver?.User?.Lastname ?? "N/A",    
+                    DriverExperience = booking.Driver?.ExperienceYears.ToString() ?? "N/A", 
+                    DriverProfileImage = booking.Driver?.User?.Image ?? "default-image.jpg" 
                 });
             }
 
             return result;
         }
+
 
 
         //filter data of the booking table

@@ -36,7 +36,9 @@ namespace EZRide_Project.Services
                 TotalHours = dto.TotalHours,
                 PerKelomeater = dto.PerKelomeater,
                 Status = Booking.BookingStatus.Confirmed,
-                CreatedAt = DateTime.Now
+                CreatedAt = DateTime.Now,
+                DriverRequired = dto.DriverRequired,  
+                DriverId = dto.DriverId
             };
 
             _bookingRepository.AddBooking(booking);

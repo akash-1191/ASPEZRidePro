@@ -29,7 +29,9 @@ namespace EZRide_Project.Model.Entities
         public DateTime CreatedAt { get; set; }
 
         // Navigation properties
-        public Booking Booking { get; set; }
+        [ForeignKey("BookingId")]
+        public Booking Booking { get; set; } // Navigation property to Booking
+
         public Driver Driver { get; set; }
         public Vehicle Vehicle { get; set; }
 

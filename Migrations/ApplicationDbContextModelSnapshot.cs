@@ -324,6 +324,9 @@ namespace EZRide_Project.Migrations
                     b.Property<int>("UserId")
                         .HasColumnType("int");
 
+                    b.Property<int>("VehicleTypes")
+                        .HasColumnType("int");
+
                     b.HasKey("DriverId");
 
                     b.HasIndex("UserId")

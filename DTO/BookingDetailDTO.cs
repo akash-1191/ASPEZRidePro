@@ -20,6 +20,11 @@ namespace EZRide_Project.DTO
         public string BookingStatus { get; set; }
         public DateTime CreatedAt { get; set; }
         public string? Useremail { get; set; }
+        public string DriverFirstName { get; set; }
+        public string DriverLastName { get; set; }
+        public string DriverExperience { get; set; }
+        public string DriverProfileImage { get; set; }
+
 
     }
 

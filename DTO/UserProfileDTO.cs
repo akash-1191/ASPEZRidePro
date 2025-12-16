@@ -16,5 +16,7 @@
         public string State { get; set; }
         public int RoleId { get; set; }
         public DateTime CreatedAt { get; set; }
+        public string Status { get; set; }
+        public string Rejectresion { get; set; }
     }
 }

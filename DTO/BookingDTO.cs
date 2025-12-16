@@ -13,6 +13,8 @@
         public int? TotalDays { get; set; }
         public int? TotalHours { get; set; }
         public int? PerKelomeater { get; set; }
+        public string DriverRequired { get; set; } // "yes" or "no"
+        public int? DriverId { get; set; }
 
 
         public string Status { get; set; }

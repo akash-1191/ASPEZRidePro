@@ -234,6 +234,9 @@ namespace EZRide_Project.Services
                 City = user.City,
                 State = user.State,
                 RoleId = user.RoleId,
+                Rejectresion=user.RejectionReason,
+                Status=user.Status.ToString(),
+
                 CreatedAt = user.CreatedAt
             };
 

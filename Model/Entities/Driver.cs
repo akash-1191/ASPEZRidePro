@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using static EZRide_Project.Model.Entities.Vehicle;
 
 namespace EZRide_Project.Model.Entities
 {
@@ -17,6 +18,10 @@ namespace EZRide_Project.Model.Entities
         [Required]
         [Column(TypeName = "varchar(20)")]
         public AvailabiliStatus AvailabilityStatus { get; set; } // Enum: Available, Busy, Inactive
+
+
+        [Required]
+        public VehicleType VehicleTypes { get; set; }
 
         [Required]
         [Column(TypeName = "varchar(20)")]
@@ -41,6 +46,12 @@ namespace EZRide_Project.Model.Entities
         {
             Active,
             Disabled
+        }
+        public enum VehicleType
+        {
+            TwoWheeler = 0,
+            FourWheeler = 1,
+            Both = 2
         }
     }
 }

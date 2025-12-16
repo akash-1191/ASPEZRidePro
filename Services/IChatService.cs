@@ -11,5 +11,9 @@ namespace EZRide_Project.Services
         Task<ChatMessageDto> SaveMessageAsync(ChatMessage message);
         Task MarkConversationMessagesReadAsync(int conversationId, int readerUserId);
         Task<IEnumerable<ConversationWithUserDto>> GetConversationsWithUserDetailsAsync(int userId);
+
+
+
+
     }
 }
