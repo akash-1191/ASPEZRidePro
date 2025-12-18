@@ -65,6 +65,8 @@ builder.Services.AddScoped<IOwnerRepository, OwnerRepository>();
 builder.Services.AddScoped<IOwnerService, OwnerService>();
 builder.Services.AddScoped<IOwnerPaymentService, OwnerPaymentService>();
 builder.Services.AddScoped<IOwnerPaymentRepository, OwnerPaymentRepository>();
+builder.Services.AddScoped<IDriverPaymentService, DriverPaymentService>(); ;
+
 
 //chat services
 builder.Services.AddScoped<IChatService, ChatService>();

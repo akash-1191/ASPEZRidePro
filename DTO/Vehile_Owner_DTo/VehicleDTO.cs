@@ -22,6 +22,8 @@
         public bool? Status { get; set; }
         //add avalibilityed daty date a nad time also both 
         public string AvailabilityStatus { get; set; }
+        public bool vehiclestatus { get; set; }
+
         public int AvailableDays { get; set; }
         public DateTime EffectiveFrom { get; set; }
         public DateTime EffectiveTo { get; set; }

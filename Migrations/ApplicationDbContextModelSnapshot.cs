@@ -317,6 +317,9 @@ namespace EZRide_Project.Migrations
                     b.Property<int>("ExperienceYears")
                         .HasColumnType("int");
 
+                    b.Property<decimal?>("PerDayRate")
+                        .HasColumnType("decimal(10,2)");
+
                     b.Property<string>("Status")
                         .IsRequired()
                         .HasColumnType("varchar(20)");
@@ -410,6 +413,48 @@ namespace EZRide_Project.Migrations
                     b.HasIndex("DriverId");
 
                     b.ToTable("DriverDocuments");
+                });
+
+            modelBuilder.Entity("EZRide_Project.Model.Entities.DriverPayment", b =>
+                {
+                    b.Property<int>("DriverPaymentId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("DriverPaymentId"));
+
+                    b.Property<decimal>("Amount")
+                        .HasColumnType("decimal(10,2)");
+
+                    b.Property<int>("BookingId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("DriverId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("PaidAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("PaymentType")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.HasKey("DriverPaymentId");
+
+                    b.HasIndex("BookingId");
+
+                    b.HasIndex("DriverId");
+
+                    b.ToTable("DriverPayments");
                 });
 
             modelBuilder.Entity("EZRide_Project.Model.Entities.DriverReview", b =>
@@ -839,6 +884,12 @@ namespace EZRide_Project.Migrations
                     b.Property<string>("RejectionReason")
                         .HasColumnType("varchar(200)");
 
+                    b.Property<string>("ResetPasswordToken")
+                        .HasColumnType("varchar(200)");
+
+                    b.Property<DateTime?>("ResetPasswordTokenExpiry")
+                        .HasColumnType("datetime2");
+
                     b.Property<int>("RoleId")
                         .HasColumnType("int");
 
@@ -1117,6 +1168,25 @@ namespace EZRide_Project.Migrations
                         .HasForeignKey("DriverId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Driver");
+                });
+
+            modelBuilder.Entity("EZRide_Project.Model.Entities.DriverPayment", b =>
+                {
+                    b.HasOne("EZRide_Project.Model.Entities.Booking", "Booking")
+                        .WithMany()
+                        .HasForeignKey("BookingId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("EZRide_Project.Model.Entities.Driver", "Driver")
+                        .WithMany()
+                        .HasForeignKey("DriverId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Booking");
 
                     b.Navigation("Driver");
                 });

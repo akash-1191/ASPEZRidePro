@@ -56,7 +56,7 @@ namespace EZRide_Project.Controllers
                 process.BeginErrorReadLine();
 
                 // wait max 60 seconds
-                var completed = await Task.WhenAny(tcs.Task, Task.Delay(100000));
+                var completed = await Task.WhenAny(tcs.Task, Task.Delay(200000));
 
                 if (completed == tcs.Task && tcs.Task.Result)
                 {

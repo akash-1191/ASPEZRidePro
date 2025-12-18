@@ -1,5 +1,4 @@
-﻿using System.Text.RegularExpressions;
-using EZRide_Project.Data;
+﻿using EZRide_Project.Data;
 using EZRide_Project.Model.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
@@ -165,6 +164,22 @@ namespace EZRide_Project.Hubs
                 await _db.SaveChangesAsync();
 
                 // Prepare DTO with sender info
+                //var dto = new
+                //{
+                //    MessageId = chatMessage.MessageId,
+                //    ConversationId = chatMessage.ConversationId,
+                //    SenderId = chatMessage.SenderId,
+                //    SenderName = $"{conversation.Participant1?.Firstname} {conversation.Participant1?.Lastname}",
+                //    SenderRole = conversation.Participant1?.Role?.RoleName.ToString() ?? "Unknown",
+                //    MessageText = chatMessage.MessageText,
+                //    Timestamp = chatMessage.Timestamp,
+                //    Status = chatMessage.Status.ToString()
+                //};
+                var sender =
+    conversation.Participant1Id == senderId
+        ? conversation.Participant1
+        : conversation.Participant2;
+
                 var dto = new
                 {
                     MessageId = chatMessage.MessageId,

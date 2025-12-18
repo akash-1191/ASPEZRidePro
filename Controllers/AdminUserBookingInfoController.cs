@@ -460,6 +460,32 @@ namespace EZRide_Project.Controllers
             return Ok(new { message = "Security deposit status updated to Refunded successfully." });
         }
 
+        [HttpPost("save-security-deposit")]
+        public async Task<IActionResult> SaveSecurityDeposit([FromBody] SaveSecurityDepositDto dto)
+        {
+            if (dto == null || dto.Amount <= 0)
+                return BadRequest("Invalid security deposit data");
+
+            var existing = await _context.SecurityDeposits
+                .FirstOrDefaultAsync(x => x.BookingId == dto.BookingId);
+
+            if (existing != null)
+                return Ok(new { message = "Security deposit already exists" });
+
+            var deposit = new SecurityDeposit
+            {
+                BookingId = dto.BookingId,
+                Amount = dto.Amount,
+                Status = SecurityDeposit.DepositStatus.Pending,
+                CreatedAt = DateTime.UtcNow
+            };
+
+            _context.SecurityDeposits.Add(deposit);
+            await _context.SaveChangesAsync();
+
+            return Ok(new { message = "Security deposit saved successfully" });
+        }
+
 
         [HttpGet("ShowDamageChargi")]
         public async Task<IActionResult> GetCompletedBookingswithamounnt()

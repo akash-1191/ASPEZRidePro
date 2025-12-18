@@ -39,7 +39,7 @@ namespace EZRide_Project.Data
         public DbSet<DriverReview> DriverReviews { get; set; }
         public DbSet<OwnerVehicleAvailability> OwnerVehicleAvailabilities { get; set; }
         public DbSet<ChatMessage> ChatMessages { get; set; }
-
+        public DbSet<DriverPayment> DriverPayments { get; set; }
 
 
 

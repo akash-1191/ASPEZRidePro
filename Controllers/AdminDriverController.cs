@@ -1,5 +1,6 @@
 ﻿using EZRide_Project.Data;
 using EZRide_Project.DTO.Driver_DTO;
+using EZRide_Project.Model.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -152,20 +153,16 @@ namespace EZRide_Project.Controllers
 
 
 
-        
-
-
-
         [HttpGet("DrivertripsDetails")]
         public async Task<IActionResult> GetDriverTripsDetails()
         {
             // Fetching data from DriverBookingHistories table
             var tripsDetails = await _context.DriverBookingHistories
-                .Include(dbh => dbh.Booking)  
-                .ThenInclude(b => b.User)  
-                .Include(dbh => dbh.Driver)  
-                .ThenInclude(d => d.User)  
-                .Include(dbh => dbh.Vehicle)  
+                .Include(dbh => dbh.Booking)
+                .ThenInclude(b => b.User)
+                .Include(dbh => dbh.Driver)
+                .ThenInclude(d => d.User)
+                .Include(dbh => dbh.Vehicle)
                 .Select(dbh => new
                 {
                     DriverFullName = dbh.Driver.User.Firstname + " " + dbh.Driver.User.Lastname,
@@ -175,14 +172,14 @@ namespace EZRide_Project.Controllers
                     CustomerFullName = dbh.Booking.User.Firstname + " " + dbh.Booking.User.Lastname,
                     CustomerPhone = dbh.Booking.User.Phone,
                     CustomerEmail = dbh.Booking.User.Email,
-                    CustomerCity=dbh.Booking.User.City,
+                    CustomerCity = dbh.Booking.User.City,
                     VehicleType = dbh.Vehicle.Vehicletype.ToString(),
                     CarName = dbh.Vehicle.CarName,
                     BikeName = dbh.Vehicle.BikeName,
                     RegistrationNo = dbh.Vehicle.RegistrationNo,
                     StartTime = dbh.StartTime,
                     EndTime = dbh.EndTime,
-                    Status = dbh.Status, 
+                    Status = dbh.Status,
                     AssignTime = dbh.AssignTime
                 })
                 .ToListAsync();
@@ -200,17 +197,17 @@ namespace EZRide_Project.Controllers
         [HttpGet("DrivertripsDetails/{driverId}")]
         public async Task<IActionResult> GetDriverTripsDetails(int driverId)
         {
-            // Fetching data from DriverBookingHistories table filtered by DriverId
+
             var tripsDetails = await _context.DriverBookingHistories
-                .Where(dbh => dbh.DriverId == driverId)  // Filter by DriverId
-                .Include(dbh => dbh.Booking)  // Include Booking table
-                    .ThenInclude(b => b.User)  // Include Customer details from Booking
-                .Include(dbh => dbh.Driver)  // Include Driver table
-                    .ThenInclude(d => d.User)  // Include Driver user details
-                .Include(dbh => dbh.Vehicle)  // Include Vehicle table
-                .Include(dbh => dbh.Vehicle.VehicleImages)  // Include Vehicle Images table
-                .Include(dbh => dbh.Vehicle.PricingRule)  // Include Vehicle Pricing table
-                .Include(dbh => dbh.Booking.SecurityDeposit)  // Include Security Deposit table
+                .Where(dbh => dbh.DriverId == driverId)
+                .Include(dbh => dbh.Booking)
+                .ThenInclude(b => b.User)
+                .Include(dbh => dbh.Driver)
+                .ThenInclude(d => d.User)
+                .Include(dbh => dbh.Vehicle)
+                .Include(dbh => dbh.Vehicle.VehicleImages)
+                .Include(dbh => dbh.Vehicle.PricingRule)
+                .Include(dbh => dbh.Booking.SecurityDeposit)
                 .Select(dbh => new
                 {
                     // Driver Details
@@ -219,7 +216,8 @@ namespace EZRide_Project.Controllers
                         DriverFullName = dbh.Driver.User.Firstname + " " + dbh.Driver.User.Lastname,
                         DriverPhone = dbh.Driver.User.Phone,
                         DriverEmail = dbh.Driver.User.Email,
-                        DriverId = dbh.DriverId
+                        DriverId = dbh.DriverId,
+                        PerDayRate = dbh.Driver.PerDayRate
                     },
 
                     // Customer Details
@@ -258,8 +256,19 @@ namespace EZRide_Project.Controllers
                         StartTime = dbh.Booking.StartTime,
                         EndTime = dbh.Booking.EndTime,
                         Status = dbh.Status.ToString(),
-                        AssignTime = dbh.AssignTime
-                    }
+                        AssignTime = dbh.AssignTime,
+                        BookingId = dbh.BookingId
+                    },
+                    DriverPayment = _context.DriverPayments
+                        .Where(dp => dp.BookingId == dbh.BookingId && dp.DriverId == dbh.DriverId)
+                        .Select(dp => new
+                        {
+                            dp.Amount,
+                            dp.Status,
+                            dp.PaidAt
+                        })
+                        .FirstOrDefault(),
+
                 })
                 .ToListAsync();
 
@@ -272,5 +281,102 @@ namespace EZRide_Project.Controllers
         }
 
 
+
+        [HttpPut("UpdatePerDayRate")]
+        public async Task<IActionResult> UpdatePerDayRate([FromBody] UpdateDriverRateDTO dto)
+        {
+            if (dto.PerDayRate <= 0)
+                return BadRequest("Per day rate must be greater than 0");
+
+            var driver = await _context.Drivers
+                .FirstOrDefaultAsync(d => d.DriverId == dto.DriverId);
+
+            if (driver == null)
+                return NotFound("Driver not found");
+
+            driver.PerDayRate = dto.PerDayRate;
+
+            await _context.SaveChangesAsync();
+
+            return Ok(new
+            {
+                Message = "Driver per day rate updated successfully",
+                DriverId = driver.DriverId,
+                PerDayRate = driver.PerDayRate
+            });
+        }
+
+
+
+        [HttpGet("AllPaidDriversPaymentReport")]
+        public async Task<IActionResult> GetAllPaidDriversPaymentReport()
+        {
+            var result = await _context.DriverBookingHistories
+                .Include(dbh => dbh.Driver)
+                    .ThenInclude(d => d.User)
+                .Include(dbh => dbh.Booking)
+                .Where(dbh =>
+                    _context.DriverPayments.Any(dp =>
+                        dp.BookingId == dbh.BookingId &&
+                        dp.DriverId == dbh.DriverId &&
+                        dp.Status == "Paid"
+                    )
+                )
+                .Select(dbh => new
+                {
+                    // 🔹 Driver Info
+                    Driver = new
+                    {
+                        DriverId = dbh.DriverId,
+                        DriverName = dbh.Driver.User.Firstname + " " + dbh.Driver.User.Lastname,
+                        DriverPhone = dbh.Driver.User.Phone,
+                        DriverEmail = dbh.Driver.User.Email
+                    },
+
+                    // 🔹 Booking Info
+                    Booking = new
+                    {
+                        BookingId = dbh.BookingId,
+                        StartTime = dbh.Booking.StartTime,
+                        EndTime = dbh.Booking.EndTime,
+                        Status = dbh.Status.ToString()
+                    },
+
+                    // 🔹 Payment Info (PAID ONLY)
+                    DriverPayment = _context.DriverPayments
+                        .Where(dp =>
+                            dp.DriverId == dbh.DriverId &&
+                            dp.BookingId == dbh.BookingId &&
+                            dp.Status == "Paid"
+                        )
+                        .Select(dp => new
+                        {
+                            dp.DriverPaymentId,
+                            dp.Amount,
+                            dp.PaymentType,
+                            dp.Status,
+                            dp.CreatedAt,
+                            dp.PaidAt
+                        })
+                        .FirstOrDefault()
+                })
+                .OrderByDescending(x => x.DriverPayment.PaidAt)
+                .ToListAsync();
+
+            if (!result.Any())
+            {
+                return NotFound(new
+                {
+                    success = false,
+                    message = "No paid driver payments found"
+                });
+            }
+
+            return Ok(new
+            {
+                success = true,
+                data = result
+            });
+        }
     }
 }

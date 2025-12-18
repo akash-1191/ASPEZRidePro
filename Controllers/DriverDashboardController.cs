@@ -154,5 +154,93 @@ namespace EZRide_Project.Controllers
         }
 
 
+
+        [HttpGet("driver/paid-payments")]
+        [Authorize(Roles = "Driver")]
+        public async Task<IActionResult> GetPaidDriverPayments()
+        {
+            var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == "UserId")?.Value;
+
+            if (string.IsNullOrEmpty(userIdClaim))
+                return Unauthorized(new { success = false, message = "Invalid token" });
+
+            int userId = int.Parse(userIdClaim);
+
+            var driver = await _context.Drivers
+                .Include(d => d.User)
+                .FirstOrDefaultAsync(d => d.UserId == userId);
+
+            if (driver == null)
+                return NotFound(new { success = false, message = "Driver not found" });
+
+            int driverId = driver.DriverId;
+
+            var result = await _context.DriverBookingHistories
+                .Include(dbh => dbh.Booking)
+                .Where(dbh =>
+                    dbh.DriverId == driverId &&
+                    _context.DriverPayments.Any(dp =>
+                        dp.DriverId == dbh.DriverId &&
+                        dp.BookingId == dbh.BookingId &&
+                        dp.Status == "Paid"
+                    )
+                )
+                .Select(dbh => new DriverPaymentdetailsDto
+                {
+                    Driver = new DriverDto
+                    {
+                        DriverId = driver.DriverId,
+                        DriverName = driver.User.Firstname + " " + driver.User.Lastname,
+                        DriverPhone = driver.User.Phone,
+                        DriverEmail = driver.User.Email
+                    },
+
+                    Booking = new BookingDto
+                    {
+                        BookingId = dbh.BookingId,
+                        StartTime = dbh.Booking.StartTime,
+                        EndTime = dbh.Booking.EndTime,
+                        Status = dbh.Status.ToString()
+                    },
+                   
+
+                    DriverPayment = _context.DriverPayments
+                        .Where(dp =>
+                            dp.DriverId == dbh.DriverId &&
+                            dp.BookingId == dbh.BookingId &&
+                            dp.Status == "Paid"
+                        )
+                        .Select(dp => new DriverPaymentInfoDto
+                        {
+                            DriverPaymentId = dp.DriverPaymentId,
+                            Amount = dp.Amount,
+                            PaymentType = dp.PaymentType,
+                            Status = dp.Status,
+                            CreatedAt = dp.CreatedAt,
+                            PaidAt = dp.PaidAt
+                        })
+                        .FirstOrDefault()
+                })
+                .OrderByDescending(x => x.DriverPayment.PaidAt)
+                .ToListAsync();
+
+            if (!result.Any())
+            {
+                return NotFound(new
+                {
+                    success = false,
+                    message = "No paid payments found for this driver"
+                });
+            }
+
+            return Ok(new
+            {
+                success = true,
+                data = result
+            });
+        }
+
+
+
     }
 }

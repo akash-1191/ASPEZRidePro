@@ -32,6 +32,7 @@ namespace EZRide_Project.Services
                 {
                     VehicleId = vehicle.VehicleId,
                     Vehicletype = vehicle.Vehicletype.ToString(),
+                    vehiclestatus=vehicle.IsApproved,
                     RegistrationNo = vehicle.RegistrationNo,
                     Availability = vehicle.Availability.ToString(),
                     FuelType = vehicle.FuelType.ToString(),

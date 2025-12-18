@@ -19,6 +19,8 @@ namespace EZRide_Project.Model.Entities
         [Column(TypeName = "varchar(20)")]
         public AvailabiliStatus AvailabilityStatus { get; set; } // Enum: Available, Busy, Inactive
 
+        [Column(TypeName = "decimal(10,2)")]
+        public decimal? PerDayRate { get; set; }
 
         [Required]
         public VehicleType VehicleTypes { get; set; }

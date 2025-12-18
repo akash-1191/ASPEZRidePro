@@ -18,8 +18,9 @@ namespace EZRide_Project.Services
             // Check if conversation already exists
             var conv = await _db.Conversations
                 .FirstOrDefaultAsync(c =>
-                    (c.Participant1Id == participant1Id && c.Participant2Id == participant2Id) ||
-                    (c.Participant1Id == participant2Id && c.Participant2Id == participant1Id));
+   ((c.Participant1Id == participant1Id && c.Participant2Id == participant2Id) ||
+    (c.Participant1Id == participant2Id && c.Participant2Id == participant1Id))
+    && c.Type == type);
 
             if (conv != null) return conv;
 
@@ -178,11 +179,18 @@ namespace EZRide_Project.Services
 
         public async Task<int> GetUnreadMessageCountAsync(int userId)
         {
-            return await _db.ChatMessages
-                .CountAsync(m => m.Conversation.Participant1Id == userId ||
-                                m.Conversation.Participant2Id == userId &&
-                                m.SenderId != userId &&
-                                m.Status != ChatMessage.MessageStatus.Read);
+            //return await _db.ChatMessages
+            //.CountAsync(m => m.Conversation.Participant1Id == userId ||
+            //m.Conversation.Participant2Id == userId &&
+            //m.SenderId != userId &&
+            //m.Status != ChatMessage.MessageStatus.Read);
+
+            return await _db.ChatMessages.CountAsync(m =>
+   (m.Conversation.Participant1Id == userId ||
+    m.Conversation.Participant2Id == userId) &&
+    m.SenderId != userId &&
+    m.Status != ChatMessage.MessageStatus.Read
+);
         }
     }
 }

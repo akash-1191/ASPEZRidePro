@@ -71,6 +71,12 @@ namespace EZRide_Project.Model.Entities
         public string? RejectionReason { get; set; }
         public DateTime CreatedAt { get; set; }
 
+
+        [Column(TypeName = "varchar(200)")]
+        public string? ResetPasswordToken { get; set; }
+
+        public DateTime? ResetPasswordTokenExpiry { get; set; }
+
         // Foreign key for Role 
         public int RoleId { get; set; }
         public Role Role { get; set; }

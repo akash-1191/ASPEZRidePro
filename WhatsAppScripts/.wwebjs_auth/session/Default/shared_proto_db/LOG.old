@@ -1,4 +1,3 @@
-2025/12/16-10:19:26.296 2628 Creating DB D:\Akash\MSC(ICT)\Sem-2\Project_sem2\ASP\EZRide_Project\WhatsAppScripts\.wwebjs_auth\session\Default\shared_proto_db since it was missing.
-2025/12/16-10:19:26.305 2628 Reusing MANIFEST D:\Akash\MSC(ICT)\Sem-2\Project_sem2\ASP\EZRide_Project\WhatsAppScripts\.wwebjs_auth\session\Default\shared_proto_db/MANIFEST-000001
-2025/12/16-10:19:26.305 2628 Recovering log #3
-2025/12/16-10:19:26.306 2628 Reusing old log D:\Akash\MSC(ICT)\Sem-2\Project_sem2\ASP\EZRide_Project\WhatsAppScripts\.wwebjs_auth\session\Default\shared_proto_db/000003.log 
+2025/12/18-14:55:11.610 502c Reusing MANIFEST D:\Akash\MSC(ICT)\Sem-2\Project_sem2\ASP\EZRide_Project\WhatsAppScripts\.wwebjs_auth\session\Default\shared_proto_db/MANIFEST-000001
+2025/12/18-14:55:11.611 502c Recovering log #3
+2025/12/18-14:55:11.612 502c Reusing old log D:\Akash\MSC(ICT)\Sem-2\Project_sem2\ASP\EZRide_Project\WhatsAppScripts\.wwebjs_auth\session\Default\shared_proto_db/000003.log 
