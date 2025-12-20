@@ -163,10 +163,10 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("SignalRPolicy", policy =>
     {
-        policy.WithOrigins("http://localhost:4200")
-              .AllowAnyHeader()
-              .AllowAnyMethod()
-              .AllowCredentials();   // IMPORTANT
+        policy
+            .AllowAnyOrigin()
+            .AllowAnyHeader()
+            .AllowAnyMethod();
     });
 });
 
@@ -186,7 +186,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseStaticFiles();
 
-app.UseHttpsRedirection();
+//app.UseHttpsRedirection();
 
 // Add CORS middleware BEFORE Authorization and routing
 //app.UseCors("AllowAll");
