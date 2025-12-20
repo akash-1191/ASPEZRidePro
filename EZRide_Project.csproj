@@ -44,6 +44,11 @@
 
   <ItemGroup>
     <Folder Include="wwwroot\" />
+    <Folder Include="wwwroot\damage-report\" />
+    <Folder Include="wwwroot\DriverDocuments\" />
+    <Folder Include="wwwroot\Upload_image\CustomerDocument\" />
+    <Folder Include="wwwroot\Upload_image\OwnerDocument\" />
+    <Folder Include="wwwroot\Upload_image\vehicles\" />
   </ItemGroup>
 
 </Project>
