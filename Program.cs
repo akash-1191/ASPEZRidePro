@@ -151,16 +151,20 @@ options.Events = new JwtBearerEvents
 });
 
 
-
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("SignalRPolicy", policy =>
-    {
-        policy
-            .AllowAnyOrigin()
-            .AllowAnyHeader()
-            .AllowAnyMethod();
-    });
+    options.AddPolicy("AllowAngular",
+        policy =>
+        {
+            policy
+                .WithOrigins(
+                    "http://localhost:4200",
+                    "https://aspcoreezride.onrender.com"
+                )
+                .AllowAnyHeader()
+                .AllowAnyMethod()
+                .AllowCredentials();
+        });
 });
 
 
@@ -190,7 +194,7 @@ if (app.Environment.IsDevelopment())
         c.SwaggerEndpoint("/swagger/v1/swagger.json", "EZRide API v1");
     });
 }
-
+app.UseCors("AllowAngular");
 app.UseStaticFiles();
 
 //app.UseHttpsRedirection();
