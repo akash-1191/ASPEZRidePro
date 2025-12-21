@@ -33,35 +33,39 @@ namespace EZRide_Project.Services
             if (dto.DocumentFile.Length > maxFileSize)
                 return ApiResponseHelper.Fail("File size cannot exceed 5 MB.");
 
-            // Folder name inside wwwroot
-            var folder = "Upload_image/OwnerDocument";
+
+            var webRoot = _env.WebRootPath
+        ?? Path.Combine(Directory.GetCurrentDirectory(), "wwwroot");
+            if (!Directory.Exists(webRoot))
+                Directory.CreateDirectory(webRoot);
+            var folder = Path.Combine(webRoot, "Upload_image", "OwnerDocument");
+
+            if (!Directory.Exists(folder))
+                Directory.CreateDirectory(folder);
+
             var fileName = $"{Guid.NewGuid()}{ext}";
+            var fullPath = Path.Combine(folder, fileName);
 
-            // Actual physical path
-            var physicalPath = Path.Combine(_env.WebRootPath, folder, fileName);
-
-            // If directory not exist → create
-            var directory = Path.GetDirectoryName(physicalPath);
-            if (!Directory.Exists(directory))
-                Directory.CreateDirectory(directory);
-
-            using (var stream = new FileStream(physicalPath, FileMode.Create))
+            using (var stream = new FileStream(fullPath, FileMode.Create))
             {
                 await dto.DocumentFile.CopyToAsync(stream);
             }
-
-            // Save only RELATIVE PATH in DB
-            var relativePath = "/" + folder + "/" + fileName;
+            var relativePath = $"/Upload_image/OwnerDocument/{fileName}";
 
             var existingDoc = await _repo.GetOwnerDocumentByType(ownerId, dto.DocumentType);
+
             if (existingDoc != null)
             {
-                // Delete old file
+                // delete old file
                 if (!string.IsNullOrEmpty(existingDoc.DocumentPath))
                 {
-                    var oldPhysicalPath = Path.Combine(_env.WebRootPath, existingDoc.DocumentPath.TrimStart('/'));
-                    if (File.Exists(oldPhysicalPath))
-                        File.Delete(oldPhysicalPath);
+                    var oldPath = Path.Combine(
+                        webRoot,
+                        existingDoc.DocumentPath.TrimStart('/')
+                    );
+
+                    if (File.Exists(oldPath))
+                        File.Delete(oldPath);
                 }
 
                 existingDoc.DocumentPath = relativePath;
@@ -75,7 +79,8 @@ namespace EZRide_Project.Services
                 var doc = new OwnerDocument
                 {
                     OwnerId = ownerId,
-                    DocumentType = Enum.Parse<OwnerDocument.documentType>(dto.DocumentType, true),
+                    DocumentType = Enum.Parse<OwnerDocument.documentType>(
+                        dto.DocumentType, true),
                     DocumentPath = relativePath,
                     Status = OwnerDocument.DocumentStatus.Pending,
                     CreatedAt = DateTime.UtcNow
@@ -85,6 +90,7 @@ namespace EZRide_Project.Services
             }
 
             await _repo.SaveChangesAsync();
+
             return ApiResponseHelper.Success("Document uploaded successfully.");
         }
 
@@ -111,9 +117,14 @@ namespace EZRide_Project.Services
             if (doc == null || doc.OwnerId != ownerId)
                 return ApiResponseHelper.Fail("Document not found or access denied.");
 
-            if (!string.IsNullOrEmpty(doc.DocumentPath) && File.Exists(doc.DocumentPath))
+            var webRoot = _env.WebRootPath
+                ?? Path.Combine(Directory.GetCurrentDirectory(), "wwwroot");
+
+            if (!string.IsNullOrEmpty(doc.DocumentPath))
             {
-                File.Delete(doc.DocumentPath);
+                var physicalPath = Path.Combine(webRoot, doc.DocumentPath.TrimStart('/'));
+                if (File.Exists(physicalPath))
+                    File.Delete(physicalPath);
             }
 
             _repo.Delete(doc);
@@ -129,30 +140,39 @@ namespace EZRide_Project.Services
             if (doc == null || doc.OwnerId != ownerId)
                 return ApiResponseHelper.Fail("Document not found or access denied.");
 
-            // Update file if provided
+            var webRoot = _env.WebRootPath
+                ?? Path.Combine(Directory.GetCurrentDirectory(), "wwwroot");
+
             if (dto.DocumentFile != null)
             {
                 var ext = Path.GetExtension(dto.DocumentFile.FileName).ToLower();
                 if (!allowedExtensions.Contains(ext))
                     return ApiResponseHelper.Fail("Only JPG, PNG, or PDF files are allowed.");
+
                 if (dto.DocumentFile.Length > maxFileSize)
                     return ApiResponseHelper.Fail("File size cannot exceed 5 MB.");
 
-                var folderPath = Path.Combine(_env.WebRootPath, "Upload_image", "OwnerDocument");
-                if (!Directory.Exists(folderPath))
-                    Directory.CreateDirectory(folderPath);
+                var folder = Path.Combine(webRoot, "Upload_image", "OwnerDocument");
+                if (!Directory.Exists(folder))
+                    Directory.CreateDirectory(folder);
 
-                var filePath = Path.Combine(folderPath, $"{Guid.NewGuid()}{ext}");
-                using (var stream = new FileStream(filePath, FileMode.Create))
+                var fileName = $"{Guid.NewGuid()}{ext}";
+                var newPath = Path.Combine(folder, fileName);
+
+                using (var stream = new FileStream(newPath, FileMode.Create))
                 {
                     await dto.DocumentFile.CopyToAsync(stream);
                 }
 
                 // Delete old file
-                if (!string.IsNullOrEmpty(doc.DocumentPath) && File.Exists(doc.DocumentPath))
-                    File.Delete(doc.DocumentPath);
+                if (!string.IsNullOrEmpty(doc.DocumentPath))
+                {
+                    var oldPath = Path.Combine(webRoot, doc.DocumentPath.TrimStart('/'));
+                    if (File.Exists(oldPath))
+                        File.Delete(oldPath);
+                }
 
-                doc.DocumentPath = filePath;
+                doc.DocumentPath = $"/Upload_image/OwnerDocument/{fileName}";
             }
 
             doc.DocumentType = Enum.Parse<OwnerDocument.documentType>(dto.DocumentType, true);

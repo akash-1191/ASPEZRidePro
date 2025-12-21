@@ -31,11 +31,15 @@ namespace EZRide_Project.Controllers
             if (dto.DocumentFile == null || dto.DocumentFile.Length == 0)
                 return BadRequest("Document file is required");
 
-            var folderPath = Path.Combine(_env.WebRootPath, "DriverDocuments");
+            var webRoot = _env.WebRootPath
+                ?? Path.Combine(Directory.GetCurrentDirectory(), "wwwroot");
+
+            var folderPath = Path.Combine(webRoot, "DriverDocuments");
+
             if (!Directory.Exists(folderPath))
                 Directory.CreateDirectory(folderPath);
 
-            var fileName = $"{Guid.NewGuid()}_{dto.DocumentFile.FileName}";
+            var fileName = $"{Guid.NewGuid()}{Path.GetExtension(dto.DocumentFile.FileName)}";
             var fullPath = Path.Combine(folderPath, fileName);
 
             using (var stream = new FileStream(fullPath, FileMode.Create))
@@ -47,7 +51,7 @@ namespace EZRide_Project.Controllers
             {
                 DriverId = dto.DriverId,
                 DocumentType = dto.DocumentType,
-                DocumentPath = $"DriverDocuments/{fileName}",
+                DocumentPath = "/DriverDocuments/" + fileName,
                 CreatedAt = DateTime.Now
             };
 
@@ -59,6 +63,7 @@ namespace EZRide_Project.Controllers
                 message = "Driver document uploaded successfully"
             });
         }
+
 
 
         // ===========================
@@ -102,14 +107,18 @@ namespace EZRide_Project.Controllers
             if (document == null)
                 return NotFound("Document not found");
 
-            // Delete physical file
+            var webRoot = _env.WebRootPath
+                ?? Path.Combine(Directory.GetCurrentDirectory(), "wwwroot");
+
             if (!string.IsNullOrEmpty(document.DocumentPath))
             {
-                var fullPath = Path.Combine(_env.WebRootPath, document.DocumentPath);
+                var fullPath = Path.Combine(
+                    webRoot,
+                    document.DocumentPath.TrimStart('/')
+                );
+
                 if (System.IO.File.Exists(fullPath))
-                {
                     System.IO.File.Delete(fullPath);
-                }
             }
 
             _context.DriverDocuments.Remove(document);
@@ -120,5 +129,6 @@ namespace EZRide_Project.Controllers
                 message = "Driver document deleted successfully"
             });
         }
+
     }
 }
