@@ -1,27 +1,45 @@
-2025/12/18-14:55:12.198 6f7c Reusing MANIFEST D:\Akash\MSC(ICT)\Sem-2\Project_sem2\ASP\EZRide_Project\WhatsAppScripts\.wwebjs_auth\session\Default\IndexedDB\https_web.whatsapp.com_0.indexeddb.leveldb/MANIFEST-000001
-2025/12/18-14:55:12.199 6f7c Recovering log #1961
-2025/12/18-14:55:12.549 6f7c Reusing old log D:\Akash\MSC(ICT)\Sem-2\Project_sem2\ASP\EZRide_Project\WhatsAppScripts\.wwebjs_auth\session\Default\IndexedDB\https_web.whatsapp.com_0.indexeddb.leveldb/001961.log 
-2025/12/18-14:55:12.550 6f7c Delete type=2 #1953
-2025/12/18-14:55:12.550 6f7c Delete type=2 #1954
-2025/12/18-14:55:12.550 6f7c Delete type=2 #1955
-2025/12/18-14:55:12.550 6f7c Delete type=2 #1956
-2025/12/18-14:55:12.550 6f7c Delete type=2 #1957
-2025/12/18-14:55:12.550 6f7c Delete type=2 #1958
-2025/12/18-14:55:12.550 6f7c Delete type=2 #1959
-2025/12/18-14:55:14.104 6c3c Level-0 table #1972: started
-2025/12/18-14:55:14.135 6c3c Level-0 table #1972: 697626 bytes OK
-2025/12/18-14:55:14.137 6c3c Delete type=0 #1961
-2025/12/18-14:55:14.138 6c3c Manual compaction at level-0 from '\x00>\x00\x00\x00' @ 72057594037927935 : 1 .. '\x00?\x00\x00\x00' @ 0 : 0; will stop at (end)
-2025/12/18-14:55:14.138 6c3c Manual compaction at level-1 from '\x00>\x00\x00\x00' @ 72057594037927935 : 1 .. '\x00?\x00\x00\x00' @ 0 : 0; will stop at '\x00>\x00\x00\x05' @ 3746366 : 1
-2025/12/18-14:55:14.138 6c3c Compacting 1@1 + 7@2 files
-2025/12/18-14:55:14.325 6c3c Generated table #1973@1: 56170 keys, 2216783 bytes
-2025/12/18-14:55:14.456 6c3c Generated table #1974@1: 27017 keys, 2183126 bytes
-2025/12/18-14:55:14.522 6c3c Generated table #1975@1: 2025 keys, 2147371 bytes
-2025/12/18-14:55:14.622 6c3c Generated table #1976@1: 10869 keys, 2177620 bytes
-2025/12/18-14:55:14.787 6c3c Generated table #1977@1: 35233 keys, 2247418 bytes
-2025/12/18-14:55:14.911 6c3c Generated table #1978@1: 44888 keys, 2178273 bytes
-2025/12/18-14:55:15.091 6c3c Generated table #1979@1: 75657 keys, 1708138 bytes
-2025/12/18-14:55:15.092 6c3c Compacted 1@1 + 7@2 files => 14858729 bytes
-2025/12/18-14:55:15.093 6c3c compacted to: files[ 0 0 7 0 0 0 0 ]
-2025/12/18-14:55:15.093 6c3c Delete type=2 #1972
-2025/12/18-14:55:15.094 6c3c Manual compaction at level-1 from '\x00>\x00\x00\x05' @ 3746366 : 1 .. '\x00?\x00\x00\x00' @ 0 : 0; will stop at (end)
+2025/12/18-14:55:54.258 6f9c Reusing MANIFEST D:\Akash\MSC(ICT)\Sem-2\Project_sem2\ASP\EZRide_Project\WhatsAppScripts\.wwebjs_auth\session\Default\IndexedDB\https_web.whatsapp.com_0.indexeddb.leveldb/MANIFEST-000001
+2025/12/18-14:55:54.259 6f9c Recovering log #1971
+2025/12/18-14:55:54.595 6f9c Reusing old log D:\Akash\MSC(ICT)\Sem-2\Project_sem2\ASP\EZRide_Project\WhatsAppScripts\.wwebjs_auth\session\Default\IndexedDB\https_web.whatsapp.com_0.indexeddb.leveldb/001971.log 
+2025/12/18-14:55:54.596 6f9c Delete type=2 #1963
+2025/12/18-14:55:54.596 6f9c Delete type=2 #1964
+2025/12/18-14:55:54.596 6f9c Delete type=2 #1965
+2025/12/18-14:55:54.596 6f9c Delete type=2 #1966
+2025/12/18-14:55:54.596 6f9c Delete type=2 #1967
+2025/12/18-14:55:54.596 6f9c Delete type=2 #1968
+2025/12/18-14:55:54.604 6f9c Delete type=2 #1969
+2025/12/18-14:55:55.577 6f9c Level-0 table #1982: started
+2025/12/18-14:55:55.613 6f9c Level-0 table #1982: 873651 bytes OK
+2025/12/18-14:55:55.615 6f9c Delete type=0 #1971
+2025/12/18-14:55:55.616 6f9c Manual compaction at level-0 from '\x00?\x00\x00\x00' @ 72057594037927935 : 1 .. '\x00@\x00\x00\x00' @ 0 : 0; will stop at (end)
+2025/12/18-14:55:55.617 6f9c Manual compaction at level-1 from '\x00?\x00\x00\x00' @ 72057594037927935 : 1 .. '\x00@\x00\x00\x00' @ 0 : 0; will stop at '\x00?\x00\x00\x05' @ 3773242 : 1
+2025/12/18-14:55:55.617 6f9c Compacting 1@1 + 7@2 files
+2025/12/18-14:55:55.808 6f9c Generated table #1983@1: 55847 keys, 2218124 bytes
+2025/12/18-14:55:55.924 6f9c Generated table #1984@1: 30064 keys, 2186587 bytes
+2025/12/18-14:55:55.971 6f9c Generated table #1985@1: 2026 keys, 2146749 bytes
+2025/12/18-14:55:56.062 6f9c Generated table #1986@1: 9083 keys, 2169427 bytes
+2025/12/18-14:55:56.220 6f9c Generated table #1987@1: 36460 keys, 2250747 bytes
+2025/12/18-14:55:56.346 6f9c Generated table #1988@1: 35934 keys, 2171674 bytes
+2025/12/18-14:55:56.533 6f9c Generated table #1989@1: 85982 keys, 1938957 bytes
+2025/12/18-14:55:56.533 6f9c Compacted 1@1 + 7@2 files => 15082265 bytes
+2025/12/18-14:55:56.534 6f9c compacted to: files[ 0 0 7 0 0 0 0 ]
+2025/12/18-14:55:56.535 6f9c Delete type=2 #1982
+2025/12/18-14:55:56.536 6f9c Manual compaction at level-1 from '\x00?\x00\x00\x05' @ 3773242 : 1 .. '\x00@\x00\x00\x00' @ 0 : 0; will stop at (end)
+2025/12/18-14:56:12.957 e14 Level-0 table #1991: started
+2025/12/18-14:56:13.007 e14 Level-0 table #1991: 1107852 bytes OK
+2025/12/18-14:56:13.009 e14 Delete type=2 #1973
+2025/12/18-14:56:13.009 e14 Delete type=2 #1974
+2025/12/18-14:56:13.009 e14 Delete type=2 #1975
+2025/12/18-14:56:13.009 e14 Delete type=2 #1976
+2025/12/18-14:56:13.009 e14 Delete type=2 #1977
+2025/12/18-14:56:13.009 e14 Delete type=2 #1978
+2025/12/18-14:56:13.009 e14 Delete type=2 #1979
+2025/12/18-14:56:13.009 e14 Delete type=0 #1981
+2025/12/18-14:56:13.042 5f6c Compacting 1@1 + 7@2 files
+2025/12/18-14:56:13.252 5f6c Generated table #1992@1: 55261 keys, 2219427 bytes
+2025/12/18-14:56:13.388 5f6c Generated table #1993@1: 32697 keys, 2190852 bytes
+2025/12/18-14:56:13.436 5f6c Generated table #1994@1: 1968 keys, 2154155 bytes
+2025/12/18-14:56:13.496 5f6c Generated table #1995@1: 8586 keys, 2165755 bytes
+2025/12/18-14:56:13.683 5f6c Generated table #1996@1: 36588 keys, 2249920 bytes
+2025/12/18-14:56:13.835 5f6c Generated table #1997@1: 33290 keys, 2174213 bytes
+2025/12/18-14:56:13.853 5f6c compacted to: files[ 0 1 7 0 0 0 0 ]
