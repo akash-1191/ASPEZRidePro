@@ -211,46 +211,49 @@ namespace EZRide_Project.Services
 
         //update the user profile image
 
-        public async Task<ApiResponseModel> UpdateUserImageAsync(UpdateUserImageDTO updateUserImageDTO)
+        public async Task<ApiResponseModel> UpdateUserImageAsync(UpdateUserImageDTO dto)
         {
-            if (updateUserImageDTO == null || updateUserImageDTO.Image == null)
+            if (dto == null || dto.Image == null)
                 return ApiResponseHelper.Fail("Image is required.");
 
             string[] blockedExtensions = { ".exe", ".bat", ".cmd", ".sh", ".js" };
+            var extension = Path.GetExtension(dto.Image.FileName).ToLower();
 
-            var extension = Path.GetExtension(updateUserImageDTO.Image.FileName).ToLower();
             if (blockedExtensions.Contains(extension))
-            {
                 return ApiResponseHelper.FileNotAllow("This file type is not allowed.");
-            }
 
-            var user = await _repository.GetUserByIdAsync(updateUserImageDTO.UserId);
+            var user = await _repository.GetUserByIdAsync(dto.UserId);
             if (user == null)
                 return ApiResponseHelper.NotFound("User not found.");
 
-            if (_environment.WebRootPath == null)
-                return ApiResponseHelper.Fail("WebRootPath not set.");
+            //  SAFE WEB ROOT
+            var webRoot = _environment.WebRootPath
+                ?? Path.Combine(Directory.GetCurrentDirectory(), "wwwroot");
 
-            string uploadFolder = Path.Combine(_environment.WebRootPath, "Upload_image");
+            string uploadFolder = Path.Combine(webRoot, "Upload_image");
 
             if (!Directory.Exists(uploadFolder))
                 Directory.CreateDirectory(uploadFolder);
 
-            // Delete old image
+            //  DELETE OLD IMAGE SAFELY
             if (!string.IsNullOrEmpty(user.Image))
             {
-                string oldImagePath = Path.Combine(_environment.WebRootPath, user.Image.TrimStart('/'));
+                string oldImagePath = Path.Combine(
+                    webRoot,
+                    user.Image.TrimStart('/')
+                );
+
                 if (File.Exists(oldImagePath))
                     File.Delete(oldImagePath);
             }
 
-            // Save new image
-            string uniqueFileName = Guid.NewGuid() + Path.GetExtension(updateUserImageDTO.Image.FileName);
+            //  SAVE NEW IMAGE
+            string uniqueFileName = Guid.NewGuid() + Path.GetExtension(dto.Image.FileName);
             string newFilePath = Path.Combine(uploadFolder, uniqueFileName);
 
             using (var stream = new FileStream(newFilePath, FileMode.Create))
             {
-                await updateUserImageDTO.Image.CopyToAsync(stream);
+                await dto.Image.CopyToAsync(stream);
             }
 
             user.Image = "/Upload_image/" + uniqueFileName;
@@ -259,6 +262,7 @@ namespace EZRide_Project.Services
 
             return ApiResponseHelper.Success("Profile image updated successfully.");
         }
+
     }
 
 }
