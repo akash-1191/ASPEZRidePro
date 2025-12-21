@@ -149,7 +149,7 @@ namespace EZRide_Project.Services
                 var webRoot = _env.WebRootPath
                     ?? Path.Combine(Directory.GetCurrentDirectory(), "wwwroot");
 
-                //  Build full file path safely
+                // Build full file path safely
                 if (!string.IsNullOrEmpty(image.ImagePath))
                 {
                     var fullPath = Path.Combine(
