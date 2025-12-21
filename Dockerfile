@@ -9,7 +9,7 @@ COPY *.csproj ./
 RUN dotnet restore
 
 # Copy everything else and publish
-COPY . ./
+COPY . .
 RUN dotnet publish -c Release -o /app/publish /p:UseAppHost=false
 
 # =========================

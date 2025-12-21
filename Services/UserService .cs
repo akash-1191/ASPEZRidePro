@@ -107,10 +107,15 @@ namespace EZRide_Project.Services
             if (blockedExtensions.Contains(extension))
                 return ApiResponseHelper.Fail("This file type is not allowed.");
 
-            if (_environment.WebRootPath == null)
-                return ApiResponseHelper.Fail("WebRootPath missing.");
+            //if (_environment.WebRootPath == null)
+            //    return ApiResponseHelper.Fail("WebRootPath missing.");
+            var webRoot = _environment.WebRootPath
+              ?? Path.Combine(Directory.GetCurrentDirectory(), "wwwroot");
 
-            string uploadFolder = Path.Combine(_environment.WebRootPath, "Upload_image");
+            string uploadFolder = Path.Combine(webRoot, "Upload_image");
+
+
+            //string uploadFolder = Path.Combine(_environment.WebRootPath, "Upload_image");
             if (!Directory.Exists(uploadFolder))
                 Directory.CreateDirectory(uploadFolder);
 

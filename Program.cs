@@ -67,6 +67,8 @@ builder.Services.AddScoped<IOwnerPaymentService, OwnerPaymentService>();
 builder.Services.AddScoped<IOwnerPaymentRepository, OwnerPaymentRepository>();
 builder.Services.AddScoped<IDriverPaymentService, DriverPaymentService>(); ;
 
+builder.Services.AddSingleton<IWebHostEnvironment>(builder.Environment);
+
 
 //chat services
 builder.Services.AddScoped<IChatService, ChatService>();
@@ -149,16 +151,7 @@ options.Events = new JwtBearerEvents
 });
 
 
-//builder.Services.AddCors(options =>
-//{
-//    options.AddPolicy("AllowAll", policy =>
-//    {
-//        policy.AllowAnyOrigin()
-//              .AllowAnyMethod()
-//              .AllowAnyHeader();
-//    });
-//});
-// ------------- CORS (ONLY 1 POLICY) -------------
+
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("SignalRPolicy", policy =>
@@ -173,6 +166,13 @@ builder.Services.AddCors(options =>
 
 
 var app = builder.Build();
+
+if (string.IsNullOrEmpty(app.Environment.WebRootPath))
+{
+    app.Environment.WebRootPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot");
+    Directory.CreateDirectory(app.Environment.WebRootPath);
+}
+
 
 app.UseSwagger();
 app.UseSwaggerUI(c =>
