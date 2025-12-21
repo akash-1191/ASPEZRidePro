@@ -11,7 +11,7 @@ using System.Linq;
 
 namespace EZRide_Project.Services
 {
-    public class UserService :IUserService
+    public class UserService : IUserService
     {
         private readonly IUserRepository _repository;
         private readonly IWebHostEnvironment _environment;
@@ -26,6 +26,7 @@ namespace EZRide_Project.Services
             _environment = environment;
             _jwtTokenGenerator = jwtTokenGenerator;
         }
+
 
         public ApiResponseModel RegisterUser(AddUserDataDTO dto)
         {
@@ -64,9 +65,9 @@ namespace EZRide_Project.Services
             string hashedPassword = BCrypt.Net.BCrypt.HashPassword(dto.Password);
 
             User.UserStatus finalStatus;
-            if (dto.RoleId == 1)                
+            if (dto.RoleId == 1)
                 finalStatus = User.UserStatus.Active;
-            else if (dto.RoleId == 2 || dto.RoleId == 3) 
+            else if (dto.RoleId == 2 || dto.RoleId == 3)
                 finalStatus = User.UserStatus.Pending;
             else
                 finalStatus = User.UserStatus.Pending;
@@ -115,7 +116,7 @@ namespace EZRide_Project.Services
 
             if (user.Email != loginDTO.Email)
             {
-                return ApiResponseHelper.Fail("Invalid email or password.");  
+                return ApiResponseHelper.Fail("Invalid email or password.");
             }
 
             bool isPasswordValid = BCrypt.Net.BCrypt.Verify(loginDTO.Password, user.Password);
@@ -127,11 +128,11 @@ namespace EZRide_Project.Services
             var token = _jwtTokenGenerator.GenerateToken(user.Email, user.RoleId, user.UserId, user.Role.RoleName.ToString());
 
 
-           // await _emailService.SendEmailAsync(
-           //    user.Email,
-           //    "Login Successful",
-           //    $"Hello {user.Firstname}\n{user.Middlename}\n{user.Lastname},\n\nYou have logged in successfully at {DateTime.Now}."
-           //);
+            //  await _emailService.SendEmailAsync(
+            //     user.Email,
+            //     "Login Successful",
+            //     $"Hello {user.Firstname}\n{user.Middlename}\n{user.Lastname},\n\nYou have logged in successfully at {DateTime.Now}."
+            // );
 
             return ApiResponseHelper.Success("Login successful", new
             {
@@ -142,15 +143,15 @@ namespace EZRide_Project.Services
                     user.Email,
                     user.RoleId,
                     RoleName = user.Role.RoleName.ToString()
-                }           
+                }
             });
         }
 
 
         //profile data
-            public ApiResponseModel GetUserProfile(int authUserId, int requestedUserId)
+        public ApiResponseModel GetUserProfile(int authUserId, int requestedUserId)
         {
-            
+
             if (authUserId != requestedUserId)
                 return ApiResponseHelper.Forbidden("Access denied.");
 
@@ -173,8 +174,8 @@ namespace EZRide_Project.Services
                 City = user.City,
                 State = user.State,
                 RoleId = user.RoleId,
-                Rejectresion=user.RejectionReason,
-                Status=user.Status.ToString(),
+                Rejectresion = user.RejectionReason,
+                Status = user.Status.ToString(),
 
                 CreatedAt = user.CreatedAt
             };
@@ -210,49 +211,46 @@ namespace EZRide_Project.Services
 
         //update the user profile image
 
-        public async Task<ApiResponseModel> UpdateUserImageAsync(UpdateUserImageDTO dto)
+        public async Task<ApiResponseModel> UpdateUserImageAsync(UpdateUserImageDTO updateUserImageDTO)
         {
-            if (dto == null || dto.Image == null)
+            if (updateUserImageDTO == null || updateUserImageDTO.Image == null)
                 return ApiResponseHelper.Fail("Image is required.");
 
             string[] blockedExtensions = { ".exe", ".bat", ".cmd", ".sh", ".js" };
-            var extension = Path.GetExtension(dto.Image.FileName).ToLower();
 
+            var extension = Path.GetExtension(updateUserImageDTO.Image.FileName).ToLower();
             if (blockedExtensions.Contains(extension))
+            {
                 return ApiResponseHelper.FileNotAllow("This file type is not allowed.");
+            }
 
-            var user = await _repository.GetUserByIdAsync(dto.UserId);
+            var user = await _repository.GetUserByIdAsync(updateUserImageDTO.UserId);
             if (user == null)
                 return ApiResponseHelper.NotFound("User not found.");
 
-            //  SAFE WEB ROOT
-            var webRoot = _environment.WebRootPath
-                ?? Path.Combine(Directory.GetCurrentDirectory(), "wwwroot");
+            if (_environment.WebRootPath == null)
+                return ApiResponseHelper.Fail("WebRootPath not set.");
 
-            string uploadFolder = Path.Combine(webRoot, "Upload_image");
+            string uploadFolder = Path.Combine(_environment.WebRootPath, "Upload_image");
 
             if (!Directory.Exists(uploadFolder))
                 Directory.CreateDirectory(uploadFolder);
 
-            //  DELETE OLD IMAGE SAFELY
+            // Delete old image
             if (!string.IsNullOrEmpty(user.Image))
             {
-                string oldImagePath = Path.Combine(
-                    webRoot,
-                    user.Image.TrimStart('/')
-                );
-
+                string oldImagePath = Path.Combine(_environment.WebRootPath, user.Image.TrimStart('/'));
                 if (File.Exists(oldImagePath))
                     File.Delete(oldImagePath);
             }
 
-            //  SAVE NEW IMAGE
-            string uniqueFileName = Guid.NewGuid() + Path.GetExtension(dto.Image.FileName);
+            // Save new image
+            string uniqueFileName = Guid.NewGuid() + Path.GetExtension(updateUserImageDTO.Image.FileName);
             string newFilePath = Path.Combine(uploadFolder, uniqueFileName);
 
             using (var stream = new FileStream(newFilePath, FileMode.Create))
             {
-                await dto.Image.CopyToAsync(stream);
+                await updateUserImageDTO.Image.CopyToAsync(stream);
             }
 
             user.Image = "/Upload_image/" + uniqueFileName;
@@ -261,8 +259,6 @@ namespace EZRide_Project.Services
 
             return ApiResponseHelper.Success("Profile image updated successfully.");
         }
-
     }
-
 
 }
