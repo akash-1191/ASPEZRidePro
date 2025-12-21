@@ -1,5 +1,6 @@
 ﻿using EZRide_Project.Services;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -16,6 +17,7 @@ namespace EZRide_Project.Controllers
             _paymentReceiptService = paymentReceiptService;
         }
 
+        [EnableCors("AllowAngular")] 
         [HttpGet("download/{userId}/{bookingId}")]
         [Authorize]
         public async Task<IActionResult> DownloadReceipt(int userId, int bookingId)
