@@ -16,6 +16,8 @@ namespace EZRide_Project.Services
             _imageRepository = imageRepository;
             _env = env;
         }
+
+       
         //add Image Logic
         public async Task<ApiResponseModel> UploadVehicleImageAsync(VehicleImageDTO dto)
         {
@@ -24,45 +26,48 @@ namespace EZRide_Project.Services
                 if (dto.ImageFile == null || dto.ImageFile.Length == 0)
                     return ApiResponseHelper.Fail("Image file is required.");
 
-                var extension = Path.GetExtension(dto.ImageFile.FileName);
                 var allowedExtensions = new[] { ".jpg", ".jpeg", ".png", ".webp" };
+                var extension = Path.GetExtension(dto.ImageFile.FileName).ToLower();
 
-                if (!allowedExtensions.Contains(extension.ToLower()))
+                if (!allowedExtensions.Contains(extension))
                     return ApiResponseHelper.FileNotAllow("Only JPG, JPEG, PNG, and WEBP are allowed.");
 
-                var imageName = Guid.NewGuid().ToString() + extension;
-                var savePath = Path.Combine(_env.WebRootPath, "Upload_image", "vehicles");
+                //  SAFE WebRoot (Local + Render)
+                var webRoot = _env.WebRootPath
+                    ?? Path.Combine(Directory.GetCurrentDirectory(), "wwwroot");
 
-                if (!Directory.Exists(savePath))
-                    Directory.CreateDirectory(savePath);
+                var folder = Path.Combine(webRoot, "Upload_image", "vehicles");
 
-                var fullPath = Path.Combine(savePath, imageName);
+                if (!Directory.Exists(folder))
+                    Directory.CreateDirectory(folder);
+
+                var fileName = $"{Guid.NewGuid()}{extension}";
+                var fullPath = Path.Combine(folder, fileName);
 
                 using (var stream = new FileStream(fullPath, FileMode.Create))
                 {
                     await dto.ImageFile.CopyToAsync(stream);
                 }
 
+                //  SAVE RELATIVE PATH ONLY
                 var vehicleImage = new VehicleImage
                 {
                     VehicleId = dto.VehicleId,
-                    ImagePath = $"Upload_image/vehicles/{imageName}",
-                    CreatedAt = DateTime.Now
+                    ImagePath = $"/Upload_image/vehicles/{fileName}",
+                    CreatedAt = DateTime.UtcNow
                 };
 
                 await _imageRepository.AddVehicleImageAsync(vehicleImage);
-                var saved = await _imageRepository.SaveChangesAsync();
-
-                if (!saved)
-                    return ApiResponseHelper.Fail("Image not saved to database.");
+                await _imageRepository.SaveChangesAsync();
 
                 return ApiResponseHelper.Success("Vehicle image uploaded successfully.");
             }
             catch (Exception ex)
             {
-                return ApiResponseHelper.ServerError("Exception: " + ex.Message);
+                return ApiResponseHelper.ServerError(ex.Message);
             }
         }
+
 
         //update image logic
 
@@ -74,52 +79,61 @@ namespace EZRide_Project.Services
                     return ApiResponseHelper.Fail("New image file is required.");
 
                 var allowedExtensions = new[] { ".jpg", ".jpeg", ".png", ".webp" };
-                var extension = Path.GetExtension(dto.NewImageFile.FileName);
+                var extension = Path.GetExtension(dto.NewImageFile.FileName).ToLower();
 
-                if (!allowedExtensions.Contains(extension.ToLower()))
+                if (!allowedExtensions.Contains(extension))
                     return ApiResponseHelper.FileNotAllow("Only JPG, JPEG, PNG, and WEBP files are allowed.");
 
+                //  Get existing image
                 var existingImage = await _imageRepository.GetVehicleImageByIdAsync(dto.VehicleImageId);
                 if (existingImage == null)
                     return ApiResponseHelper.NotFound("Vehicle image");
 
-                // Delete old image from disk
-                var oldImagePath = Path.Combine(_env.WebRootPath, existingImage.ImagePath.Replace("/", "\\"));
-                if (File.Exists(oldImagePath))
-                {
-                    File.Delete(oldImagePath);
-                }
+                //  SAFE WebRoot (Local + Render)
+                var webRoot = _env.WebRootPath
+                    ?? Path.Combine(Directory.GetCurrentDirectory(), "wwwroot");
 
-                // Save new image
-                var newImageName = Guid.NewGuid().ToString() + extension;
-                var folderPath = Path.Combine(_env.WebRootPath, "Upload_image", "vehicles");
+                var folderPath = Path.Combine(webRoot, "Upload_image", "vehicles");
 
                 if (!Directory.Exists(folderPath))
                     Directory.CreateDirectory(folderPath);
 
-                var newFullPath = Path.Combine(folderPath, newImageName);
+                //  Delete old image (if exists)
+                if (!string.IsNullOrEmpty(existingImage.ImagePath))
+                {
+                    var oldImageFullPath = Path.Combine(
+                        webRoot,
+                        existingImage.ImagePath.TrimStart('/').Replace("/", Path.DirectorySeparatorChar.ToString())
+                    );
+
+                    if (File.Exists(oldImageFullPath))
+                        File.Delete(oldImageFullPath);
+                }
+
+                //  Save new image
+                var newFileName = $"{Guid.NewGuid()}{extension}";
+                var newFullPath = Path.Combine(folderPath, newFileName);
+
                 using (var stream = new FileStream(newFullPath, FileMode.Create))
                 {
                     await dto.NewImageFile.CopyToAsync(stream);
                 }
 
-                // Update image path in DB
-                existingImage.ImagePath = $"Upload_image/vehicles/{newImageName}";
-                existingImage.CreatedAt = DateTime.Now;
+                //  Update DB (SAVE RELATIVE PATH ONLY)
+                existingImage.ImagePath = $"/Upload_image/vehicles/{newFileName}";
+                existingImage.CreatedAt = DateTime.UtcNow;
 
                 _imageRepository.UpdateVehicleImage(existingImage);
-                var saved = await _imageRepository.SaveChangesAsync();
+                await _imageRepository.SaveChangesAsync();
 
-                if (!saved)
-                    return ApiResponseHelper.Fail("Failed to update image.");
-
-                return ApiResponseHelper.Success("Image updated successfully.");
+                return ApiResponseHelper.Success("Vehicle image updated successfully.");
             }
             catch (Exception ex)
             {
-                return ApiResponseHelper.ServerError("Exception: " + ex.Message);
+                return ApiResponseHelper.ServerError(ex.Message);
             }
         }
+
 
 
         //delete image
@@ -131,27 +145,34 @@ namespace EZRide_Project.Services
                 if (image == null)
                     return ApiResponseHelper.NotFound("Vehicle image");
 
+                //  SAFE WebRoot (Local + Render)
+                var webRoot = _env.WebRootPath
+                    ?? Path.Combine(Directory.GetCurrentDirectory(), "wwwroot");
 
-                var filePath = Path.Combine(_env.WebRootPath, image.ImagePath.Replace("/", "\\"));
-                if (File.Exists(filePath))
+                //  Build full file path safely
+                if (!string.IsNullOrEmpty(image.ImagePath))
                 {
-                    File.Delete(filePath);
+                    var fullPath = Path.Combine(
+                        webRoot,
+                        image.ImagePath.TrimStart('/').Replace("/", Path.DirectorySeparatorChar.ToString())
+                    );
+
+                    if (File.Exists(fullPath))
+                        File.Delete(fullPath);
                 }
 
-
+                //  Delete DB record
                 _imageRepository.DeleteVehicleImage(image);
-                var saved = await _imageRepository.SaveChangesAsync();
-
-                if (!saved)
-                    return ApiResponseHelper.Fail("Failed to delete image from database.");
+                await _imageRepository.SaveChangesAsync();
 
                 return ApiResponseHelper.Success("Vehicle image deleted successfully.");
             }
             catch (Exception ex)
             {
-                return ApiResponseHelper.ServerError("Exception: " + ex.Message);
+                return ApiResponseHelper.ServerError(ex.Message);
             }
         }
+
 
         //get all image 
 
