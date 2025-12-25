@@ -159,7 +159,7 @@ builder.Services.AddCors(options =>
             policy
                 .WithOrigins(
                     "http://localhost:4200",
-                    "https://aspcoreezride.onrender.com"
+                     "https://ezrideam.onrender.com"
                 )
                 .AllowAnyHeader()
                 .AllowAnyMethod()
