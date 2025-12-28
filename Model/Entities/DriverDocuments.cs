@@ -25,6 +25,9 @@ namespace EZRide_Project.Model.Entities
 
         public DateTime CreatedAt { get; set; }
 
+        public string? PublicId { get; set; }
+
+
         // Navigation property
         public Driver Driver { get; set; }
 

@@ -1,13 +1,15 @@
-﻿using EZRide_Project.DTO;
+﻿using System;
+using System.IO;
+using System.Linq;
+using CloudinaryDotNet;
+using CloudinaryDotNet.Actions;
+using EZRide_Project.DTO;
 using EZRide_Project.Helpers;
 using EZRide_Project.Model;
 using EZRide_Project.Model.Entities;
 using EZRide_Project.Repositories;
 using Humanizer;
 using Microsoft.AspNetCore.Http.HttpResults;
-using System;
-using System.IO;
-using System.Linq;
 
 namespace EZRide_Project.Services
 {
@@ -16,15 +18,18 @@ namespace EZRide_Project.Services
         private readonly IUserRepository _repository;
         private readonly IWebHostEnvironment _environment;
         private readonly JwtTokenGenerator _jwtTokenGenerator;
+        private readonly Cloudinary _cloudinary;
 
         public UserService(
             IUserRepository repository,
             IWebHostEnvironment environment,
-            JwtTokenGenerator jwtTokenGenerator)
+            JwtTokenGenerator jwtTokenGenerator,
+            Cloudinary cloudinary)
         {
             _repository = repository;
             _environment = environment;
             _jwtTokenGenerator = jwtTokenGenerator;
+            _cloudinary = cloudinary;
         }
 
 
@@ -210,57 +215,50 @@ namespace EZRide_Project.Services
         }
 
         //update the user profile image
-
         public async Task<ApiResponseModel> UpdateUserImageAsync(UpdateUserImageDTO dto)
         {
             if (dto == null || dto.Image == null)
                 return ApiResponseHelper.Fail("Image is required.");
 
-            string[] blockedExtensions = { ".exe", ".bat", ".cmd", ".sh", ".js" };
-            var extension = Path.GetExtension(dto.Image.FileName).ToLower();
-
-            if (blockedExtensions.Contains(extension))
-                return ApiResponseHelper.FileNotAllow("This file type is not allowed.");
-
             var user = await _repository.GetUserByIdAsync(dto.UserId);
             if (user == null)
                 return ApiResponseHelper.NotFound("User not found.");
 
-            //  SAFE WEB ROOT
-            var webRoot = _environment.WebRootPath
-                ?? Path.Combine(Directory.GetCurrentDirectory(), "wwwroot");
+            // Allowed extensions
+            string[] allowedExtensions = { ".jpg", ".jpeg", ".png", ".webp" };
+            var extension = Path.GetExtension(dto.Image.FileName).ToLower();
 
-            string uploadFolder = Path.Combine(webRoot, "Upload_image");
+            if (!allowedExtensions.Contains(extension))
+                return ApiResponseHelper.FileNotAllow("Only JPG, PNG, JPEG, WEBP allowed!");
 
-            if (!Directory.Exists(uploadFolder))
-                Directory.CreateDirectory(uploadFolder);
-
-            //  DELETE OLD IMAGE SAFELY
-            if (!string.IsNullOrEmpty(user.Image))
+            // DELETE OLD IMAGE FROM CLOUDINARY
+            if (!string.IsNullOrEmpty(user.PublicId))
             {
-                string oldImagePath = Path.Combine(
-                    webRoot,
-                    user.Image.TrimStart('/')
-                );
-
-                if (File.Exists(oldImagePath))
-                    File.Delete(oldImagePath);
+                var deletionParams = new DeletionParams(user.PublicId);
+                await _cloudinary.DestroyAsync(deletionParams);
             }
 
-            //  SAVE NEW IMAGE
-            string uniqueFileName = Guid.NewGuid() + Path.GetExtension(dto.Image.FileName);
-            string newFilePath = Path.Combine(uploadFolder, uniqueFileName);
-
-            using (var stream = new FileStream(newFilePath, FileMode.Create))
+            // UPLOAD NEW IMAGE TO CLOUDINARY
+            var uploadParams = new ImageUploadParams
             {
-                await dto.Image.CopyToAsync(stream);
-            }
+                File = new FileDescription(dto.Image.FileName, dto.Image.OpenReadStream()),
+                Folder = "EZRide/ProfileImages"
+            };
 
-            user.Image = "/Upload_image/" + uniqueFileName;
+            var uploadResult = await _cloudinary.UploadAsync(uploadParams);
+            if (uploadResult == null || uploadResult.StatusCode != System.Net.HttpStatusCode.OK)
+                return ApiResponseHelper.ServerError("Image upload failed!");
+
+            //  UPDATE DATABASE
+            user.Image = uploadResult.SecureUrl.ToString();
+            user.PublicId = uploadResult.PublicId;
 
             await _repository.UpdateUserAsync(user);
 
-            return ApiResponseHelper.Success("Profile image updated successfully.");
+            return ApiResponseHelper.Success("Profile image updated successfully.", new
+            {
+                imageUrl = user.Image
+            });
         }
 
     }

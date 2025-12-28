@@ -7,5 +7,9 @@
         public IFormFile? AddressProof { get; set; }
         public IFormFile? DLImage { get; set; }
         public string Status { get; set; }
+
+        public string? AgeProofPublicId { get; set; }
+        public string? AddressProofPublicId { get; set; }
+        public string? DLImagePublicId { get; set; }
     }
 }

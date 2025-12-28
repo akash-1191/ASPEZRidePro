@@ -1,7 +1,9 @@
-﻿using EZRide_Project.DTO;
+﻿using CloudinaryDotNet;
+using CloudinaryDotNet.Actions;
+using EZRide_Project.DTO;
 using EZRide_Project.Helpers;
-using EZRide_Project.Model.Entities;
 using EZRide_Project.Model;
+using EZRide_Project.Model.Entities;
 using EZRide_Project.Repositories;
 using Microsoft.EntityFrameworkCore;
 
@@ -10,189 +12,127 @@ namespace EZRide_Project.Services
     public class CustomerDocumentService : ICustomerDocumentService
     {
         private readonly ICustomerDocumentRepository _repository;
-        private readonly IWebHostEnvironment _env;
+        private readonly Cloudinary _cloudinary;
 
-        public CustomerDocumentService(ICustomerDocumentRepository repository, IWebHostEnvironment env)
+        public CustomerDocumentService(ICustomerDocumentRepository repository, Cloudinary cloudinary)
         {
             _repository = repository;
-            _env = env;
+            _cloudinary = cloudinary;
         }
-        //Add documnet
-        public async Task<bool> HasUserUploadedAnyDocumentsAsync(int userId)
-        {
-            return await _repository.HasUserUploadedAnyDocumentsAsync(userId);
-        }
-
 
         public async Task AddAsync(CustomerDocumentCreateDTO dto)
         {
-            var folderPath = Path.Combine(_env.WebRootPath, "Upload_image", "CustomerDocument");
-            if (!Directory.Exists(folderPath))
-                Directory.CreateDirectory(folderPath);
+            var existingDoc = await _repository.GetByUserIdRawAsync(dto.UserId);
 
-            // File paths
-            string? ageProofPath = dto.AgeProof != null ? await SaveFileAsync(dto.AgeProof, folderPath) : null;
-            string? addressProofPath = dto.AddressProof != null ? await SaveFileAsync(dto.AddressProof, folderPath) : null;
-            string? dlImagePath = dto.DLImage != null ? await SaveFileAsync(dto.DLImage, folderPath) : null;
-
-            // Pehle check karo ki record already exist karta hai ya nahi
-            var existingDoc = await _repository.GetByUserIdRawAsync(dto.UserId); // NOTE: This should return Entity not DTO
-
-            if (existingDoc != null)
+            if (existingDoc == null)
             {
-                // Update existing record
-                if (ageProofPath != null) existingDoc.AgeProofPath = ageProofPath;
-                if (addressProofPath != null) existingDoc.AddressProofPath = addressProofPath;
-                if (dlImagePath != null) existingDoc.DLImagePath = dlImagePath;
-
-                existingDoc.CreatedAt = DateTime.UtcNow;
-
-                if (!string.IsNullOrEmpty(dto.Status) &&
-                    Enum.TryParse(dto.Status, true, out CustomerDocument.DocumentStatus parsedStatus))
-                {
-                    existingDoc.Status = parsedStatus;
-                }
-
-                await _repository.UpdateAsync(existingDoc); // You must implement UpdateAsync in repository
-            }
-            else
-            {
-                // Add new record
-                var document = new CustomerDocument
+                existingDoc = new CustomerDocument
                 {
                     UserId = dto.UserId,
-                    AgeProofPath = ageProofPath,
-                    AddressProofPath = addressProofPath,
-                    DLImagePath = dlImagePath,
-                    CreatedAt = DateTime.UtcNow,
-                    Status = CustomerDocument.DocumentStatus.Active
+                    Status = CustomerDocument.DocumentStatus.Active,
+                    CreatedAt = DateTime.UtcNow
                 };
-
-                if (!string.IsNullOrEmpty(dto.Status) &&
-                    Enum.TryParse(dto.Status, true, out CustomerDocument.DocumentStatus parsedStatus))
-                {
-                    document.Status = parsedStatus;
-                }
-
-                await _repository.AddAsync(document);
+                await _repository.AddAsync(existingDoc);
             }
+
+            // 🔹 Age Proof upload
+            if (dto.AgeProof != null)
+                await UploadDocument(dto.AgeProof, "EZRide/Documents/AgeProof",
+                    (url, id) => { existingDoc.AgeProofPath = url; existingDoc.AgeProofPublicId = id; });
+
+            // 🔹 Address Proof upload
+            if (dto.AddressProof != null)
+                await UploadDocument(dto.AddressProof, "EZRide/Documents/AddressProof",
+                    (url, id) => { existingDoc.AddressProofPath = url; existingDoc.AddressProofPublicId = id; });
+
+            // 🔹 DL Upload
+            if (dto.DLImage != null)
+                await UploadDocument(dto.DLImage, "EZRide/Documents/DL",
+                    (url, id) => { existingDoc.DLImagePath = url; existingDoc.DLImagePublicId = id; });
+
+            existingDoc.CreatedAt = DateTime.UtcNow;
+            await _repository.UpdateAsync(existingDoc);
         }
 
-        //get all document
+        private async Task UploadDocument(IFormFile file, string folder,
+            Action<string, string> updateCallback)
+        {
+            string ext = Path.GetExtension(file.FileName).ToLower();
+            if (!new[] { ".jpg", ".jpeg", ".png", ".pdf" }.Contains(ext))
+                throw new Exception("Only JPG, PNG, and PDF allowed");
+
+            var uploadParams = new RawUploadParams
+            {
+                File = new FileDescription(file.FileName, file.OpenReadStream()),
+                Folder = folder
+            };
+
+            var uploadResult = await _cloudinary.UploadAsync(uploadParams);
+
+            updateCallback(uploadResult.SecureUrl.ToString(), uploadResult.PublicId);
+        }
+
+        // GET All
         public async Task<IEnumerable<CustomerDocumentReadDTO>> GetAllAsync()
         {
-            var documents = await _repository.GetAllAsync();
+            var data = await _repository.GetAllAsync();
+            return data.Select(x => new CustomerDocumentReadDTO
+            {
+                DocumentId = x.DocumentId,
+                UserId = x.UserId,
+                AgeProofPath = x.AgeProofPath,
+                AddressProofPath = x.AddressProofPath,
+                DLImagePath = x.DLImagePath,
+                CreatedAt = x.CreatedAt,
+                Status = x.Status.ToString()
+            });
+        }
 
-            return documents.Select(d => new CustomerDocumentReadDTO
+        // GET by User
+        public async Task<CustomerDocumentReadDTO> GetByUserIdAsync(int userId)
+        {
+            var d = await _repository.GetByUserIdAsync(userId);
+            if (d == null) return null;
+
+            return new CustomerDocumentReadDTO
             {
                 DocumentId = d.DocumentId,
                 UserId = d.UserId,
                 AgeProofPath = d.AgeProofPath,
                 AddressProofPath = d.AddressProofPath,
                 DLImagePath = d.DLImagePath,
-                Status = d.Status.ToString(),
-                CreatedAt = d.CreatedAt
-            });
-        }
-
-        //get document by user id
-        public async Task<CustomerDocumentReadDTO> GetByUserIdAsync(int userId)
-        {
-            var document = await _repository.GetByUserIdAsync(userId);
-            if (document == null) return null;
-
-            return new CustomerDocumentReadDTO
-            {
-                DocumentId = document.DocumentId,
-                UserId = document.UserId,
-                AgeProofPath = document.AgeProofPath,
-                AddressProofPath = document.AddressProofPath,
-                DLImagePath = document.DLImagePath,
-                CreatedAt = document.CreatedAt,
-                Status = document.Status.ToString()
+                CreatedAt = d.CreatedAt,
+                Status = d.Status.ToString()
             };
         }
-     
 
-        // Helper to remove file from server
-        private void DeleteFileIfExists(string relativePath)
-        {
-            if (string.IsNullOrWhiteSpace(relativePath))
-                return;
-
-            var fullPath = Path.Combine(_env.WebRootPath, relativePath.Replace("/", "\\"));
-
-            if (File.Exists(fullPath))
-                File.Delete(fullPath);
-        }
-
-        //validatio to check file type and drive 
-        private async Task<string> SaveFileAsync(IFormFile file, string folderPath)
-        {
-
-            if (file == null || file.Length == 0)
-                throw new Exception("File is empty or missing.");
-
-            var allowedExtensions = new[] { ".jpg", ".jpeg", ".png", ".pdf" };
-            var ext = Path.GetExtension(file.FileName).ToLowerInvariant();
-
-            if (!allowedExtensions.Contains(ext))
-                throw new Exception("Invalid file type. Only JPG, PNG, and PDF files are allowed.");
-
-            if (file.Length > 5 * 1024 * 1024) // 5 MB
-                throw new Exception("File size cannot exceed 5MB.");
-
-            if (!Directory.Exists(folderPath))
-                Directory.CreateDirectory(folderPath);
-
-            var fileName = $"{Guid.NewGuid()}_{Path.GetFileName(file.FileName)}";
-            var fullPath = Path.Combine(folderPath, fileName);
-
-            using (var stream = new FileStream(fullPath, FileMode.Create))
-            {
-                await file.CopyToAsync(stream);
-            }
-
-
-            return Path.Combine("Upload_image", "CustomerDocument", fileName).Replace("\\", "/");
-        }
-
-
-
+        // DELETE a specific document field
         public async Task UpdateDocumentFieldToNullAndDeleteFileAsync(int userId, string fieldName)
         {
-            var document = await _repository.GetByUserIdAsync(userId);
-            if (document == null) return;
+            var d = await _repository.GetByUserIdRawAsync(userId);
+            if (d == null) throw new ArgumentException("Documents not found");
 
-            string filePath = null;
-
-            switch (fieldName.ToLower())
+            string? publicId = fieldName.ToLower() switch
             {
-                case "ageproof":
-                    filePath = document.AgeProofPath;
-                    break;
-                case "addressproof":
-                    filePath = document.AddressProofPath;
-                    break;
-                case "dlimage":
-                    filePath = document.DLImagePath;
-                    break;
-                default:
-                    throw new ArgumentException("Invalid field name");
-            }
+                "ageproof" => d.AgeProofPublicId,
+                "addressproof" => d.AddressProofPublicId,
+                "dlimage" => d.DLImagePublicId,
+                _ => throw new ArgumentException("Invalid field name")
+            };
 
-            // 1. Null in DB
+            // Delete from Cloudinary
+            if (!string.IsNullOrEmpty(publicId))
+                await _cloudinary.DestroyAsync(new DeletionParams(publicId));
+
+            // Null field in DB
             await _repository.UpdateDocumentFieldToNullAsync(userId, fieldName);
-
-            // 2. Delete file from server
-            if (!string.IsNullOrEmpty(filePath))
-            {
-                var fullPath = Path.Combine(_env.WebRootPath, filePath.Replace("/", Path.DirectorySeparatorChar.ToString()));
-                if (File.Exists(fullPath))
-                {
-                    File.Delete(fullPath);
-                }
-            }
         }
+
+        //Add documnet
+        public async Task<bool> HasUserUploadedAnyDocumentsAsync(int userId)
+        {
+            return await _repository.HasUserUploadedAnyDocumentsAsync(userId);
+        }
+
     }
 }

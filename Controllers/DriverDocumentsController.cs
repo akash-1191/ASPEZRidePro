@@ -1,4 +1,6 @@
 ﻿using System;
+using CloudinaryDotNet;
+using CloudinaryDotNet.Actions;
 using EZRide_Project.Data;
 using EZRide_Project.DTO.Driver_DTO;
 using EZRide_Project.Model.Entities;
@@ -15,11 +17,14 @@ namespace EZRide_Project.Controllers
 
         private readonly ApplicationDbContext _context;
         private readonly IWebHostEnvironment _env;
+        private readonly Cloudinary _cloudinary;
 
-        public DriverDocumentsController(ApplicationDbContext context, IWebHostEnvironment env)
+        public DriverDocumentsController(ApplicationDbContext context, IWebHostEnvironment env, Cloudinary cloudinary)
         {
             _context = context;
             _env = env;
+            _cloudinary = cloudinary;
+
         }
 
         // ===========================
@@ -29,30 +34,30 @@ namespace EZRide_Project.Controllers
         public async Task<IActionResult> AddDriverDocument([FromForm] AddDriverDocumentDto dto)
         {
             if (dto.DocumentFile == null || dto.DocumentFile.Length == 0)
-                return BadRequest("Document file is required");
+                return BadRequest("Document file is required.");
 
-            var webRoot = _env.WebRootPath
-                ?? Path.Combine(Directory.GetCurrentDirectory(), "wwwroot");
+            var allowedExtensions = new[] { ".jpg", ".jpeg", ".png", ".pdf" };
+            var ext = Path.GetExtension(dto.DocumentFile.FileName).ToLower();
 
-            var folderPath = Path.Combine(webRoot, "DriverDocuments");
+            if (!allowedExtensions.Contains(ext))
+                return BadRequest("Only JPG, PNG, and PDF files allowed.");
 
-            if (!Directory.Exists(folderPath))
-                Directory.CreateDirectory(folderPath);
-
-            var fileName = $"{Guid.NewGuid()}{Path.GetExtension(dto.DocumentFile.FileName)}";
-            var fullPath = Path.Combine(folderPath, fileName);
-
-            using (var stream = new FileStream(fullPath, FileMode.Create))
+            var uploadParams = new RawUploadParams
             {
-                await dto.DocumentFile.CopyToAsync(stream);
-            }
+                File = new FileDescription(dto.DocumentFile.FileName, dto.DocumentFile.OpenReadStream()),
+                Folder = "EZRide/DriverDocuments"
+            };
+
+            var uploadResult = await _cloudinary.UploadAsync(uploadParams);
 
             var document = new DriverDocuments
             {
                 DriverId = dto.DriverId,
                 DocumentType = dto.DocumentType,
-                DocumentPath = "/DriverDocuments/" + fileName,
-                CreatedAt = DateTime.Now
+                DocumentPath = uploadResult.SecureUrl.ToString(),
+                PublicId = uploadResult.PublicId,
+                Status = DriverDocuments.DocumentStatus.Pending,
+                CreatedAt = DateTime.UtcNow
             };
 
             _context.DriverDocuments.Add(document);
@@ -60,9 +65,11 @@ namespace EZRide_Project.Controllers
 
             return Ok(new
             {
-                message = "Driver document uploaded successfully"
+                message = "Driver document uploaded successfully",
+                url = document.DocumentPath
             });
         }
+
 
 
 
@@ -107,28 +114,17 @@ namespace EZRide_Project.Controllers
             if (document == null)
                 return NotFound("Document not found");
 
-            var webRoot = _env.WebRootPath
-                ?? Path.Combine(Directory.GetCurrentDirectory(), "wwwroot");
-
-            if (!string.IsNullOrEmpty(document.DocumentPath))
+            if (!string.IsNullOrEmpty(document.PublicId))
             {
-                var fullPath = Path.Combine(
-                    webRoot,
-                    document.DocumentPath.TrimStart('/')
-                );
-
-                if (System.IO.File.Exists(fullPath))
-                    System.IO.File.Delete(fullPath);
+                await _cloudinary.DestroyAsync(new DeletionParams(document.PublicId));
             }
 
             _context.DriverDocuments.Remove(document);
             await _context.SaveChangesAsync();
 
-            return Ok(new
-            {
-                message = "Driver document deleted successfully"
-            });
+            return Ok(new { message = "Driver document deleted successfully" });
         }
+
 
     }
 }

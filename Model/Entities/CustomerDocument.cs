@@ -25,6 +25,15 @@ namespace EZRide_Project.Model.Entities
         public DocumentStatus Status { get; set; } = DocumentStatus.Active;  // Enum can be used here
         public DateTime CreatedAt { get; set; }
 
+
+
+
+        public string? AgeProofPublicId { get; set; }
+        public string? AddressProofPublicId { get; set; }
+        public string? DLImagePublicId { get; set; }
+
+
+
         // Navigation property for User
         public User User { get; set; }
 

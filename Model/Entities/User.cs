@@ -71,6 +71,9 @@ namespace EZRide_Project.Model.Entities
         public string? RejectionReason { get; set; }
         public DateTime CreatedAt { get; set; }
 
+        [Column(TypeName ="varchar(200)")]
+        public string? PublicId { get; set; }
+
 
         [Column(TypeName = "varchar(200)")]
         public string? ResetPasswordToken { get; set; }
