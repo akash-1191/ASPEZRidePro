@@ -1,4 +1,5 @@
 using System.Text;
+using CloudinaryDotNet;
 using EZRide_Project.Data;
 using EZRide_Project.Helpers;
 using EZRide_Project.Model;
@@ -56,6 +57,7 @@ builder.Services.AddScoped<IContactService, ContactService>();
 builder.Services.AddSingleton<WhatsAppService>();
 builder.Services.AddScoped<IAdminUserBookingInfoRepository, AdminUserBookingInfoRepository>();
 builder.Services.AddScoped<IAdminUserBookingInfoService, AdminUserBookingInfoService>();
+
 // Owner Vehicle Dependency Injection
 builder.Services.AddScoped<IOwnerVehicleService, OwnerVehicleService>();
 builder.Services.AddScoped<IOwnerVehicleRepository, OwnerVehicleRepository>();
@@ -66,16 +68,23 @@ builder.Services.AddScoped<IOwnerService, OwnerService>();
 builder.Services.AddScoped<IOwnerPaymentService, OwnerPaymentService>();
 builder.Services.AddScoped<IOwnerPaymentRepository, OwnerPaymentRepository>();
 builder.Services.AddScoped<IDriverPaymentService, DriverPaymentService>(); ;
-
 builder.Services.AddSingleton<IWebHostEnvironment>(builder.Environment);
 
-
-//chat services
-builder.Services.AddScoped<IChatService, ChatService>();
 
 
 // --- ADD SIGNALR ---
 builder.Services.AddSignalR();
+
+//chat services
+builder.Services.AddScoped<IChatService, ChatService>();
+
+// Cloudinary Config
+var cloudName = builder.Configuration["Cloudinary:CloudName"];
+var apiKey = builder.Configuration["Cloudinary:ApiKey"];
+var apiSecret = builder.Configuration["Cloudinary:ApiSecret"];
+
+var cloudinary = new Cloudinary(new Account(cloudName, apiKey, apiSecret));
+builder.Services.AddSingleton(cloudinary);
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
@@ -112,6 +121,9 @@ builder.Services.AddSwaggerGen(c =>
         }
     });
 });
+
+
+//builder.Services.AddSingleton(cloudinary);
 // AUTH (JWT) with SignalR token-from-query handling
 
 builder.Services.AddAuthentication(options =>
@@ -200,8 +212,8 @@ app.UseStaticFiles();
 //app.UseHttpsRedirection();
 
 // Add CORS middleware BEFORE Authorization and routing
-//app.UseCors("AllowAll");
-app.UseCors("SignalRPolicy");
+
+//app.UseCors("SignalRPolicy");
 
 app.UseAuthentication();
 app.UseAuthorization();

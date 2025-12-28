@@ -12,7 +12,11 @@ namespace EZRide_Project.Model.Entities
 
         [Required]
         [Column(TypeName ="varchar(100)")]
-        public string ImagePath { get; set; } 
+        public string ImagePath { get; set; }   
+
+        [Column(TypeName = "varchar(200)")]
+        public string? PublicId { get; set; } // importent for  Cloudinary 
+
         public DateTime CreatedAt { get; set; } 
 
         // Navigation property for Vehicle
