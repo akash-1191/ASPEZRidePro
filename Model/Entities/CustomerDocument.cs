@@ -11,14 +11,14 @@ namespace EZRide_Project.Model.Entities
         public int UserId { get; set; } // FK for User
 
         
-        [Column(TypeName ="Varchar(150)")]
+        [Column(TypeName ="Varchar(500)")]
         public string? AgeProofPath { get; set; }
 
        
-        [Column(TypeName = "Varchar(150)")]
+        [Column(TypeName = "Varchar(500)")]
         public string? AddressProofPath { get; set; }
 
-        [Column(TypeName = "varchar(150)")]
+        [Column(TypeName = "varchar(500)")]
         public string? DLImagePath { get; set; }
 
         [Column(TypeName ="varchar(50)")]

@@ -8,6 +8,9 @@ namespace EZRide_Project.DTO.Vehile_Owner_DTo
         public string DocumentType { get; set; } // RCBook, InsurancePaper, AadhaarCard, etc.
 
         [Required(ErrorMessage = "Document file is required.")]
-        public IFormFile DocumentFile { get; set; } // File upload
+        public IFormFile DocumentFile { get; set; }
+
+        public string? PublicId { get; set; }
+
     }
 }

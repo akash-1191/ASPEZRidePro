@@ -36,7 +36,7 @@ namespace EZRide_Project.Model.Entities
 
 
         [Required]
-        [Column(TypeName = "varchar(255)")]
+        [Column(TypeName = "varchar(500)")]
         public string Image { set; get; }
 
 

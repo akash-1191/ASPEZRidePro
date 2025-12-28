@@ -11,10 +11,10 @@ namespace EZRide_Project.Model.Entities
         public int VehicleId { get; set; } 
 
         [Required]
-        [Column(TypeName ="varchar(100)")]
+        [Column(TypeName ="varchar(500)")]
         public string ImagePath { get; set; }   
 
-        [Column(TypeName = "varchar(200)")]
+        [Column(TypeName = "varchar(500)")]
         public string? PublicId { get; set; } // importent for  Cloudinary 
 
         public DateTime CreatedAt { get; set; } 

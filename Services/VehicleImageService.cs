@@ -10,14 +10,12 @@ namespace EZRide_Project.Services
 {
     public class VehicleImageService : IVehicleImageService
     {
-        private readonly IVehicleImageRepository _imageRepository;
-       
         private readonly Cloudinary _cloudinary;
+        private readonly IVehicleImageRepository _imageRepository;
 
         public VehicleImageService(IVehicleImageRepository imageRepository, Cloudinary cloudinary)
         {
             _imageRepository = imageRepository;
-           
             _cloudinary = cloudinary;
         }
 

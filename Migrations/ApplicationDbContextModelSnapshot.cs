@@ -85,7 +85,7 @@ namespace EZRide_Project.Migrations
 
                     b.HasIndex("VehicleId");
 
-                    b.ToTable("Bookings", (string)null);
+                    b.ToTable("Bookings");
                 });
 
             modelBuilder.Entity("EZRide_Project.Model.Entities.BookingOTP", b =>
@@ -120,7 +120,7 @@ namespace EZRide_Project.Migrations
 
                     b.HasIndex("BookingId");
 
-                    b.ToTable("BookingOTPs", (string)null);
+                    b.ToTable("BookingOTPs");
                 });
 
             modelBuilder.Entity("EZRide_Project.Model.Entities.ChatMessage", b =>
@@ -154,7 +154,7 @@ namespace EZRide_Project.Migrations
 
                     b.HasIndex("SenderId");
 
-                    b.ToTable("ChatMessages", (string)null);
+                    b.ToTable("ChatMessages");
                 });
 
             modelBuilder.Entity("EZRide_Project.Model.Entities.Contact", b =>
@@ -194,7 +194,7 @@ namespace EZRide_Project.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Contacts", (string)null);
+                    b.ToTable("Contacts");
                 });
 
             modelBuilder.Entity("EZRide_Project.Model.Entities.Conversation", b =>
@@ -228,7 +228,7 @@ namespace EZRide_Project.Migrations
 
                     b.HasIndex("Participant2Id");
 
-                    b.ToTable("Conversations", (string)null);
+                    b.ToTable("Conversations");
                 });
 
             modelBuilder.Entity("EZRide_Project.Model.Entities.CustomerDocument", b =>
@@ -240,16 +240,25 @@ namespace EZRide_Project.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("DocumentId"));
 
                     b.Property<string>("AddressProofPath")
-                        .HasColumnType("Varchar(150)");
+                        .HasColumnType("Varchar(500)");
+
+                    b.Property<string>("AddressProofPublicId")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("AgeProofPath")
-                        .HasColumnType("Varchar(150)");
+                        .HasColumnType("Varchar(500)");
+
+                    b.Property<string>("AgeProofPublicId")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("DLImagePath")
-                        .HasColumnType("varchar(150)");
+                        .HasColumnType("varchar(500)");
+
+                    b.Property<string>("DLImagePublicId")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Status")
                         .IsRequired()
@@ -262,7 +271,7 @@ namespace EZRide_Project.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("CustomerDocuments", (string)null);
+                    b.ToTable("CustomerDocuments");
                 });
 
             modelBuilder.Entity("EZRide_Project.Model.Entities.DamageReport", b =>
@@ -296,7 +305,7 @@ namespace EZRide_Project.Migrations
                     b.HasIndex("BookingId")
                         .IsUnique();
 
-                    b.ToTable("DamageReports", (string)null);
+                    b.ToTable("DamageReports");
                 });
 
             modelBuilder.Entity("EZRide_Project.Model.Entities.Driver", b =>
@@ -335,7 +344,7 @@ namespace EZRide_Project.Migrations
                     b.HasIndex("UserId")
                         .IsUnique();
 
-                    b.ToTable("Drivers", (string)null);
+                    b.ToTable("Drivers");
                 });
 
             modelBuilder.Entity("EZRide_Project.Model.Entities.DriverBookingHistory", b =>
@@ -379,7 +388,7 @@ namespace EZRide_Project.Migrations
 
                     b.HasIndex("VehicleId");
 
-                    b.ToTable("DriverBookingHistories", (string)null);
+                    b.ToTable("DriverBookingHistories");
                 });
 
             modelBuilder.Entity("EZRide_Project.Model.Entities.DriverDocuments", b =>
@@ -395,7 +404,7 @@ namespace EZRide_Project.Migrations
 
                     b.Property<string>("DocumentPath")
                         .IsRequired()
-                        .HasColumnType("varchar(255)");
+                        .HasColumnType("varchar(500)");
 
                     b.Property<string>("DocumentType")
                         .IsRequired()
@@ -403,6 +412,9 @@ namespace EZRide_Project.Migrations
 
                     b.Property<int>("DriverId")
                         .HasColumnType("int");
+
+                    b.Property<string>("PublicId")
+                        .HasColumnType("varchar(500)");
 
                     b.Property<string>("Status")
                         .IsRequired()
@@ -412,7 +424,7 @@ namespace EZRide_Project.Migrations
 
                     b.HasIndex("DriverId");
 
-                    b.ToTable("DriverDocuments", (string)null);
+                    b.ToTable("DriverDocuments");
                 });
 
             modelBuilder.Entity("EZRide_Project.Model.Entities.DriverPayment", b =>
@@ -454,7 +466,7 @@ namespace EZRide_Project.Migrations
 
                     b.HasIndex("DriverId");
 
-                    b.ToTable("DriverPayments", (string)null);
+                    b.ToTable("DriverPayments");
                 });
 
             modelBuilder.Entity("EZRide_Project.Model.Entities.DriverReview", b =>
@@ -486,7 +498,7 @@ namespace EZRide_Project.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("DriverReviews", (string)null);
+                    b.ToTable("DriverReviews");
                 });
 
             modelBuilder.Entity("EZRide_Project.Model.Entities.Feedback", b =>
@@ -519,7 +531,7 @@ namespace EZRide_Project.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Feedbacks", (string)null);
+                    b.ToTable("Feedbacks");
                 });
 
             modelBuilder.Entity("EZRide_Project.Model.Entities.FuelLog", b =>
@@ -553,7 +565,7 @@ namespace EZRide_Project.Migrations
                     b.HasIndex("BookingId")
                         .IsUnique();
 
-                    b.ToTable("FuelLogs", (string)null);
+                    b.ToTable("FuelLogs");
                 });
 
             modelBuilder.Entity("EZRide_Project.Model.Entities.OwnerDocument", b =>
@@ -570,14 +582,17 @@ namespace EZRide_Project.Migrations
                     b.Property<string>("DocumentPath")
                         .IsRequired()
                         .HasMaxLength(255)
-                        .HasColumnType("varchar(255)");
+                        .HasColumnType("varchar(500)");
 
                     b.Property<string>("DocumentType")
                         .IsRequired()
-                        .HasColumnType("varchar(50)");
+                        .HasColumnType("varchar(250)");
 
                     b.Property<int>("OwnerId")
                         .HasColumnType("int");
+
+                    b.Property<string>("PublicId")
+                        .HasColumnType("varchar(500)");
 
                     b.Property<string>("Reason")
                         .HasColumnType("varchar(20)");
@@ -590,7 +605,7 @@ namespace EZRide_Project.Migrations
 
                     b.HasIndex("OwnerId");
 
-                    b.ToTable("OwnerDocuments", (string)null);
+                    b.ToTable("OwnerDocuments");
                 });
 
             modelBuilder.Entity("EZRide_Project.Model.Entities.OwnerPayment", b =>
@@ -627,7 +642,7 @@ namespace EZRide_Project.Migrations
 
                     b.HasIndex("VehicleId");
 
-                    b.ToTable("OwnerPayments", (string)null);
+                    b.ToTable("OwnerPayments");
                 });
 
             modelBuilder.Entity("EZRide_Project.Model.Entities.OwnerVehicleAvailability", b =>
@@ -669,7 +684,7 @@ namespace EZRide_Project.Migrations
 
                     b.HasIndex("VehicleId");
 
-                    b.ToTable("OwnerVehicleAvailabilities", (string)null);
+                    b.ToTable("OwnerVehicleAvailabilities");
                 });
 
             modelBuilder.Entity("EZRide_Project.Model.Entities.Payment", b =>
@@ -709,7 +724,7 @@ namespace EZRide_Project.Migrations
                     b.HasIndex("BookingId")
                         .IsUnique();
 
-                    b.ToTable("Payments", (string)null);
+                    b.ToTable("Payments");
                 });
 
             modelBuilder.Entity("EZRide_Project.Model.Entities.PricingRule", b =>
@@ -740,7 +755,7 @@ namespace EZRide_Project.Migrations
                     b.HasIndex("VehicleId")
                         .IsUnique();
 
-                    b.ToTable("PricingRules", (string)null);
+                    b.ToTable("PricingRules");
                 });
 
             modelBuilder.Entity("EZRide_Project.Model.Entities.Role", b =>
@@ -762,7 +777,7 @@ namespace EZRide_Project.Migrations
 
                     b.HasKey("RoleId");
 
-                    b.ToTable("Roles", (string)null);
+                    b.ToTable("Roles");
 
                     b.HasData(
                         new
@@ -820,7 +835,7 @@ namespace EZRide_Project.Migrations
                     b.HasIndex("BookingId")
                         .IsUnique();
 
-                    b.ToTable("SecurityDeposits", (string)null);
+                    b.ToTable("SecurityDeposits");
                 });
 
             modelBuilder.Entity("EZRide_Project.Model.Entities.User", b =>
@@ -861,7 +876,7 @@ namespace EZRide_Project.Migrations
 
                     b.Property<string>("Image")
                         .IsRequired()
-                        .HasColumnType("varchar(255)");
+                        .HasColumnType("varchar(500)");
 
                     b.Property<string>("Lastname")
                         .IsRequired()
@@ -880,6 +895,9 @@ namespace EZRide_Project.Migrations
                         .IsRequired()
                         .HasMaxLength(12)
                         .HasColumnType("varchar(15)");
+
+                    b.Property<string>("PublicId")
+                        .HasColumnType("varchar(200)");
 
                     b.Property<string>("RejectionReason")
                         .HasColumnType("varchar(200)");
@@ -907,7 +925,7 @@ namespace EZRide_Project.Migrations
 
                     b.HasIndex("RoleId");
 
-                    b.ToTable("Users", (string)null);
+                    b.ToTable("Users");
                 });
 
             modelBuilder.Entity("EZRide_Project.Model.Entities.Vehicle", b =>
@@ -992,7 +1010,7 @@ namespace EZRide_Project.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Vehicles", (string)null);
+                    b.ToTable("Vehicles");
                 });
 
             modelBuilder.Entity("EZRide_Project.Model.Entities.VehicleImage", b =>
@@ -1008,7 +1026,10 @@ namespace EZRide_Project.Migrations
 
                     b.Property<string>("ImagePath")
                         .IsRequired()
-                        .HasColumnType("varchar(100)");
+                        .HasColumnType("varchar(500)");
+
+                    b.Property<string>("PublicId")
+                        .HasColumnType("varchar(500)");
 
                     b.Property<int>("VehicleId")
                         .HasColumnType("int");
@@ -1017,7 +1038,7 @@ namespace EZRide_Project.Migrations
 
                     b.HasIndex("VehicleId");
 
-                    b.ToTable("VehicleImages", (string)null);
+                    b.ToTable("VehicleImages");
                 });
 
             modelBuilder.Entity("EZRide_Project.Model.Entities.Booking", b =>

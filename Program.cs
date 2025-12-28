@@ -83,8 +83,12 @@ var cloudName = builder.Configuration["Cloudinary:CloudName"];
 var apiKey = builder.Configuration["Cloudinary:ApiKey"];
 var apiSecret = builder.Configuration["Cloudinary:ApiSecret"];
 
+
 var cloudinary = new Cloudinary(new Account(cloudName, apiKey, apiSecret));
 builder.Services.AddSingleton(cloudinary);
+
+
+
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();

@@ -16,13 +16,13 @@ namespace EZRide_Project.Model.Entities
 
         // Document Type (ENUM)
         [Required]
-        [Column(TypeName = "varchar(50)")]
+        [Column(TypeName = "varchar(250)")]
         public documentType DocumentType { get; set; }
 
         // File Path
         [Required]
         [MaxLength(255)]
-        [Column(TypeName = "varchar(255)")]
+        [Column(TypeName = "varchar(500)")]
         public string DocumentPath { get; set; }
 
         // Document Status
@@ -30,9 +30,12 @@ namespace EZRide_Project.Model.Entities
         [Column(TypeName = "varchar(20)")]
         public DocumentStatus Status { get; set; } = DocumentStatus.Pending;
 
+        [Column(TypeName = "varchar(500)")]
+        public string? PublicId { get; set; }
+
 
         // cancelation Reasion 
-       
+
         [Column(TypeName = "varchar(20)")]
         public string? Reason { get; set; }
 

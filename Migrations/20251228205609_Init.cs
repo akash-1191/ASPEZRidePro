@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace EZRide_Project.Migrations
 {
     /// <inheritdoc />
-    public partial class Add_tables : Migration
+    public partial class Init : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -38,7 +38,7 @@ namespace EZRide_Project.Migrations
                     Lastname = table.Column<string>(type: "varchar(100)", maxLength: 100, nullable: false),
                     Age = table.Column<int>(type: "int", nullable: false),
                     Gender = table.Column<string>(type: "varchar(20)", nullable: false),
-                    Image = table.Column<string>(type: "varchar(255)", nullable: false),
+                    Image = table.Column<string>(type: "varchar(500)", nullable: false),
                     City = table.Column<string>(type: "varchar(50)", nullable: false),
                     State = table.Column<string>(type: "varchar(50)", nullable: false),
                     Email = table.Column<string>(type: "varchar(100)", maxLength: 100, nullable: false),
@@ -46,7 +46,11 @@ namespace EZRide_Project.Migrations
                     Password = table.Column<string>(type: "varchar(100)", nullable: false),
                     Address = table.Column<string>(type: "varchar(200)", nullable: false),
                     Status = table.Column<int>(type: "int", nullable: false),
+                    RejectionReason = table.Column<string>(type: "varchar(200)", nullable: true),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    PublicId = table.Column<string>(type: "varchar(200)", nullable: true),
+                    ResetPasswordToken = table.Column<string>(type: "varchar(200)", nullable: true),
+                    ResetPasswordTokenExpiry = table.Column<DateTime>(type: "datetime2", nullable: true),
                     RoleId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
@@ -118,11 +122,14 @@ namespace EZRide_Project.Migrations
                     DocumentId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     UserId = table.Column<int>(type: "int", nullable: false),
-                    AgeProofPath = table.Column<string>(type: "Varchar(150)", nullable: true),
-                    AddressProofPath = table.Column<string>(type: "Varchar(150)", nullable: true),
-                    DLImagePath = table.Column<string>(type: "varchar(150)", nullable: true),
+                    AgeProofPath = table.Column<string>(type: "Varchar(500)", nullable: true),
+                    AddressProofPath = table.Column<string>(type: "Varchar(500)", nullable: true),
+                    DLImagePath = table.Column<string>(type: "varchar(500)", nullable: true),
                     Status = table.Column<string>(type: "varchar(50)", nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    AgeProofPublicId = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    AddressProofPublicId = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    DLImagePublicId = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -144,6 +151,8 @@ namespace EZRide_Project.Migrations
                     UserId = table.Column<int>(type: "int", nullable: false),
                     ExperienceYears = table.Column<int>(type: "int", nullable: false),
                     AvailabilityStatus = table.Column<string>(type: "varchar(20)", nullable: false),
+                    PerDayRate = table.Column<decimal>(type: "decimal(10,2)", nullable: true),
+                    VehicleTypes = table.Column<int>(type: "int", nullable: false),
                     Status = table.Column<string>(type: "varchar(20)", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
@@ -182,6 +191,30 @@ namespace EZRide_Project.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "OwnerDocuments",
+                columns: table => new
+                {
+                    DocumentId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    OwnerId = table.Column<int>(type: "int", nullable: false),
+                    DocumentType = table.Column<string>(type: "varchar(50)", nullable: false),
+                    DocumentPath = table.Column<string>(type: "varchar(255)", maxLength: 255, nullable: false),
+                    Status = table.Column<string>(type: "varchar(20)", nullable: false),
+                    Reason = table.Column<string>(type: "varchar(20)", nullable: true),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_OwnerDocuments", x => x.DocumentId);
+                    table.ForeignKey(
+                        name: "FK_OwnerDocuments_Users_OwnerId",
+                        column: x => x.OwnerId,
+                        principalTable: "Users",
+                        principalColumn: "UserId",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Vehicles",
                 columns: table => new
                 {
@@ -203,7 +236,10 @@ namespace EZRide_Project.Migrations
                     CarName = table.Column<string>(type: "varchar(50)", nullable: true),
                     EngineCapacity = table.Column<int>(type: "int", nullable: false),
                     BikeName = table.Column<string>(type: "varchar(80)", nullable: true),
-                    SecurityDepositAmount = table.Column<decimal>(type: "decimal(10,2)", nullable: false),
+                    SecurityDepositAmount = table.Column<decimal>(type: "decimal(10,2)", nullable: true),
+                    Status = table.Column<bool>(type: "bit", nullable: true),
+                    IsApproved = table.Column<bool>(type: "bit", nullable: false),
+                    RejectReason = table.Column<string>(type: "varchar(200)", nullable: true),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
@@ -254,9 +290,10 @@ namespace EZRide_Project.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     DriverId = table.Column<int>(type: "int", nullable: false),
                     DocumentType = table.Column<string>(type: "varchar(50)", nullable: false),
-                    DocumentPath = table.Column<string>(type: "varchar(255)", nullable: false),
+                    DocumentPath = table.Column<string>(type: "varchar(500)", nullable: false),
                     Status = table.Column<string>(type: "varchar(20)", nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    PublicId = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -316,7 +353,7 @@ namespace EZRide_Project.Migrations
                     Status = table.Column<string>(type: "varchar(50)", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
                     Cancelreasion = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    DriverRequired = table.Column<string>(type: "varchar(3)", nullable: false),
+                    DriverRequired = table.Column<string>(type: "varchar(3)", nullable: true),
                     DriverId = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
@@ -380,7 +417,7 @@ namespace EZRide_Project.Migrations
                     EffectiveFrom = table.Column<DateTime>(type: "datetime2", nullable: false),
                     EffectiveTo = table.Column<DateTime>(type: "datetime2", nullable: false),
                     Status = table.Column<string>(type: "varchar(20)", nullable: false),
-                    PricePerDay = table.Column<decimal>(type: "decimal(10,2)", nullable: false),
+                    vehicleAmountPerDay = table.Column<decimal>(type: "decimal(10,2)", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
@@ -428,7 +465,8 @@ namespace EZRide_Project.Migrations
                     VehicleImageId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     VehicleId = table.Column<int>(type: "int", nullable: false),
-                    ImagePath = table.Column<string>(type: "varchar(100)", nullable: false),
+                    ImagePath = table.Column<string>(type: "varchar(500)", nullable: false),
+                    PublicId = table.Column<string>(type: "varchar(200)", nullable: true),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
@@ -523,6 +561,37 @@ namespace EZRide_Project.Migrations
                         column: x => x.VehicleId,
                         principalTable: "Vehicles",
                         principalColumn: "VehicleId");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "DriverPayments",
+                columns: table => new
+                {
+                    DriverPaymentId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    DriverId = table.Column<int>(type: "int", nullable: false),
+                    BookingId = table.Column<int>(type: "int", nullable: false),
+                    Amount = table.Column<decimal>(type: "decimal(10,2)", nullable: false),
+                    PaymentType = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
+                    Status = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    PaidAt = table.Column<DateTime>(type: "datetime2", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_DriverPayments", x => x.DriverPaymentId);
+                    table.ForeignKey(
+                        name: "FK_DriverPayments_Bookings_BookingId",
+                        column: x => x.BookingId,
+                        principalTable: "Bookings",
+                        principalColumn: "BookingId",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_DriverPayments_Drivers_DriverId",
+                        column: x => x.DriverId,
+                        principalTable: "Drivers",
+                        principalColumn: "DriverId",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -682,6 +751,16 @@ namespace EZRide_Project.Migrations
                 column: "DriverId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_DriverPayments_BookingId",
+                table: "DriverPayments",
+                column: "BookingId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_DriverPayments_DriverId",
+                table: "DriverPayments",
+                column: "DriverId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_DriverReviews_DriverId",
                 table: "DriverReviews",
                 column: "DriverId");
@@ -707,6 +786,11 @@ namespace EZRide_Project.Migrations
                 table: "FuelLogs",
                 column: "BookingId",
                 unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_OwnerDocuments_OwnerId",
+                table: "OwnerDocuments",
+                column: "OwnerId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_OwnerPayments_UserId",
@@ -793,6 +877,9 @@ namespace EZRide_Project.Migrations
                 name: "DriverDocuments");
 
             migrationBuilder.DropTable(
+                name: "DriverPayments");
+
+            migrationBuilder.DropTable(
                 name: "DriverReviews");
 
             migrationBuilder.DropTable(
@@ -800,6 +887,9 @@ namespace EZRide_Project.Migrations
 
             migrationBuilder.DropTable(
                 name: "FuelLogs");
+
+            migrationBuilder.DropTable(
+                name: "OwnerDocuments");
 
             migrationBuilder.DropTable(
                 name: "OwnerPayments");

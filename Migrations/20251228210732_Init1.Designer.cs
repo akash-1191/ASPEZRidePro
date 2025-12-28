@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EZRide_Project.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20251201085046_addonetable")]
-    partial class addonetable
+    [Migration("20251228210732_Init1")]
+    partial class Init1
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -243,16 +243,25 @@ namespace EZRide_Project.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("DocumentId"));
 
                     b.Property<string>("AddressProofPath")
-                        .HasColumnType("Varchar(150)");
+                        .HasColumnType("Varchar(500)");
+
+                    b.Property<string>("AddressProofPublicId")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("AgeProofPath")
-                        .HasColumnType("Varchar(150)");
+                        .HasColumnType("Varchar(500)");
+
+                    b.Property<string>("AgeProofPublicId")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("DLImagePath")
-                        .HasColumnType("varchar(150)");
+                        .HasColumnType("varchar(500)");
+
+                    b.Property<string>("DLImagePublicId")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Status")
                         .IsRequired()
@@ -320,11 +329,17 @@ namespace EZRide_Project.Migrations
                     b.Property<int>("ExperienceYears")
                         .HasColumnType("int");
 
+                    b.Property<decimal?>("PerDayRate")
+                        .HasColumnType("decimal(10,2)");
+
                     b.Property<string>("Status")
                         .IsRequired()
                         .HasColumnType("varchar(20)");
 
                     b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("VehicleTypes")
                         .HasColumnType("int");
 
                     b.HasKey("DriverId");
@@ -392,7 +407,7 @@ namespace EZRide_Project.Migrations
 
                     b.Property<string>("DocumentPath")
                         .IsRequired()
-                        .HasColumnType("varchar(255)");
+                        .HasColumnType("varchar(500)");
 
                     b.Property<string>("DocumentType")
                         .IsRequired()
@@ -400,6 +415,9 @@ namespace EZRide_Project.Migrations
 
                     b.Property<int>("DriverId")
                         .HasColumnType("int");
+
+                    b.Property<string>("PublicId")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Status")
                         .IsRequired()
@@ -410,6 +428,48 @@ namespace EZRide_Project.Migrations
                     b.HasIndex("DriverId");
 
                     b.ToTable("DriverDocuments");
+                });
+
+            modelBuilder.Entity("EZRide_Project.Model.Entities.DriverPayment", b =>
+                {
+                    b.Property<int>("DriverPaymentId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("DriverPaymentId"));
+
+                    b.Property<decimal>("Amount")
+                        .HasColumnType("decimal(10,2)");
+
+                    b.Property<int>("BookingId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("DriverId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("PaidAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("PaymentType")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.HasKey("DriverPaymentId");
+
+                    b.HasIndex("BookingId");
+
+                    b.HasIndex("DriverId");
+
+                    b.ToTable("DriverPayments");
                 });
 
             modelBuilder.Entity("EZRide_Project.Model.Entities.DriverReview", b =>
@@ -534,6 +594,9 @@ namespace EZRide_Project.Migrations
                     b.Property<int>("OwnerId")
                         .HasColumnType("int");
 
+                    b.Property<string>("Reason")
+                        .HasColumnType("varchar(20)");
+
                     b.Property<string>("Status")
                         .IsRequired()
                         .HasColumnType("varchar(20)");
@@ -542,7 +605,7 @@ namespace EZRide_Project.Migrations
 
                     b.HasIndex("OwnerId");
 
-                    b.ToTable("OwnerDocument");
+                    b.ToTable("OwnerDocuments");
                 });
 
             modelBuilder.Entity("EZRide_Project.Model.Entities.OwnerPayment", b =>
@@ -605,15 +668,15 @@ namespace EZRide_Project.Migrations
                     b.Property<int>("OwnerId")
                         .HasColumnType("int");
 
-                    b.Property<decimal>("PricePerDay")
-                        .HasColumnType("decimal(10,2)");
-
                     b.Property<string>("Status")
                         .IsRequired()
                         .HasColumnType("varchar(20)");
 
                     b.Property<int>("VehicleId")
                         .HasColumnType("int");
+
+                    b.Property<decimal>("vehicleAmountPerDay")
+                        .HasColumnType("decimal(10,2)");
 
                     b.HasKey("AvailabilityId");
 
@@ -813,7 +876,7 @@ namespace EZRide_Project.Migrations
 
                     b.Property<string>("Image")
                         .IsRequired()
-                        .HasColumnType("varchar(255)");
+                        .HasColumnType("varchar(500)");
 
                     b.Property<string>("Lastname")
                         .IsRequired()
@@ -832,6 +895,18 @@ namespace EZRide_Project.Migrations
                         .IsRequired()
                         .HasMaxLength(12)
                         .HasColumnType("varchar(15)");
+
+                    b.Property<string>("PublicId")
+                        .HasColumnType("varchar(200)");
+
+                    b.Property<string>("RejectionReason")
+                        .HasColumnType("varchar(200)");
+
+                    b.Property<string>("ResetPasswordToken")
+                        .HasColumnType("varchar(200)");
+
+                    b.Property<DateTime?>("ResetPasswordTokenExpiry")
+                        .HasColumnType("datetime2");
 
                     b.Property<int>("RoleId")
                         .HasColumnType("int");
@@ -895,6 +970,9 @@ namespace EZRide_Project.Migrations
                         .IsRequired()
                         .HasColumnType("varchar(50)");
 
+                    b.Property<bool>("IsApproved")
+                        .HasColumnType("bit");
+
                     b.Property<decimal>("Mileage")
                         .HasColumnType("decimal(5,2)");
 
@@ -905,6 +983,9 @@ namespace EZRide_Project.Migrations
                     b.Property<string>("RegistrationNo")
                         .IsRequired()
                         .HasColumnType("varchar(50)");
+
+                    b.Property<string>("RejectReason")
+                        .HasColumnType("varchar(200)");
 
                     b.Property<byte?>("SeatingCapacity")
                         .HasColumnType("tinyint");
@@ -945,7 +1026,10 @@ namespace EZRide_Project.Migrations
 
                     b.Property<string>("ImagePath")
                         .IsRequired()
-                        .HasColumnType("varchar(100)");
+                        .HasColumnType("varchar(500)");
+
+                    b.Property<string>("PublicId")
+                        .HasColumnType("varchar(500)");
 
                     b.Property<int>("VehicleId")
                         .HasColumnType("int");
@@ -1105,6 +1189,25 @@ namespace EZRide_Project.Migrations
                         .HasForeignKey("DriverId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Driver");
+                });
+
+            modelBuilder.Entity("EZRide_Project.Model.Entities.DriverPayment", b =>
+                {
+                    b.HasOne("EZRide_Project.Model.Entities.Booking", "Booking")
+                        .WithMany()
+                        .HasForeignKey("BookingId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("EZRide_Project.Model.Entities.Driver", "Driver")
+                        .WithMany()
+                        .HasForeignKey("DriverId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Booking");
 
                     b.Navigation("Driver");
                 });

@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EZRide_Project.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20251216174922_addperdayDriverTable")]
-    partial class addperdayDriverTable
+    [Migration("20251228212316_Init2")]
+    partial class Init2
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -243,16 +243,25 @@ namespace EZRide_Project.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("DocumentId"));
 
                     b.Property<string>("AddressProofPath")
-                        .HasColumnType("Varchar(150)");
+                        .HasColumnType("Varchar(500)");
+
+                    b.Property<string>("AddressProofPublicId")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("AgeProofPath")
-                        .HasColumnType("Varchar(150)");
+                        .HasColumnType("Varchar(500)");
+
+                    b.Property<string>("AgeProofPublicId")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("DLImagePath")
-                        .HasColumnType("varchar(150)");
+                        .HasColumnType("varchar(500)");
+
+                    b.Property<string>("DLImagePublicId")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Status")
                         .IsRequired()
@@ -398,7 +407,7 @@ namespace EZRide_Project.Migrations
 
                     b.Property<string>("DocumentPath")
                         .IsRequired()
-                        .HasColumnType("varchar(255)");
+                        .HasColumnType("varchar(500)");
 
                     b.Property<string>("DocumentType")
                         .IsRequired()
@@ -406,6 +415,9 @@ namespace EZRide_Project.Migrations
 
                     b.Property<int>("DriverId")
                         .HasColumnType("int");
+
+                    b.Property<string>("PublicId")
+                        .HasColumnType("varchar(500)");
 
                     b.Property<string>("Status")
                         .IsRequired()
@@ -573,14 +585,17 @@ namespace EZRide_Project.Migrations
                     b.Property<string>("DocumentPath")
                         .IsRequired()
                         .HasMaxLength(255)
-                        .HasColumnType("varchar(255)");
+                        .HasColumnType("varchar(500)");
 
                     b.Property<string>("DocumentType")
                         .IsRequired()
-                        .HasColumnType("varchar(50)");
+                        .HasColumnType("varchar(250)");
 
                     b.Property<int>("OwnerId")
                         .HasColumnType("int");
+
+                    b.Property<string>("PublicId")
+                        .HasColumnType("varchar(500)");
 
                     b.Property<string>("Reason")
                         .HasColumnType("varchar(20)");
@@ -864,7 +879,7 @@ namespace EZRide_Project.Migrations
 
                     b.Property<string>("Image")
                         .IsRequired()
-                        .HasColumnType("varchar(255)");
+                        .HasColumnType("varchar(500)");
 
                     b.Property<string>("Lastname")
                         .IsRequired()
@@ -884,8 +899,17 @@ namespace EZRide_Project.Migrations
                         .HasMaxLength(12)
                         .HasColumnType("varchar(15)");
 
+                    b.Property<string>("PublicId")
+                        .HasColumnType("varchar(200)");
+
                     b.Property<string>("RejectionReason")
                         .HasColumnType("varchar(200)");
+
+                    b.Property<string>("ResetPasswordToken")
+                        .HasColumnType("varchar(200)");
+
+                    b.Property<DateTime?>("ResetPasswordTokenExpiry")
+                        .HasColumnType("datetime2");
 
                     b.Property<int>("RoleId")
                         .HasColumnType("int");
@@ -1005,7 +1029,10 @@ namespace EZRide_Project.Migrations
 
                     b.Property<string>("ImagePath")
                         .IsRequired()
-                        .HasColumnType("varchar(100)");
+                        .HasColumnType("varchar(500)");
+
+                    b.Property<string>("PublicId")
+                        .HasColumnType("varchar(500)");
 
                     b.Property<int>("VehicleId")
                         .HasColumnType("int");

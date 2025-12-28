@@ -5,31 +5,31 @@
 namespace EZRide_Project.Migrations
 {
     /// <inheritdoc />
-    public partial class init : Migration
+    public partial class Init1 : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.AlterColumn<string>(
-                name: "DriverRequired",
-                table: "Bookings",
-                type: "varchar(3)",
+                name: "PublicId",
+                table: "VehicleImages",
+                type: "varchar(500)",
                 nullable: true,
                 oldClrType: typeof(string),
-                oldType: "varchar(3)");
+                oldType: "varchar(200)",
+                oldNullable: true);
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.AlterColumn<string>(
-                name: "DriverRequired",
-                table: "Bookings",
-                type: "varchar(3)",
-                nullable: false,
-                defaultValue: "",
+                name: "PublicId",
+                table: "VehicleImages",
+                type: "varchar(200)",
+                nullable: true,
                 oldClrType: typeof(string),
-                oldType: "varchar(3)",
+                oldType: "varchar(500)",
                 oldNullable: true);
         }
     }

@@ -16,7 +16,7 @@ namespace EZRide_Project.Model.Entities
         public DocumentTypes DocumentType { get; set; } // Enum: License, IDProof, AddressProof
 
         [Required]
-        [Column(TypeName = "varchar(255)")]
+        [Column(TypeName = "varchar(500)")]
         public string DocumentPath { get; set; }
 
         [Required]
@@ -24,7 +24,7 @@ namespace EZRide_Project.Model.Entities
         public DocumentStatus Status { get; set; } // Enum: Pending, Verified, Rejected
 
         public DateTime CreatedAt { get; set; }
-
+        [Column(TypeName = "varchar(500)")]
         public string? PublicId { get; set; }
 
 

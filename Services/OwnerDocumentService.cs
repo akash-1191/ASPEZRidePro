@@ -1,6 +1,7 @@
-﻿using EZRide_Project.DTO.Vehile_Owner_DTo;
+﻿using CloudinaryDotNet;
+using CloudinaryDotNet.Actions;
+using EZRide_Project.DTO.Vehile_Owner_DTo;
 using EZRide_Project.Helpers;
-using EZRide_Project.Migrations;
 using EZRide_Project.Model;
 using EZRide_Project.Model.Entities;
 using EZRide_Project.Repositories;
@@ -10,65 +11,53 @@ namespace EZRide_Project.Services
     public class OwnerDocumentService : IOwnerDocumentService
     {
         private readonly IOwnerDocumentRepository _repo;
-        private readonly IWebHostEnvironment _env;
+        private readonly Cloudinary _cloudinary;
 
-        public OwnerDocumentService(IOwnerDocumentRepository repo, IWebHostEnvironment env)
+        public OwnerDocumentService(IOwnerDocumentRepository repo, Cloudinary cloudinary)
         {
             _repo = repo;
-            _env = env;
+            _cloudinary = cloudinary;
         }
 
-        private string[] allowedExtensions = new[] { ".jpg", ".jpeg", ".png", ".pdf" };
-        private long maxFileSize = 5 * 1024 * 1024; // 5 MB
-
-        // Add or update document
         public async Task<ApiResponseModel> AddOwnerDocumentAsync(int ownerId, AddOwnerDocumentDTO dto)
         {
             if (dto.DocumentFile == null)
-                return ApiResponseHelper.Fail("Please provide a document to upload.");
+                return ApiResponseHelper.Fail("Document File is required.");
 
+            var allowedExtensions = new[] { ".jpg", ".jpeg", ".png", ".pdf" };
             var ext = Path.GetExtension(dto.DocumentFile.FileName).ToLower();
+
             if (!allowedExtensions.Contains(ext))
-                return ApiResponseHelper.Fail("Only JPG, PNG, or PDF files are allowed.");
-            if (dto.DocumentFile.Length > maxFileSize)
-                return ApiResponseHelper.Fail("File size cannot exceed 5 MB.");
+                return ApiResponseHelper.Fail("Only JPG, PNG, and PDF allowed.");
 
+            if (dto.DocumentFile.Length > 5 * 1024 * 1024)
+                return ApiResponseHelper.Fail("Max file size 5 MB.");
 
-            var webRoot = _env.WebRootPath
-        ?? Path.Combine(Directory.GetCurrentDirectory(), "wwwroot");
-            if (!Directory.Exists(webRoot))
-                Directory.CreateDirectory(webRoot);
-            var folder = Path.Combine(webRoot, "Upload_image", "OwnerDocument");
+            using var stream = dto.DocumentFile.OpenReadStream();
 
-            if (!Directory.Exists(folder))
-                Directory.CreateDirectory(folder);
-
-            var fileName = $"{Guid.NewGuid()}{ext}";
-            var fullPath = Path.Combine(folder, fileName);
-
-            using (var stream = new FileStream(fullPath, FileMode.Create))
+            var uploadParams = new RawUploadParams()
             {
-                await dto.DocumentFile.CopyToAsync(stream);
-            }
-            var relativePath = $"/Upload_image/OwnerDocument/{fileName}";
+                File = new FileDescription(dto.DocumentFile.FileName, stream),
+                Folder = "EZRide/OwnerDocuments",
+                PublicId = Guid.NewGuid().ToString()
+            };
+
+            var uploadResult = await _cloudinary.UploadAsync(uploadParams);
+            if (uploadResult.Error != null)
+                return ApiResponseHelper.Fail(uploadResult.Error.Message);
+
+            string cloudUrl = uploadResult.SecureUrl.AbsoluteUri;
+            string publicId = uploadResult.PublicId;
 
             var existingDoc = await _repo.GetOwnerDocumentByType(ownerId, dto.DocumentType);
 
             if (existingDoc != null)
             {
-                // delete old file
-                if (!string.IsNullOrEmpty(existingDoc.DocumentPath))
-                {
-                    var oldPath = Path.Combine(
-                        webRoot,
-                        existingDoc.DocumentPath.TrimStart('/')
-                    );
+                if (!string.IsNullOrEmpty(existingDoc.PublicId))
+                    await _cloudinary.DestroyAsync(new DeletionParams(existingDoc.PublicId));
 
-                    if (File.Exists(oldPath))
-                        File.Delete(oldPath);
-                }
-
-                existingDoc.DocumentPath = relativePath;
+                existingDoc.DocumentPath = cloudUrl;
+                existingDoc.PublicId = publicId;
                 existingDoc.Status = OwnerDocument.DocumentStatus.Pending;
                 existingDoc.CreatedAt = DateTime.UtcNow;
 
@@ -79,9 +68,9 @@ namespace EZRide_Project.Services
                 var doc = new OwnerDocument
                 {
                     OwnerId = ownerId,
-                    DocumentType = Enum.Parse<OwnerDocument.documentType>(
-                        dto.DocumentType, true),
-                    DocumentPath = relativePath,
+                    DocumentType = Enum.Parse<OwnerDocument.documentType>(dto.DocumentType, true),
+                    DocumentPath = cloudUrl,
+                    PublicId = publicId,
                     Status = OwnerDocument.DocumentStatus.Pending,
                     CreatedAt = DateTime.UtcNow
                 };
@@ -90,9 +79,9 @@ namespace EZRide_Project.Services
             }
 
             await _repo.SaveChangesAsync();
-
-            return ApiResponseHelper.Success("Document uploaded successfully.");
+            return ApiResponseHelper.Success("Document uploaded successfully!");
         }
+
 
 
         // Get all documents
@@ -104,6 +93,7 @@ namespace EZRide_Project.Services
                 DocumentId = d.DocumentId,
                 DocumentType = d.DocumentType.ToString(),
                 DocumentPath = d.DocumentPath,
+                PublicId = d.PublicId ?? string.Empty,
                 Status = d.Status.ToString(),
                 Reason = d.Reason,
                 CreatedAt = d.CreatedAt
@@ -117,14 +107,11 @@ namespace EZRide_Project.Services
             if (doc == null || doc.OwnerId != ownerId)
                 return ApiResponseHelper.Fail("Document not found or access denied.");
 
-            var webRoot = _env.WebRootPath
-                ?? Path.Combine(Directory.GetCurrentDirectory(), "wwwroot");
-
-            if (!string.IsNullOrEmpty(doc.DocumentPath))
+            // Cloudinary delete
+            if (!string.IsNullOrEmpty(doc.PublicId))
             {
-                var physicalPath = Path.Combine(webRoot, doc.DocumentPath.TrimStart('/'));
-                if (File.Exists(physicalPath))
-                    File.Delete(physicalPath);
+                var delParams = new DeletionParams(doc.PublicId);
+                await _cloudinary.DestroyAsync(delParams);
             }
 
             _repo.Delete(doc);
@@ -133,46 +120,46 @@ namespace EZRide_Project.Services
             return ApiResponseHelper.Success("Document deleted successfully.");
         }
 
+
         // Update document
         public async Task<ApiResponseModel> UpdateOwnerDocumentAsync(int ownerId, updateOwnerDocumentDTO dto)
         {
+            var allowedExtensions = new[] { ".jpg", ".jpeg", ".png", ".pdf" };
+            var maxFileSize = 5 * 1024 * 1024; // 5 MB
+
             var doc = await _repo.GetByIdAsync(dto.DocumentId);
             if (doc == null || doc.OwnerId != ownerId)
                 return ApiResponseHelper.Fail("Document not found or access denied.");
-
-            var webRoot = _env.WebRootPath
-                ?? Path.Combine(Directory.GetCurrentDirectory(), "wwwroot");
 
             if (dto.DocumentFile != null)
             {
                 var ext = Path.GetExtension(dto.DocumentFile.FileName).ToLower();
                 if (!allowedExtensions.Contains(ext))
-                    return ApiResponseHelper.Fail("Only JPG, PNG, or PDF files are allowed.");
+                    return ApiResponseHelper.Fail("Only JPG, PNG, and PDF files are allowed.");
 
                 if (dto.DocumentFile.Length > maxFileSize)
                     return ApiResponseHelper.Fail("File size cannot exceed 5 MB.");
 
-                var folder = Path.Combine(webRoot, "Upload_image", "OwnerDocument");
-                if (!Directory.Exists(folder))
-                    Directory.CreateDirectory(folder);
-
-                var fileName = $"{Guid.NewGuid()}{ext}";
-                var newPath = Path.Combine(folder, fileName);
-
-                using (var stream = new FileStream(newPath, FileMode.Create))
+                // Delete old from Cloudinary
+                if (!string.IsNullOrEmpty(doc.PublicId))
                 {
-                    await dto.DocumentFile.CopyToAsync(stream);
+                    var deleteParams = new DeletionParams(doc.PublicId);
+                    await _cloudinary.DestroyAsync(deleteParams);
                 }
 
-                // Delete old file
-                if (!string.IsNullOrEmpty(doc.DocumentPath))
+                using var stream = dto.DocumentFile.OpenReadStream();
+                var uploadParams = new RawUploadParams()
                 {
-                    var oldPath = Path.Combine(webRoot, doc.DocumentPath.TrimStart('/'));
-                    if (File.Exists(oldPath))
-                        File.Delete(oldPath);
-                }
+                    File = new FileDescription(dto.DocumentFile.FileName, stream),
+                    Folder = "EZRide/OwnerDocuments"
+                };
 
-                doc.DocumentPath = $"/Upload_image/OwnerDocument/{fileName}";
+                var uploadResult = await _cloudinary.UploadAsync(uploadParams);
+                if (uploadResult.Error != null)
+                    return ApiResponseHelper.Fail(uploadResult.Error.Message);
+
+                doc.DocumentPath = uploadResult.SecureUrl.AbsoluteUri;
+                doc.PublicId = uploadResult.PublicId;
             }
 
             doc.DocumentType = Enum.Parse<OwnerDocument.documentType>(dto.DocumentType, true);
@@ -181,8 +168,10 @@ namespace EZRide_Project.Services
             await _repo.UpdateAsync(doc);
             await _repo.SaveChangesAsync();
 
-            return ApiResponseHelper.Success("Document updated successfully.");
+            return ApiResponseHelper.Success("Document updated successfully!");
         }
+
+
     }
 }
 

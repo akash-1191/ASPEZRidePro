@@ -18,6 +18,8 @@ namespace EZRide_Project.DTO.Vehile_Owner_DTo
         public string? Reason { get; set; }
 
         public DateTime CreatedAt { get; set; }
+        public string? PublicId { get; set; }
+
 
 
     }
