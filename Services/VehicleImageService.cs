@@ -161,7 +161,7 @@ namespace EZRide_Project.Services
                 VehicleImageId = i.VehicleImageId,
                 VehicleId = i.VehicleId,
                 ImagePath = i.ImagePath, // Cloud URL
-                PublicId = i.PublicId,   // New field if for delete/update
+                PublicId = i.PublicId ?? string.Empty,
                 CreatedAt = i.CreatedAt
             }).ToList();
         }
