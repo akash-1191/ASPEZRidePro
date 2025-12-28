@@ -156,16 +156,16 @@ namespace EZRide_Project.Services
         {
             var images = await _imageRepository.GetImagesByVehicleIdAsync(vehicleId);
 
-            var result = images.Select(i => new VehicleImageResponseDTO
+            return images.Select(i => new VehicleImageResponseDTO
             {
                 VehicleImageId = i.VehicleImageId,
                 VehicleId = i.VehicleId,
-                ImagePath = i.ImagePath,
+                ImagePath = i.ImagePath, // Cloud URL
+                PublicId = i.PublicId,   // New field if for delete/update
                 CreatedAt = i.CreatedAt
             }).ToList();
-
-            return result;
         }
+
 
 
     }
